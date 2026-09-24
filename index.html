@@ -146,8 +146,113 @@
                 <p id="ui-shiftCompletedDesc" class="text-slate-500">تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.</p>
             </div>
 
+            <!-- قسم الخدمات السريعة -->
+            <div class="fade-in bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 id="ui-servicesTitle" class="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">الخدمات السريعة</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="openModal('leave-modal')" class="flex flex-col items-center justify-center p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-blue-700 shadow-sm border border-blue-100">
+                        <i class="fa-solid fa-calendar-days text-xl mb-2"></i>
+                        <span id="ui-btnLeave" class="text-xs font-bold text-center">طلب إجازة</span>
+                    </button>
+                    <button onclick="openModal('loan-modal')" class="flex flex-col items-center justify-center p-3 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors text-emerald-700 shadow-sm border border-emerald-100">
+                        <i class="fa-solid fa-money-bill-wave text-xl mb-2"></i>
+                        <span id="ui-btnLoan" class="text-xs font-bold text-center">طلب سلفة</span>
+                    </button>
+                    <button onclick="openModal('issue-modal')" class="flex flex-col items-center justify-center p-3 bg-rose-50 rounded-xl hover:bg-rose-100 transition-colors text-rose-700 shadow-sm border border-rose-100">
+                        <i class="fa-solid fa-triangle-exclamation text-xl mb-2"></i>
+                        <span id="ui-btnIssue" class="text-xs font-bold text-center">بلاغ مشكلة</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
     </main>
+
+    <!-- 1. نافذة طلب الإجازة -->
+    <div id="leave-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="leave-modal-content">
+            <div class="bg-blue-600 p-4 flex justify-between items-center text-white">
+                <h3 id="ui-modalLeaveTitle" class="font-bold text-lg">تقديم طلب إجازة</h3>
+                <button onclick="closeModal('leave-modal')" class="hover:text-blue-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="leave-form" class="p-5 space-y-4">
+                <div>
+                    <label id="ui-leaveDateLabel" class="block text-sm font-semibold text-slate-700 mb-1">تاريخ بداية الإجازة</label>
+                    <input type="date" required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                </div>
+                <div>
+                    <label id="ui-leaveTypeLabel" class="block text-sm font-semibold text-slate-700 mb-1">نوع الإجازة</label>
+                    <select required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                        <option id="ui-leaveType1" value="annual">سنوية</option>
+                        <option id="ui-leaveType2" value="sick">مرضية</option>
+                        <option id="ui-leaveType3" value="unpaid">بدون راتب</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
+                    <span id="ui-leaveSubmit">إرسال الطلب</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. نافذة طلب سلفة -->
+    <div id="loan-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="loan-modal-content">
+            <div class="bg-emerald-600 p-4 flex justify-between items-center text-white">
+                <h3 id="ui-modalLoanTitle" class="font-bold text-lg">طلب سلفة مالية</h3>
+                <button onclick="closeModal('loan-modal')" class="hover:text-emerald-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="loan-form" class="p-5 space-y-4">
+                <div>
+                    <label id="ui-loanAmountLabel" class="block text-sm font-semibold text-slate-700 mb-1">المبلغ المطلوب</label>
+                    <input type="number" required placeholder="0.00" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50">
+                </div>
+                <div>
+                    <label id="ui-loanReasonLabel" class="block text-sm font-semibold text-slate-700 mb-1">السبب (اختياري)</label>
+                    <textarea rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
+                    <span id="ui-loanSubmit">إرسال الطلب</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. نافذة بلاغ مشكلة -->
+    <div id="issue-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="issue-modal-content">
+            <div class="bg-rose-600 p-4 flex justify-between items-center text-white">
+                <h3 id="ui-modalIssueTitle" class="font-bold text-lg">الإبلاغ عن مشكلة</h3>
+                <button onclick="closeModal('issue-modal')" class="hover:text-rose-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="issue-form" class="p-5 space-y-4">
+                <div>
+                    <label id="ui-issueTypeLabel" class="block text-sm font-semibold text-slate-700 mb-1">نوع المشكلة</label>
+                    <select required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50">
+                        <option id="ui-issueType1" value="safety">أمن وسلامة</option>
+                        <option id="ui-issueType2" value="equipment">عطل معدات</option>
+                        <option id="ui-issueType3" value="other">أخرى</option>
+                    </select>
+                </div>
+                <div>
+                    <label id="ui-issueDescLabel" class="block text-sm font-semibold text-slate-700 mb-1">وصف المشكلة</label>
+                    <textarea required rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
+                    <span id="ui-issueSubmit">إرسال البلاغ</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- رسالة النجاح (Toast Message) -->
+    <div id="success-toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-50 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+        <span id="ui-successMsg" class="font-medium text-sm whitespace-nowrap">تم إرسال طلبك بنجاح للإدارة</span>
+    </div>
 
     <script>
         // ----------------- قاعدة البيانات المصغرة -----------------
@@ -182,7 +287,36 @@
                 checkedInAtLabel: "تم تسجيل الحضور الساعة:",
                 checkOutBtn: "تسجيل الانصراف",
                 shiftCompletedTitle: "تم إنهاء العمل بنجاح!",
-                shiftCompletedDesc: "تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً."
+                shiftCompletedDesc: "تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.",
+                
+                // ترجمة الخدمات الجديدة
+                servicesTitle: "الخدمات السريعة",
+                btnLeave: "طلب إجازة",
+                btnLoan: "طلب سلفة",
+                btnIssue: "بلاغ مشكلة",
+                
+                modalLeaveTitle: "تقديم طلب إجازة",
+                leaveDateLabel: "تاريخ بداية الإجازة",
+                leaveTypeLabel: "نوع الإجازة",
+                leaveType1: "سنوية",
+                leaveType2: "مرضية",
+                leaveType3: "بدون راتب",
+                leaveSubmit: "إرسال الطلب",
+                
+                modalLoanTitle: "طلب سلفة مالية",
+                loanAmountLabel: "المبلغ المطلوب",
+                loanReasonLabel: "السبب (اختياري)",
+                loanSubmit: "إرسال الطلب",
+                
+                modalIssueTitle: "الإبلاغ عن مشكلة",
+                issueTypeLabel: "نوع المشكلة",
+                issueType1: "أمن وسلامة",
+                issueType2: "عطل في المعدات",
+                issueType3: "أخرى",
+                issueDescLabel: "وصف المشكلة",
+                issueSubmit: "إرسال البلاغ",
+                
+                successMsg: "تم إرسال طلبك بنجاح للإدارة"
             },
             en: {
                 companyName: "Arkan Al-Khaleej Metal Works",
@@ -201,7 +335,36 @@
                 checkedInAtLabel: "Checked in at:",
                 checkOutBtn: "Check Out",
                 shiftCompletedTitle: "Shift completed successfully!",
-                shiftCompletedDesc: "Your attendance has been saved. A new workday will start tomorrow."
+                shiftCompletedDesc: "Your attendance has been saved. A new workday will start tomorrow.",
+                
+                // New Services Translations
+                servicesTitle: "Quick Services",
+                btnLeave: "Leave Request",
+                btnLoan: "Loan Request",
+                btnIssue: "Report Issue",
+                
+                modalLeaveTitle: "Submit Leave Request",
+                leaveDateLabel: "Leave Start Date",
+                leaveTypeLabel: "Leave Type",
+                leaveType1: "Annual",
+                leaveType2: "Sick",
+                leaveType3: "Unpaid",
+                leaveSubmit: "Submit Request",
+                
+                modalLoanTitle: "Financial Loan Request",
+                loanAmountLabel: "Requested Amount",
+                loanReasonLabel: "Reason (Optional)",
+                loanSubmit: "Submit Request",
+                
+                modalIssueTitle: "Report an Issue",
+                issueTypeLabel: "Issue Type",
+                issueType1: "Health & Safety",
+                issueType2: "Equipment Failure",
+                issueType3: "Other",
+                issueDescLabel: "Issue Description",
+                issueSubmit: "Submit Report",
+                
+                successMsg: "Your request has been sent successfully"
             }
         };
 
@@ -255,6 +418,35 @@
 
             // تحديث زر اللغة
             document.getElementById('lang-text').innerText = currentLang === 'ar' ? 'English' : 'عربي';
+
+            // تحديث نصوص الخدمات والنوافذ
+            document.getElementById('ui-servicesTitle').innerText = t.servicesTitle;
+            document.getElementById('ui-btnLeave').innerText = t.btnLeave;
+            document.getElementById('ui-btnLoan').innerText = t.btnLoan;
+            document.getElementById('ui-btnIssue').innerText = t.btnIssue;
+            
+            document.getElementById('ui-modalLeaveTitle').innerText = t.modalLeaveTitle;
+            document.getElementById('ui-leaveDateLabel').innerText = t.leaveDateLabel;
+            document.getElementById('ui-leaveTypeLabel').innerText = t.leaveTypeLabel;
+            document.getElementById('ui-leaveType1').innerText = t.leaveType1;
+            document.getElementById('ui-leaveType2').innerText = t.leaveType2;
+            document.getElementById('ui-leaveType3').innerText = t.leaveType3;
+            document.getElementById('ui-leaveSubmit').innerText = t.leaveSubmit;
+
+            document.getElementById('ui-modalLoanTitle').innerText = t.modalLoanTitle;
+            document.getElementById('ui-loanAmountLabel').innerText = t.loanAmountLabel;
+            document.getElementById('ui-loanReasonLabel').innerText = t.loanReasonLabel;
+            document.getElementById('ui-loanSubmit').innerText = t.loanSubmit;
+
+            document.getElementById('ui-modalIssueTitle').innerText = t.modalIssueTitle;
+            document.getElementById('ui-issueTypeLabel').innerText = t.issueTypeLabel;
+            document.getElementById('ui-issueType1').innerText = t.issueType1;
+            document.getElementById('ui-issueType2').innerText = t.issueType2;
+            document.getElementById('ui-issueType3').innerText = t.issueType3;
+            document.getElementById('ui-issueDescLabel').innerText = t.issueDescLabel;
+            document.getElementById('ui-issueSubmit').innerText = t.issueSubmit;
+            
+            document.getElementById('ui-successMsg').innerText = t.successMsg;
 
             // تحديث الترحيب
             updateGreeting();
@@ -382,6 +574,60 @@
             document.getElementById('worker-id-input').value = '';
             showSection('login-section');
         });
+
+        // ----------------- دوال النوافذ المنبثقة والخدمات (Modals) -----------------
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + '-content');
+            modal.classList.remove('hidden');
+            // تأخير بسيط جداً لتفعيل التأثير الحركي للظهور
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + '-content');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            // إخفاء العنصر بالكامل بعد انتهاء التأثير الحركي (300 ملي ثانية)
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // إظهار رسالة النجاح (بديل عن الـ alert المزعج)
+        function showSuccessToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // إخفاء الرسالة تلقائياً بعد 3 ثواني
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // معالجة إرسال النماذج
+        const handleServiceSubmit = (e, modalId) => {
+            e.preventDefault(); // منع إعادة تحميل الصفحة
+            
+            // سيتم هنا لاحقاً إرسال البيانات (Form Data) لقاعدة البيانات الحقيقية
+            
+            closeModal(modalId);
+            setTimeout(() => {
+                showSuccessToast();
+                e.target.reset(); // تفريغ الحقول ليتمكن من تقديم طلب جديد لاحقاً
+            }, 300);
+        };
+
+        // ربط النماذج بالدوال
+        document.getElementById('leave-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'leave-modal'));
+        document.getElementById('loan-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'loan-modal'));
+        document.getElementById('issue-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'issue-modal'));
 
         // ----------------- التهيئة عند تحميل الصفحة -----------------
         window.onload = () => {
