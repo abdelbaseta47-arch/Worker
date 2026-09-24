@@ -1,0 +1,291 @@
+import React, { useState, useEffect } from 'react';
+import { Globe, LogIn, Clock, CheckCircle, MapPin, User, LogOut, Hexagon } from 'lucide-react';
+
+// القاموس اللغوي (عربي / إنجليزي)
+const translations = {
+  ar: {
+    companyName: "شركة أركان الخليج للأعمال المعدنية",
+    subtitle: "لوحة متابعة العمل",
+    goodMorning: "صباح الخير",
+    goodEvening: "مساء الخير",
+    workerId: "كود العامل",
+    login: "تسجيل الدخول",
+    selectProject: "اختر موقع العمل الحالي",
+    checkIn: "تسجيل الحضور",
+    checkOut: "تسجيل الانصراف",
+    checkedInAt: "تم تسجيل الحضور الساعة:",
+    workingAt: "تعمل الآن في:",
+    shiftCompleted: "تم إنهاء العمل بنجاح لهذا اليوم. شكراً لك!",
+    invalidId: "رقم العامل غير صحيح، يرجى التأكد",
+    enterIdPlaceholder: "أدخل رقمك الوظيفي هنا",
+    factory: "المصنع الرئيسي",
+    logout: "خروج",
+  },
+  en: {
+    companyName: "Arkan Al-Khaleej Metal Works",
+    subtitle: "Work Tracking Dashboard",
+    goodMorning: "Good Morning",
+    goodEvening: "Good Evening",
+    workerId: "Worker ID",
+    login: "Login",
+    selectProject: "Select Current Location",
+    checkIn: "Check In",
+    checkOut: "Check Out",
+    checkedInAt: "Checked in at:",
+    workingAt: "Currently working at:",
+    shiftCompleted: "Shift completed successfully for today. Thank you!",
+    invalidId: "Invalid Worker ID, please check",
+    enterIdPlaceholder: "Enter your ID here",
+    factory: "Main Factory",
+    logout: "Logout",
+  }
+};
+
+// محاكاة لقاعدة بيانات العمال (ستُستبدل لاحقاً بـ Supabase)
+const mockWorkers = [
+  { id: "1001", name: "أحمد محمد" },
+  { id: "1002", name: "محمود علي" },
+  { id: "1003", name: "جون دوي (John Doe)" },
+];
+
+// محاكاة لقاعدة بيانات المشاريع ومراكز التكلفة
+const mockProjects = [
+  { id: "F-01", name: { ar: "المصنع الرئيسي (أجور صناعية)", en: "Main Factory (Direct Labor)" } },
+  { id: "P-101", name: { ar: "مشروع أبراج الرياض", en: "Riyadh Towers Project" } },
+  { id: "P-102", name: { ar: "مشروع مستشفى جدة", en: "Jeddah Hospital Project" } },
+];
+
+export default function WorkerInterface() {
+  const [lang, setLang] = useState('ar');
+  const t = translations[lang];
+
+  // حالة العامل والتسجيل
+  const [workerIdInput, setWorkerIdInput] = useState('');
+  const [activeWorker, setActiveWorker] = useState(null);
+  const [error, setError] = useState('');
+
+  // حالة الحضور والانصراف: 'none' | 'checked_in' | 'completed'
+  const [attendanceStatus, setAttendanceStatus] = useState('none');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [checkInTime, setCheckInTime] = useState(null);
+
+  // دالة لحساب الترحيب بناءً على الوقت
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    return hour < 12 ? t.goodMorning : t.goodEvening;
+  };
+
+  // دالة لتنسيق الوقت بصيغة مقروءة 
+  const formatTime = (date) => {
+    if (!date) return '';
+    return date.toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // معالجة تسجيل الدخول للعامل
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const worker = mockWorkers.find(w => w.id === workerIdInput);
+    if (worker) {
+      setActiveWorker(worker);
+      setError('');
+      // هنا لاحقاً سنستدعي قاعدة البيانات لنرى إذا كان العامل قد سجل حضور اليوم أم لا
+      setAttendanceStatus('none'); 
+    } else {
+      setError(t.invalidId);
+    }
+  };
+
+  // معالجة تسجيل الحضور
+  const handleCheckIn = () => {
+    if (!selectedProjectId) return;
+    setCheckInTime(new Date());
+    setAttendanceStatus('checked_in');
+    // هنا لاحقاً سنرسل البيانات لـ Supabase لحفظ الوقت والمشروع
+  };
+
+  // معالجة تسجيل الانصراف
+  const handleCheckOut = () => {
+    setAttendanceStatus('completed');
+    // هنا لاحقاً سنحسب الساعات (الطبيعية والإضافية) ونحفظها في قاعدة البيانات للتصدير لاحقاً للإكسيل
+  };
+
+  const handleLogout = () => {
+    setActiveWorker(null);
+    setWorkerIdInput('');
+    setAttendanceStatus('none');
+    setCheckInTime(null);
+  };
+
+  const renderLogin = () => (
+    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 border border-slate-100">
+      <div className="bg-slate-900 p-8 text-center">
+        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <User className="text-white w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-2">{t.login}</h2>
+        <p className="text-slate-400 text-sm">{t.subtitle}</p>
+      </div>
+      <div className="p-8">
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              {t.workerId}
+            </label>
+            <input
+              type="number"
+              value={workerIdInput}
+              onChange={(e) => setWorkerIdInput(e.target.value)}
+              placeholder={t.enterIdPlaceholder}
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-slate-800 bg-slate-50"
+              required
+            />
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md"
+          >
+            <LogIn className="w-5 h-5" />
+            <span>{t.login}</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+
+  const renderDashboard = () => (
+    <div className="w-full max-w-md mx-auto mt-6 space-y-6">
+      {/* بطاقة الترحيب */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-slate-500 font-medium">{getGreeting()} 👋</p>
+          <h2 className="text-xl font-bold text-slate-800">{activeWorker.name}</h2>
+        </div>
+        <button onClick={handleLogout} className="text-slate-400 hover:text-red-500 transition-colors">
+          <LogOut className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* بطاقة الإجراءات (حضور/انصراف) */}
+      <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 overflow-hidden relative">
+        {attendanceStatus === 'none' && (
+          <div className="space-y-6 animate-in fade-in zoom-in duration-300">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-blue-600" />
+                {t.selectProject}
+              </label>
+              <select
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-slate-800 bg-slate-50 appearance-none"
+              >
+                <option value="" disabled>--- {t.selectProject} ---</option>
+                {mockProjects.map(proj => (
+                  <option key={proj.id} value={proj.id}>
+                    {proj.name[lang]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <button
+              onClick={handleCheckIn}
+              disabled={!selectedProjectId}
+              className={`w-full font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg text-lg ${
+                selectedProjectId 
+                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white transform hover:-translate-y-1' 
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              <LogIn className="w-6 h-6" />
+              <span>{t.checkIn}</span>
+            </button>
+          </div>
+        )}
+
+        {attendanceStatus === 'checked_in' && (
+          <div className="space-y-8 text-center animate-in fade-in zoom-in duration-300">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-600 rounded-full mb-2">
+              <Clock className="w-10 h-10 animate-pulse" />
+            </div>
+            <div>
+              <p className="text-sm text-slate-500 mb-1">{t.workingAt}</p>
+              <p className="text-lg font-bold text-slate-800">
+                {mockProjects.find(p => p.id === selectedProjectId)?.name[lang]}
+              </p>
+              <div className="mt-4 inline-block bg-slate-100 px-4 py-2 rounded-full text-slate-600 font-medium text-sm">
+                {t.checkedInAt} <span className="font-bold text-blue-600 mx-1">{formatTime(checkInTime)}</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleCheckOut}
+              className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-rose-500/30 transform hover:-translate-y-1 text-lg"
+            >
+              <LogOut className="w-6 h-6" />
+              <span>{t.checkOut}</span>
+            </button>
+          </div>
+        )}
+
+        {attendanceStatus === 'completed' && (
+          <div className="text-center py-8 animate-in fade-in zoom-in duration-500">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full mb-6">
+              <CheckCircle className="w-12 h-12" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">{t.shiftCompleted}</h3>
+            <p className="text-slate-500 px-4">
+              تم إرسال بيانات دوامك للإدارة بنجاح. سيتم بدء يوم عمل جديد غداً.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div 
+      className={`min-h-screen bg-slate-50 font-sans ${lang === 'ar' ? 'rtl' : 'ltr'}`} 
+      dir={lang === 'ar' ? 'rtl' : 'ltr'}
+      style={{ fontFamily: lang === 'ar' ? 'Tajawal, system-ui, sans-serif' : 'Inter, system-ui, sans-serif' }}
+    >
+      {/* الشريط العلوي للتبديل بين اللغات */}
+      <div className="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end">
+        <button 
+          onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+          className="flex items-center gap-1.5 text-xs font-semibold hover:text-white transition-colors"
+        >
+          <Globe className="w-4 h-4" />
+          {lang === 'ar' ? 'English' : 'عربي'}
+        </button>
+      </div>
+
+      {/* ترويسة الشركة */}
+      <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-4 py-4 flex items-center gap-4">
+          <div className="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+            <Hexagon className="w-7 h-7 text-blue-400" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-blue-950 leading-tight">
+              {t.companyName}
+            </h1>
+            <p className="text-xs font-medium text-slate-500 mt-0.5">
+              {t.subtitle}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* المحتوى الرئيسي */}
+      <main className="p-4 pb-20">
+        {!activeWorker ? renderLogin() : renderDashboard()}
+      </main>
+
+    </div>
+  );
+}
