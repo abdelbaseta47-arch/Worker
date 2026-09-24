@@ -1,292 +1,403 @@
-"use client";
-import React, { useState, useEffect } from 'react';
-import { Globe, LogIn, Clock, CheckCircle, MapPin, User, LogOut, Hexagon } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أركان الخليج - متابعة العمل</title>
+    
+    <!-- تحميل مكتبة Tailwind CSS للتصميم -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- تحميل مكتبة الأيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- تحميل الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- إعدادات الخطوط الافتراضية -->
+    <style>
+        :root {
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Inter', sans-serif;
+        }
+        body { font-family: var(--font-ar); }
+        .ltr body { font-family: var(--font-en); }
+        
+        /* تأثيرات حركية بسيطة */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-20 text-slate-800">
 
-// القاموس اللغوي (عربي / إنجليزي)
-const translations = {
-  ar: {
-    companyName: "شركة أركان الخليج للأعمال المعدنية",
-    subtitle: "لوحة متابعة العمل",
-    goodMorning: "صباح الخير",
-    goodEvening: "مساء الخير",
-    workerId: "كود العامل",
-    login: "تسجيل الدخول",
-    selectProject: "اختر موقع العمل الحالي",
-    checkIn: "تسجيل الحضور",
-    checkOut: "تسجيل الانصراف",
-    checkedInAt: "تم تسجيل الحضور الساعة:",
-    workingAt: "تعمل الآن في:",
-    shiftCompleted: "تم إنهاء العمل بنجاح لهذا اليوم. شكراً لك!",
-    invalidId: "رقم العامل غير صحيح، يرجى التأكد",
-    enterIdPlaceholder: "أدخل رقمك الوظيفي هنا",
-    factory: "المصنع الرئيسي",
-    logout: "خروج",
-  },
-  en: {
-    companyName: "Arkan Al-Khaleej Metal Works",
-    subtitle: "Work Tracking Dashboard",
-    goodMorning: "Good Morning",
-    goodEvening: "Good Evening",
-    workerId: "Worker ID",
-    login: "Login",
-    selectProject: "Select Current Location",
-    checkIn: "Check In",
-    checkOut: "Check Out",
-    checkedInAt: "Checked in at:",
-    workingAt: "Currently working at:",
-    shiftCompleted: "Shift completed successfully for today. Thank you!",
-    invalidId: "Invalid Worker ID, please check",
-    enterIdPlaceholder: "Enter your ID here",
-    factory: "Main Factory",
-    logout: "Logout",
-  }
-};
-
-// محاكاة لقاعدة بيانات العمال (ستُستبدل لاحقاً بـ Supabase)
-const mockWorkers = [
-  { id: "1001", name: "أحمد محمد" },
-  { id: "1002", name: "محمود علي" },
-  { id: "1003", name: "جون دوي (John Doe)" },
-];
-
-// محاكاة لقاعدة بيانات المشاريع ومراكز التكلفة
-const mockProjects = [
-  { id: "F-01", name: { ar: "المصنع الرئيسي (أجور صناعية)", en: "Main Factory (Direct Labor)" } },
-  { id: "P-101", name: { ar: "مشروع أبراج الرياض", en: "Riyadh Towers Project" } },
-  { id: "P-102", name: { ar: "مشروع مستشفى جدة", en: "Jeddah Hospital Project" } },
-];
-
-export default function WorkerInterface() {
-  const [lang, setLang] = useState('ar');
-  const t = translations[lang];
-
-  // حالة العامل والتسجيل
-  const [workerIdInput, setWorkerIdInput] = useState('');
-  const [activeWorker, setActiveWorker] = useState(null);
-  const [error, setError] = useState('');
-
-  // حالة الحضور والانصراف: 'none' | 'checked_in' | 'completed'
-  const [attendanceStatus, setAttendanceStatus] = useState('none');
-  const [selectedProjectId, setSelectedProjectId] = useState('');
-  const [checkInTime, setCheckInTime] = useState(null);
-
-  // دالة لحساب الترحيب بناءً على الوقت
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    return hour < 12 ? t.goodMorning : t.goodEvening;
-  };
-
-  // دالة لتنسيق الوقت بصيغة مقروءة 
-  const formatTime = (date) => {
-    if (!date) return '';
-    return date.toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  // معالجة تسجيل الدخول للعامل
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const worker = mockWorkers.find(w => w.id === workerIdInput);
-    if (worker) {
-      setActiveWorker(worker);
-      setError('');
-      // هنا لاحقاً سنستدعي قاعدة البيانات لنرى إذا كان العامل قد سجل حضور اليوم أم لا
-      setAttendanceStatus('none'); 
-    } else {
-      setError(t.invalidId);
-    }
-  };
-
-  // معالجة تسجيل الحضور
-  const handleCheckIn = () => {
-    if (!selectedProjectId) return;
-    setCheckInTime(new Date());
-    setAttendanceStatus('checked_in');
-    // هنا لاحقاً سنرسل البيانات لـ Supabase لحفظ الوقت والمشروع
-  };
-
-  // معالجة تسجيل الانصراف
-  const handleCheckOut = () => {
-    setAttendanceStatus('completed');
-    // هنا لاحقاً سنحسب الساعات (الطبيعية والإضافية) ونحفظها في قاعدة البيانات للتصدير لاحقاً للإكسيل
-  };
-
-  const handleLogout = () => {
-    setActiveWorker(null);
-    setWorkerIdInput('');
-    setAttendanceStatus('none');
-    setCheckInTime(null);
-  };
-
-  const renderLogin = () => (
-    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 border border-slate-100">
-      <div className="bg-slate-900 p-8 text-center">
-        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <User className="text-white w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-2">{t.login}</h2>
-        <p className="text-slate-400 text-sm">{t.subtitle}</p>
-      </div>
-      <div className="p-8">
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              {t.workerId}
-            </label>
-            <input
-              type="number"
-              value={workerIdInput}
-              onChange={(e) => setWorkerIdInput(e.target.value)}
-              placeholder={t.enterIdPlaceholder}
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-slate-800 bg-slate-50"
-              required
-            />
-            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md"
-          >
-            <LogIn className="w-5 h-5" />
-            <span>{t.login}</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-
-  const renderDashboard = () => (
-    <div className="w-full max-w-md mx-auto mt-6 space-y-6">
-      {/* بطاقة الترحيب */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-slate-500 font-medium">{getGreeting()} 👋</p>
-          <h2 className="text-xl font-bold text-slate-800">{activeWorker.name}</h2>
-        </div>
-        <button onClick={handleLogout} className="text-slate-400 hover:text-red-500 transition-colors">
-          <LogOut className="w-6 h-6" />
+    <!-- الشريط العلوي لتغيير اللغة -->
+    <div class="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end">
+        <button id="lang-toggle" class="flex items-center gap-2 text-xs font-semibold hover:text-white transition-colors">
+            <i class="fa-solid fa-globe"></i>
+            <span id="lang-text">English</span>
         </button>
-      </div>
+    </div>
 
-      {/* بطاقة الإجراءات (حضور/انصراف) */}
-      <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 overflow-hidden relative">
-        {attendanceStatus === 'none' && (
-          <div className="space-y-6 animate-in fade-in zoom-in duration-300">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-600" />
-                {t.selectProject}
-              </label>
-              <select
-                value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-slate-800 bg-slate-50 appearance-none"
-              >
-                <option value="" disabled>--- {t.selectProject} ---</option>
-                {mockProjects.map(proj => (
-                  <option key={proj.id} value={proj.id}>
-                    {proj.name[lang]}
-                  </option>
-                ))}
-              </select>
+    <!-- ترويسة الشركة -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-md mx-auto px-4 py-4 flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+                <i class="fa-solid fa-industry text-blue-400 text-xl"></i>
             </div>
+            <div>
+                <h1 id="ui-companyName" class="text-lg font-bold text-blue-950 leading-tight">
+                    شركة أركان الخليج للأعمال المعدنية
+                </h1>
+                <p id="ui-subtitle" class="text-xs font-medium text-slate-500 mt-0.5">
+                    لوحة متابعة العمل
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="p-4 max-w-md mx-auto mt-4">
+
+        <!-- 1. شاشة تسجيل الدخول -->
+        <div id="login-section" class="fade-in bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-slate-900 p-8 text-center">
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fa-solid fa-user text-white text-2xl"></i>
+                </div>
+                <h2 id="ui-loginTitle" class="text-2xl font-bold text-white mb-2">تسجيل الدخول</h2>
+            </div>
+            <div class="p-8">
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label id="ui-workerIdLabel" class="block text-sm font-semibold text-slate-700 mb-2">كود العامل</label>
+                        <input type="number" id="worker-id-input" placeholder="أدخل رقمك الوظيفي هنا" required
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                        <p id="login-error" class="mt-2 text-sm text-red-600 hidden">رقم العامل غير صحيح، يرجى التأكد</p>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span id="ui-loginBtn">تسجيل الدخول</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. شاشة المتابعة (الداشبورد) -->
+        <div id="dashboard-section" class="hidden space-y-6">
             
-            <button
-              onClick={handleCheckIn}
-              disabled={!selectedProjectId}
-              className={`w-full font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg text-lg ${
-                selectedProjectId 
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white transform hover:-translate-y-1' 
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              <LogIn className="w-6 h-6" />
-              <span>{t.checkIn}</span>
-            </button>
-          </div>
-        )}
-
-        {attendanceStatus === 'checked_in' && (
-          <div className="space-y-8 text-center animate-in fade-in zoom-in duration-300">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-600 rounded-full mb-2">
-              <Clock className="w-10 h-10 animate-pulse" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 mb-1">{t.workingAt}</p>
-              <p className="text-lg font-bold text-slate-800">
-                {mockProjects.find(p => p.id === selectedProjectId)?.name[lang]}
-              </p>
-              <div className="mt-4 inline-block bg-slate-100 px-4 py-2 rounded-full text-slate-600 font-medium text-sm">
-                {t.checkedInAt} <span className="font-bold text-blue-600 mx-1">{formatTime(checkInTime)}</span>
-              </div>
+            <!-- بطاقة الترحيب -->
+            <div class="fade-in bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-slate-500 font-medium"><span id="greeting-text">صباح الخير</span> 👋</p>
+                    <h2 id="worker-name-display" class="text-xl font-bold text-slate-800"></h2>
+                </div>
+                <button id="logout-btn" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <i class="fa-solid fa-power-off text-xl"></i>
+                </button>
             </div>
 
-            <button
-              onClick={handleCheckOut}
-              className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-rose-500/30 transform hover:-translate-y-1 text-lg"
-            >
-              <LogOut className="w-6 h-6" />
-              <span>{t.checkOut}</span>
-            </button>
-          </div>
-        )}
-
-        {attendanceStatus === 'completed' && (
-          <div className="text-center py-8 animate-in fade-in zoom-in duration-500">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full mb-6">
-              <CheckCircle className="w-12 h-12" />
+            <!-- حالة 1: لم يسجل حضور بعد -->
+            <div id="status-none" class="fade-in bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+                <div class="space-y-6">
+                    <div>
+                        <label id="ui-selectProjectLabel" class="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-blue-600"></i>
+                            اختر موقع العمل الحالي
+                        </label>
+                        <select id="project-select" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            <!-- Options will be injected by JS -->
+                        </select>
+                    </div>
+                    <button id="check-in-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg text-lg opacity-50 cursor-not-allowed" disabled>
+                        <i class="fa-solid fa-fingerprint text-xl"></i>
+                        <span id="ui-checkInBtn">تسجيل الحضور</span>
+                    </button>
+                </div>
             </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">{t.shiftCompleted}</h3>
-            <p className="text-slate-500 px-4">
-              تم إرسال بيانات دوامك للإدارة بنجاح. سيتم بدء يوم عمل جديد غداً.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
-  return (
-    <div 
-      className={`min-h-screen bg-slate-50 font-sans ${lang === 'ar' ? 'rtl' : 'ltr'}`} 
-      dir={lang === 'ar' ? 'rtl' : 'ltr'}
-      style={{ fontFamily: lang === 'ar' ? 'Tajawal, system-ui, sans-serif' : 'Inter, system-ui, sans-serif' }}
-    >
-      {/* الشريط العلوي للتبديل بين اللغات */}
-      <div className="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end">
-        <button 
-          onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-          className="flex items-center gap-1.5 text-xs font-semibold hover:text-white transition-colors"
-        >
-          <Globe className="w-4 h-4" />
-          {lang === 'ar' ? 'English' : 'عربي'}
-        </button>
-      </div>
+            <!-- حالة 2: تم تسجيل الحضور ويعمل الآن -->
+            <div id="status-working" class="hidden fade-in bg-white p-6 rounded-2xl shadow-xl border border-slate-100 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-600 rounded-full mb-4">
+                    <i class="fa-regular fa-clock text-4xl animate-pulse"></i>
+                </div>
+                <div>
+                    <p id="ui-workingAtLabel" class="text-sm text-slate-500 mb-1">تعمل الآن في:</p>
+                    <p id="current-project-name" class="text-xl font-bold text-slate-800 mb-4"></p>
+                    <div class="inline-block bg-slate-100 px-4 py-2 rounded-full text-slate-600 font-medium text-sm mb-6">
+                        <span id="ui-checkedInAtLabel">تم تسجيل الحضور الساعة:</span> 
+                        <span id="check-in-time-display" class="font-bold text-blue-600 mx-1"></span>
+                    </div>
+                </div>
+                <button id="check-out-btn" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg text-lg">
+                    <i class="fa-solid fa-door-open text-xl"></i>
+                    <span id="ui-checkOutBtn">تسجيل الانصراف</span>
+                </button>
+            </div>
 
-      {/* ترويسة الشركة */}
-      <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-4 py-4 flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
-            <Hexagon className="w-7 h-7 text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-blue-950 leading-tight">
-              {t.companyName}
-            </h1>
-            <p className="text-xs font-medium text-slate-500 mt-0.5">
-              {t.subtitle}
-            </p>
-          </div>
+            <!-- حالة 3: تم الانصراف -->
+            <div id="status-completed" class="hidden fade-in bg-white p-8 rounded-2xl shadow-xl border border-slate-100 text-center">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full mb-6">
+                    <i class="fa-solid fa-circle-check text-5xl"></i>
+                </div>
+                <h3 id="ui-shiftCompletedTitle" class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
+                <p id="ui-shiftCompletedDesc" class="text-slate-500">تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.</p>
+            </div>
+
         </div>
-      </header>
+    </main>
 
-      {/* المحتوى الرئيسي */}
-      <main className="p-4 pb-20">
-        {!activeWorker ? renderLogin() : renderDashboard()}
-      </main>
+    <script>
+        // ----------------- قاعدة البيانات المصغرة -----------------
+        const mockWorkers = [
+            { id: "1001", name: "أحمد محمد" },
+            { id: "1002", name: "محمود علي" },
+            { id: "1003", name: "جون دوي (John Doe)" },
+        ];
 
-    </div>
-  );
-}
+        const mockProjects = [
+            { id: "F-01", nameAr: "المصنع الرئيسي (أجور صناعية)", nameEn: "Main Factory (Direct Labor)" },
+            { id: "P-101", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers Project" },
+            { id: "P-102", nameAr: "مشروع مستشفى جدة", nameEn: "Jeddah Hospital Project" },
+        ];
+
+        // ----------------- القاموس اللغوي -----------------
+        const translations = {
+            ar: {
+                companyName: "شركة أركان الخليج للأعمال المعدنية",
+                subtitle: "لوحة متابعة العمل",
+                loginTitle: "تسجيل الدخول",
+                workerIdLabel: "كود العامل",
+                workerIdPlaceholder: "أدخل رقمك الوظيفي هنا",
+                loginBtn: "تسجيل الدخول",
+                loginError: "رقم العامل غير صحيح، يرجى التأكد",
+                goodMorning: "صباح الخير",
+                goodEvening: "مساء الخير",
+                selectProjectLabel: "اختر موقع العمل الحالي",
+                selectDefault: "--- اختر الموقع ---",
+                checkInBtn: "تسجيل الحضور",
+                workingAtLabel: "تعمل الآن في:",
+                checkedInAtLabel: "تم تسجيل الحضور الساعة:",
+                checkOutBtn: "تسجيل الانصراف",
+                shiftCompletedTitle: "تم إنهاء العمل بنجاح!",
+                shiftCompletedDesc: "تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً."
+            },
+            en: {
+                companyName: "Arkan Al-Khaleej Metal Works",
+                subtitle: "Work Tracking Dashboard",
+                loginTitle: "Login",
+                workerIdLabel: "Worker ID",
+                workerIdPlaceholder: "Enter your ID here",
+                loginBtn: "Login",
+                loginError: "Invalid Worker ID, please check",
+                goodMorning: "Good Morning",
+                goodEvening: "Good Evening",
+                selectProjectLabel: "Select Current Location",
+                selectDefault: "--- Select Location ---",
+                checkInBtn: "Check In",
+                workingAtLabel: "Currently working at:",
+                checkedInAtLabel: "Checked in at:",
+                checkOutBtn: "Check Out",
+                shiftCompletedTitle: "Shift completed successfully!",
+                shiftCompletedDesc: "Your attendance has been saved. A new workday will start tomorrow."
+            }
+        };
+
+        // ----------------- متغيرات الحالة (State) -----------------
+        let currentLang = 'ar';
+        let activeWorker = null;
+        let todayDate = new Date().toDateString();
+
+        // ----------------- الدوال الأساسية (Functions) -----------------
+        
+        // التحقق من اليوم الجديد
+        function checkNewDay() {
+            const savedDate = localStorage.getItem('lastAccessDate');
+            if (savedDate !== todayDate) {
+                // تصفير بيانات الحضور لأننا في يوم جديد، لكن نحتفظ بتسجيل الدخول
+                localStorage.setItem('lastAccessDate', todayDate);
+                localStorage.removeItem('attendanceStatus');
+                localStorage.removeItem('checkInTime');
+                localStorage.removeItem('selectedProject');
+            }
+        }
+
+        // تحديث واجهة المستخدم باللغة المناسبة
+        function applyTranslations() {
+            const t = translations[currentLang];
+            
+            // تغيير اتجاه الصفحة
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+            if (currentLang === 'en') {
+                document.documentElement.classList.add('ltr');
+            } else {
+                document.documentElement.classList.remove('ltr');
+            }
+
+            // تحديث النصوص
+            document.getElementById('ui-companyName').innerText = t.companyName;
+            document.getElementById('ui-subtitle').innerText = t.subtitle;
+            document.getElementById('ui-loginTitle').innerText = t.loginTitle;
+            document.getElementById('ui-workerIdLabel').innerText = t.workerIdLabel;
+            document.getElementById('worker-id-input').placeholder = t.workerIdPlaceholder;
+            document.getElementById('ui-loginBtn').innerText = t.loginBtn;
+            document.getElementById('login-error').innerText = t.loginError;
+            document.getElementById('ui-selectProjectLabel').innerHTML = `<i class="fa-solid fa-location-dot text-blue-600 ml-2"></i> ${t.selectProjectLabel}`;
+            document.getElementById('ui-checkInBtn').innerText = t.checkInBtn;
+            document.getElementById('ui-workingAtLabel').innerText = t.workingAtLabel;
+            document.getElementById('ui-checkedInAtLabel').innerText = t.checkedInAtLabel;
+            document.getElementById('ui-checkOutBtn').innerText = t.checkOutBtn;
+            document.getElementById('ui-shiftCompletedTitle').innerText = t.shiftCompletedTitle;
+            document.getElementById('ui-shiftCompletedDesc').innerText = t.shiftCompletedDesc;
+
+            // تحديث زر اللغة
+            document.getElementById('lang-text').innerText = currentLang === 'ar' ? 'English' : 'عربي';
+
+            // تحديث الترحيب
+            updateGreeting();
+            populateProjects();
+        }
+
+        function updateGreeting() {
+            if(!activeWorker) return;
+            const hour = new Date().getHours();
+            const t = translations[currentLang];
+            const greeting = hour < 12 ? t.goodMorning : t.goodEvening;
+            document.getElementById('greeting-text').innerText = greeting;
+            // في النسخة الإنجليزية نظهر اسم العامل كما هو حالياً (في التطبيق الحقيقي سيتم جلب الاسم الإنجليزي)
+            document.getElementById('worker-name-display').innerText = activeWorker.name;
+        }
+
+        function populateProjects() {
+            const select = document.getElementById('project-select');
+            select.innerHTML = `<option value="" disabled selected>${translations[currentLang].selectDefault}</option>`;
+            mockProjects.forEach(proj => {
+                const option = document.createElement('option');
+                option.value = proj.id;
+                option.innerText = currentLang === 'ar' ? proj.nameAr : proj.nameEn;
+                select.appendChild(option);
+            });
+        }
+
+        function showSection(sectionId) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            
+            if(sectionId) {
+                document.getElementById(sectionId).classList.remove('hidden');
+            }
+        }
+
+        function updateAttendanceUI() {
+            const status = localStorage.getItem('attendanceStatus') || 'none';
+            document.getElementById('status-none').classList.add('hidden');
+            document.getElementById('status-working').classList.add('hidden');
+            document.getElementById('status-completed').classList.add('hidden');
+
+            if (status === 'none') {
+                document.getElementById('status-none').classList.remove('hidden');
+            } else if (status === 'working') {
+                document.getElementById('status-working').classList.remove('hidden');
+                
+                // عرض بيانات العمل الحالي
+                const timeStr = localStorage.getItem('checkInTime');
+                document.getElementById('check-in-time-display').innerText = timeStr;
+                
+                const projId = localStorage.getItem('selectedProject');
+                const project = mockProjects.find(p => p.id === projId);
+                if(project) {
+                    document.getElementById('current-project-name').innerText = currentLang === 'ar' ? project.nameAr : project.nameEn;
+                }
+            } else if (status === 'completed') {
+                document.getElementById('status-completed').classList.remove('hidden');
+            }
+        }
+
+        // ----------------- ربط الأحداث (Event Listeners) -----------------
+        
+        // تغيير اللغة
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            applyTranslations();
+            if(activeWorker) updateAttendanceUI();
+        });
+
+        // تفعيل زر الحضور عند اختيار مشروع
+        document.getElementById('project-select').addEventListener('change', function() {
+            const btn = document.getElementById('check-in-btn');
+            if (this.value) {
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.removeAttribute('disabled');
+            }
+        });
+
+        // تسجيل الدخول
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const idInput = document.getElementById('worker-id-input').value;
+            const worker = mockWorkers.find(w => w.id === idInput);
+            
+            if (worker) {
+                document.getElementById('login-error').classList.add('hidden');
+                activeWorker = worker;
+                localStorage.setItem('activeWorker', JSON.stringify(worker)); // حفظ تسجيل الدخول مؤقتاً
+                
+                checkNewDay();
+                updateGreeting();
+                showSection('dashboard-section');
+                updateAttendanceUI();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        // تسجيل الحضور
+        document.getElementById('check-in-btn').addEventListener('click', () => {
+            const projId = document.getElementById('project-select').value;
+            if (!projId) return;
+
+            const now = new Date();
+            const timeString = now.toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            localStorage.setItem('attendanceStatus', 'working');
+            localStorage.setItem('checkInTime', timeString);
+            localStorage.setItem('selectedProject', projId);
+            
+            updateAttendanceUI();
+        });
+
+        // تسجيل الانصراف
+        document.getElementById('check-out-btn').addEventListener('click', () => {
+            localStorage.setItem('attendanceStatus', 'completed');
+            updateAttendanceUI();
+        });
+
+        // تسجيل الخروج (تغيير المستخدم)
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            activeWorker = null;
+            localStorage.removeItem('activeWorker');
+            document.getElementById('worker-id-input').value = '';
+            showSection('login-section');
+        });
+
+        // ----------------- التهيئة عند تحميل الصفحة -----------------
+        window.onload = () => {
+            checkNewDay();
+            applyTranslations();
+            
+            // استعادة جلسة العمل إذا كانت محفوظة
+            const savedWorker = localStorage.getItem('activeWorker');
+            if(savedWorker) {
+                activeWorker = JSON.parse(savedWorker);
+                updateGreeting();
+                showSection('dashboard-section');
+                updateAttendanceUI();
+            }
+        };
+
+    </script>
+</body>
+</html>
