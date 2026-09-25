@@ -1,748 +1,649 @@
-"use client";
-import React, { useState, useEffect } from 'react';
-import { 
-  Globe, LogIn, Clock, CheckCircle, MapPin, User, LogOut, 
-  Hexagon, ShieldAlert, ShieldCheck, Smartphone, Battery, Activity,
-  Calendar, DollarSign, AlertTriangle, X, Send, FileText, Check
-} from 'lucide-react';
-
-const translations = {
-  ar: {
-    companyName: "شركة أركان الخليج للأعمال المعدنية",
-    subtitle: "نظام الحضور والخدمات الآمن",
-    goodMorning: "صباح الخير",
-    goodEvening: "مساء الخير",
-    workerId: "كود العامل",
-    login: "تسجيل الدخول",
-    selectProject: "اختر موقع العمل الحالي",
-    checkIn: "تسجيل الحضور",
-    checkOut: "تسجيل الانصراف",
-    checkedInAt: "تم تسجيل الحضور الساعة:",
-    workingAt: "تعمل الآن في:",
-    shiftCompleted: "تم إنهاء العمل بنجاح. شكراً لك!",
-    invalidId: "رقم العامل غير صحيح، يرجى التأكد",
-    deviceBlocked: "تم حظر هذا الحساب! هذا الجهاز غير مسجل لهذا العامل.",
-    enterIdPlaceholder: "أدخل رقمك الوظيفي هنا",
-    logout: "خروج",
-    securityCheck: "الفحص الأمني جارٍ...",
-    locationError: "أنت خارج النطاق الجغرافي للمشروع!",
-    gpsDenied: "يرجى تفعيل صلاحية الموقع (GPS) للمتابعة.",
-    telemetryTitle: "بيانات الرقابة الأمنية (للإدارة):",
-    distanceLabel: "المسافة عن الموقع:",
-    bypassTesting: "تجاوز للاختبار (Admin)",
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أركان الخليج - متابعة العمل</title>
     
-    // الخدمات السريعة
-    servicesTitle: "الخدمات السريعة",
-    btnLeave: "طلب إجازة",
-    btnLoan: "طلب سلفة",
-    btnIssue: "بلاغ مشكلة",
+    <!-- تحميل مكتبة Tailwind CSS للتصميم -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    // نافذة طلب الإجازة
-    modalLeaveTitle: "تقديم طلب إجازة",
-    leaveDateLabel: "تاريخ بداية الإجازة",
-    leaveTypeLabel: "نوع الإجازة",
-    leaveTypeAnnual: "سنوية",
-    leaveTypeSick: "مرضية",
-    leaveTypeUnpaid: "بدون راتب",
+    <!-- تحميل مكتبة الأيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    // نافذة طلب السلفة
-    modalLoanTitle: "طلب سلفة مالية",
-    loanAmountLabel: "المبلغ المطلوب (ر.س)",
-    loanReasonLabel: "سبب الطلب (اختياري)",
+    <!-- تحميل الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    // نافذة بلاغ المشكلة
-    modalIssueTitle: "الإبلاغ عن مشكلة",
-    issueTypeLabel: "نوع المشكلة",
-    issueTypeSafety: "أمن وسلامة",
-    issueTypeEquipment: "عطل معدات",
-    issueTypeOther: "أخرى",
-    issueDescLabel: "تفاصيل المشكلة",
-    
-    // العامة للإرسال
-    submitRequest: "إرسال الطلب",
-    submitIssue: "إرسال البلاغ",
-    requestSuccessMsg: "تم إرسال طلبك بنجاح للإدارة!"
-  },
-  en: {
-    companyName: "Arkan Al-Khaleej Metal Works",
-    subtitle: "Secure Attendance & Services",
-    goodMorning: "Good Morning",
-    goodEvening: "Good Evening",
-    workerId: "Worker ID",
-    login: "Login",
-    selectProject: "Select Current Location",
-    checkIn: "Check In",
-    checkOut: "Check Out",
-    checkedInAt: "Checked in at:",
-    workingAt: "Currently working at:",
-    shiftCompleted: "Shift completed successfully. Thank you!",
-    invalidId: "Invalid Worker ID, please check",
-    deviceBlocked: "Account blocked! Unregistered device detected.",
-    enterIdPlaceholder: "Enter your ID here",
-    logout: "Logout",
-    securityCheck: "Security Check in progress...",
-    locationError: "You are outside the project's geofence!",
-    gpsDenied: "Please enable GPS location to continue.",
-    telemetryTitle: "Security Telemetry (Admin):",
-    distanceLabel: "Distance to site:",
-    bypassTesting: "Bypass for Testing (Admin)",
-    
-    // Quick Services
-    servicesTitle: "Quick Services",
-    btnLeave: "Leave Request",
-    btnLoan: "Loan Request",
-    btnIssue: "Report Issue",
-    
-    // Leave Modal
-    modalLeaveTitle: "Submit Leave Request",
-    leaveDateLabel: "Leave Start Date",
-    leaveTypeLabel: "Leave Type",
-    leaveTypeAnnual: "Annual",
-    leaveTypeSick: "Sick",
-    leaveTypeUnpaid: "Unpaid",
-    
-    // Loan Modal
-    modalLoanTitle: "Financial Loan Request",
-    loanAmountLabel: "Requested Amount (SAR)",
-    loanReasonLabel: "Reason (Optional)",
-    
-    // Issue Modal
-    modalIssueTitle: "Report an Issue",
-    issueTypeLabel: "Issue Category",
-    issueTypeSafety: "Health & Safety",
-    issueTypeEquipment: "Equipment Failure",
-    issueTypeOther: "Other",
-    issueDescLabel: "Issue Details",
-    
-    // General Submit
-    submitRequest: "Submit Request",
-    submitIssue: "Submit Report",
-    requestSuccessMsg: "Your request has been sent successfully!"
-  }
-};
-
-let mockWorkers = [
-  { id: "1001", name: "أحمد محمد", boundDeviceId: null },
-  { id: "1002", name: "محمود علي", boundDeviceId: "mock-device-uuid-999" },
-  { id: "1003", name: "جون دوي (John Doe)", boundDeviceId: null },
-];
-
-const mockProjects = [
-  { 
-    id: "F-01", 
-    name: { ar: "المصنع الرئيسي (جدة)", en: "Main Factory (Jeddah)" },
-    lat: 21.4858, lng: 39.1925, radius: 500 
-  },
-  { 
-    id: "P-101", 
-    name: { ar: "مشروع أبراج الرياض", en: "Riyadh Towers Project" },
-    lat: 24.7136, lng: 46.6753, radius: 1000 
-  },
-  { 
-    id: "P-102", 
-    name: { ar: "مشروع مستشفى مكة", en: "Makkah Hospital Project" },
-    lat: 21.3891, lng: 39.8579, radius: 800 
-  },
-];
-
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371e3;
-  const p1 = lat1 * Math.PI / 180;
-  const p2 = lat2 * Math.PI / 180;
-  const deltaP = (lat2 - lat1) * Math.PI / 180;
-  const deltaLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(deltaP/2) * Math.sin(deltaP/2) +
-            Math.cos(p1) * Math.cos(p2) *
-            Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-};
-
-const getDeviceFingerprint = () => {
-  if (typeof window === 'undefined') return 'SSR-ENV';
-  let deviceId = localStorage.getItem('arkan_device_id');
-  if (!deviceId) {
-    deviceId = 'DEV-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
-    localStorage.setItem('arkan_device_id', deviceId);
-  }
-  return deviceId;
-};
-
-export default function WorkerInterface() {
-  const [lang, setLang] = useState('ar');
-  const t = translations[lang];
-
-  // بيانات الدخول والتطبيق
-  const [workerIdInput, setWorkerIdInput] = useState('');
-  const [activeWorker, setActiveWorker] = useState(null);
-  const [error, setError] = useState('');
-
-  // حالة الحضور
-  const [attendanceStatus, setAttendanceStatus] = useState('none'); // 'none' | 'checked_in' | 'completed'
-  const [selectedProjectId, setSelectedProjectId] = useState('');
-  const [checkInTime, setCheckInTime] = useState(null);
-
-  // الفحص الأمني
-  const [isCheckingSecurity, setIsCheckingSecurity] = useState(false);
-  const [securityLog, setSecurityLog] = useState(null);
-
-  // النوافذ المنبثقة والخدمات
-  const [activeModal, setActiveModal] = useState(null); // 'leave' | 'loan' | 'issue' | null
-  const [toastMessage, setToastMessage] = useState(null);
-
-  // نماذج الخدمات
-  const [leaveData, setLeaveData] = useState({ date: '', type: 'annual' });
-  const [loanData, setLoanData] = useState({ amount: '', reason: '' });
-  const [issueData, setIssueData] = useState({ type: 'safety', description: '' });
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    return hour < 12 ? t.goodMorning : t.goodEvening;
-  };
-
-  const formatTime = (date) => {
-    if (!date) return '';
-    return date.toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {
-      hour: '2-digit', minute: '2-digit', second: '2-digit'
-    });
-  };
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const worker = mockWorkers.find(w => w.id === workerIdInput);
-    
-    if (!worker) {
-      setError(t.invalidId);
-      return;
-    }
-
-    const currentDeviceId = getDeviceFingerprint();
-
-    if (worker.boundDeviceId === null) {
-      worker.boundDeviceId = currentDeviceId;
-    } else if (worker.boundDeviceId !== currentDeviceId) {
-      setError(t.deviceBlocked);
-      return;
-    }
-
-    setActiveWorker(worker);
-    setError('');
-    setAttendanceStatus('none'); 
-  };
-
-  const performSecurityCheck = (bypass = false) => {
-    setIsCheckingSecurity(true);
-    setError('');
-    setSecurityLog(null);
-
-    const project = mockProjects.find(p => p.id === selectedProjectId);
-    
-    const telemetry = {
-      device: typeof navigator !== 'undefined' ? (navigator.userAgent.split(' ')[0] || 'Browser') : 'N/A',
-      platform: typeof navigator !== 'undefined' ? navigator.platform : 'N/A',
-      battery: 'Checking...',
-      timeAccurate: true,
-      gpsAccuracy: 'N/A',
-      distanceToSite: 0
-    };
-
-    if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
-      navigator.getBattery().then(batt => {
-        telemetry.battery = Math.round(batt.level * 100) + '% ' + (batt.charging ? '⚡' : '');
-      });
-    }
-
-    if (bypass) {
-        setTimeout(() => {
-            telemetry.distanceToSite = 50;
-            telemetry.gpsAccuracy = 'Mocked (Bypass)';
-            setSecurityLog(telemetry);
-            finalizeCheckIn();
-        }, 1200);
-        return;
-    }
-
-    if (!navigator.geolocation) {
-      setError(t.gpsDenied);
-      setIsCheckingSecurity(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude, accuracy } = position.coords;
-        telemetry.gpsAccuracy = Math.round(accuracy) + 'm';
-        
-        const distance = calculateDistance(latitude, longitude, project.lat, project.lng);
-        telemetry.distanceToSite = Math.round(distance);
-
-        setSecurityLog(telemetry);
-
-        if (distance > project.radius) {
-          setIsCheckingSecurity(false);
-          setError(`${t.locationError} (${telemetry.distanceToSite}m > ${project.radius}m)`);
-        } else {
-          finalizeCheckIn();
+    <!-- إعدادات الخطوط الافتراضية -->
+    <style>
+        :root {
+            --font-ar: 'Tajawal', sans-serif;
+            --font-en: 'Inter', sans-serif;
         }
-      },
-      (geoError) => {
-        setIsCheckingSecurity(false);
-        setError(t.gpsDenied + ' (Error: ' + geoError.code + ')');
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  };
-
-  const finalizeCheckIn = () => {
-    setIsCheckingSecurity(false);
-    setCheckInTime(new Date());
-    setAttendanceStatus('checked_in');
-  };
-
-  const handleCheckIn = () => {
-    if (!selectedProjectId) return;
-    performSecurityCheck(false);
-  };
-
-  const handleBypassCheckIn = () => {
-    if (!selectedProjectId) return;
-    performSecurityCheck(true);
-  };
-
-  const handleCheckOut = () => {
-    setAttendanceStatus('completed');
-  };
-
-  const handleLogout = () => {
-    setActiveWorker(null);
-    setWorkerIdInput('');
-    setAttendanceStatus('none');
-    setCheckInTime(null);
-    setSecurityLog(null);
-  };
-
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => {
-      setToastMessage(null);
-    }, 3500);
-  };
-
-  const handleServiceSubmit = (e, modalName) => {
-    e.preventDefault();
-    setActiveModal(null);
-    showToast(t.requestSuccessMsg);
-
-    // Reset fields
-    if (modalName === 'leave') setLeaveData({ date: '', type: 'annual' });
-    if (modalName === 'loan') setLoanData({ amount: '', reason: '' });
-    if (modalName === 'issue') setIssueData({ type: 'safety', description: '' });
-  };
-
-  const renderLogin = () => (
-    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 border border-slate-100">
-      <div className="bg-slate-900 p-8 text-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-            <ShieldCheck className="w-24 h-24 text-white" />
-        </div>
-        <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative z-10">
-          <User className="text-white w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-2 relative z-10">{t.login}</h2>
-        <p className="text-slate-400 text-sm flex items-center justify-center gap-1">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" /> {t.subtitle}
-        </p>
-      </div>
-      <div className="p-8">
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              {t.workerId}
-            </label>
-            <input
-              type="number"
-              value={workerIdInput}
-              onChange={(e) => setWorkerIdInput(e.target.value)}
-              placeholder={t.enterIdPlaceholder}
-              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all text-slate-800 bg-slate-50"
-              required
-            />
-            {error && (
-                <div className="mt-3 p-3 bg-red-50 border border-red-100 rounded-lg flex items-start gap-2 text-red-700 text-sm animate-in fade-in">
-                    <ShieldAlert className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                    <p>{error}</p>
-                </div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md"
-          >
-            <LogIn className="w-5 h-5" />
-            <span>{t.login}</span>
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-
-  const renderDashboard = () => (
-    <div className="w-full max-w-md mx-auto mt-6 space-y-6">
-      {/* بطاقة الترحيب */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <p className="text-sm text-slate-500 font-medium">{getGreeting()} 👋</p>
-          <h2 className="text-xl font-bold text-slate-800">{activeWorker.name}</h2>
-          <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
-             <ShieldCheck className="w-3.5 h-3.5" /> الجهاز موثق ومطابق
-          </p>
-        </div>
-        <button 
-          onClick={handleLogout} 
-          className="text-slate-400 hover:text-red-500 transition-colors bg-slate-50 hover:bg-red-50 p-2.5 rounded-full"
-          title={t.logout}
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* بطاقة الحضور والغياب */}
-      <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 overflow-hidden relative">
+        body { font-family: var(--font-ar); }
+        .ltr body { font-family: var(--font-en); }
         
-        {/* حالة عدم الحضور */}
-        {attendanceStatus === 'none' && !isCheckingSecurity && (
-          <div className="space-y-5 animate-in fade-in duration-300">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-600" />
-                {t.selectProject}
-              </label>
-              <select
-                value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none transition-all text-slate-800 bg-slate-50"
-              >
-                <option value="" disabled>--- {t.selectProject} ---</option>
-                {mockProjects.map(proj => (
-                  <option key={proj.id} value={proj.id}>
-                    {proj.name[lang]} (نطاق {proj.radius}م)
-                  </option>
-                ))}
-              </select>
+        /* تأثيرات حركية بسيطة */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-20 text-slate-800">
+
+    <!-- الشريط العلوي لتغيير اللغة -->
+    <div class="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end">
+        <button id="lang-toggle" class="flex items-center gap-2 text-xs font-semibold hover:text-white transition-colors">
+            <i class="fa-solid fa-globe"></i>
+            <span id="lang-text">English</span>
+        </button>
+    </div>
+
+    <!-- ترويسة الشركة -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-md mx-auto px-4 py-4 flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
+                <i class="fa-solid fa-industry text-blue-400 text-xl"></i>
             </div>
-            
-            {error && (
-                <div className="p-3 bg-red-50 border border-red-100 rounded-lg flex items-start gap-2 text-red-700 text-sm">
-                    <ShieldAlert className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                    <p>{error}</p>
-                </div>
-            )}
-
-            <button
-              onClick={handleCheckIn}
-              disabled={!selectedProjectId}
-              className={`w-full font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg text-lg ${
-                selectedProjectId 
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white transform hover:-translate-y-0.5' 
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              }`}
-            >
-              <LogIn className="w-6 h-6" />
-              <span>{t.checkIn}</span>
-            </button>
-
-            {selectedProjectId && (
-                 <button onClick={handleBypassCheckIn} className="w-full text-xs text-slate-400 underline mt-1">
-                    {t.bypassTesting}
-                 </button>
-            )}
-          </div>
-        )}
-
-        {/* حالة الفحص الأمني */}
-        {isCheckingSecurity && (
-            <div className="py-8 text-center space-y-4 animate-in fade-in">
-                <div className="relative w-20 h-20 mx-auto">
-                    <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
-                    <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-                    <Activity className="w-8 h-8 text-blue-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-700">{t.securityCheck}</h3>
-                <p className="text-sm text-slate-500 max-w-[250px] mx-auto">
-                    جاري التحقق من الموقع الجغرافي وحالة الجهاز...
+            <div>
+                <h1 id="ui-companyName" class="text-lg font-bold text-blue-950 leading-tight">
+                    شركة أركان الخليج للأعمال المعدنية
+                </h1>
+                <p id="ui-subtitle" class="text-xs font-medium text-slate-500 mt-0.5">
+                    لوحة متابعة العمل
                 </p>
             </div>
-        )}
+        </div>
+    </header>
 
-        {/* حالة المسجل حضورياً */}
-        {attendanceStatus === 'checked_in' && (
-          <div className="space-y-6 text-center animate-in fade-in duration-300">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-600 rounded-full mb-2 shadow-inner">
-              <Clock className="w-10 h-10 animate-pulse" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-500 mb-1">{t.workingAt}</p>
-              <p className="text-lg font-bold text-slate-800">
-                {mockProjects.find(p => p.id === selectedProjectId)?.name[lang]}
-              </p>
-              <div className="mt-4 inline-block bg-slate-100 px-5 py-2.5 rounded-full text-slate-600 font-medium text-sm border border-slate-200">
-                {t.checkedInAt} <span className="font-bold text-blue-600 mx-1">{formatTime(checkInTime)}</span>
-              </div>
-            </div>
+    <!-- المحتوى الرئيسي -->
+    <main class="p-4 max-w-md mx-auto mt-4">
 
-            {securityLog && (
-                <div className="text-right bg-slate-50 p-4 rounded-xl border border-slate-200 mt-4 text-xs text-slate-600">
-                    <p className="font-bold mb-2 flex items-center gap-1 text-slate-700">
-                        <Smartphone className="w-4 h-4"/> {t.telemetryTitle}
-                    </p>
-                    <ul className="space-y-1 opacity-80">
-                        <li><span className="font-semibold text-slate-500">الجهاز:</span> {securityLog.platform} / {securityLog.device}</li>
-                        <li><span className="font-semibold text-slate-500">البطارية:</span> {securityLog.battery}</li>
-                        <li><span className="font-semibold text-slate-500">دقة ה-GPS:</span> {securityLog.gpsAccuracy}</li>
-                        <li><span className="font-semibold text-slate-500">{t.distanceLabel}</span> {securityLog.distanceToSite} متر</li>
-                    </ul>
+        <!-- 1. شاشة تسجيل الدخول -->
+        <div id="login-section" class="fade-in bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-slate-900 p-8 text-center">
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fa-solid fa-user text-white text-2xl"></i>
                 </div>
-            )}
-
-            <button
-              onClick={handleCheckOut}
-              className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg text-lg mt-6"
-            >
-              <LogOut className="w-6 h-6" />
-              <span>{t.checkOut}</span>
-            </button>
-          </div>
-        )}
-
-        {/* حالة إنهاء العمل */}
-        {attendanceStatus === 'completed' && (
-          <div className="text-center py-8 animate-in fade-in duration-500">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full mb-6">
-              <CheckCircle className="w-12 h-12" />
+                <h2 id="ui-loginTitle" class="text-2xl font-bold text-white mb-2">تسجيل الدخول</h2>
             </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">{t.shiftCompleted}</h3>
-            <p className="text-slate-500 px-4 text-sm">
-              تم إرسال بيانات دوامك للأنظمة الإدارية بنجاح.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* قسم الخدمات السريعة (طلب إجازة / سلفة / بلاغ مشكلة) */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <h3 className="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">
-          {t.servicesTitle}
-        </h3>
-        <div className="grid grid-cols-3 gap-3">
-          <button 
-            onClick={() => setActiveModal('leave')}
-            className="flex flex-col items-center justify-center p-3 bg-blue-50 hover:bg-blue-100 transition-colors text-blue-700 rounded-xl border border-blue-100 group"
-          >
-            <Calendar className="w-6 h-6 mb-2 text-blue-600 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-center">{t.btnLeave}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveModal('loan')}
-            className="flex flex-col items-center justify-center p-3 bg-emerald-50 hover:bg-emerald-100 transition-colors text-emerald-700 rounded-xl border border-emerald-100 group"
-          >
-            <DollarSign className="w-6 h-6 mb-2 text-emerald-600 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-center">{t.btnLoan}</span>
-          </button>
-
-          <button 
-            onClick={() => setActiveModal('issue')}
-            className="flex flex-col items-center justify-center p-3 bg-rose-50 hover:bg-rose-100 transition-colors text-rose-700 rounded-xl border border-rose-100 group"
-          >
-            <AlertTriangle className="w-6 h-6 mb-2 text-rose-600 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-center">{t.btnIssue}</span>
-          </button>
+            <div class="p-8">
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label id="ui-workerIdLabel" class="block text-sm font-semibold text-slate-700 mb-2">كود العامل</label>
+                        <input type="number" id="worker-id-input" placeholder="أدخل رقمك الوظيفي هنا" required
+                            class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                        <p id="login-error" class="mt-2 text-sm text-red-600 hidden">رقم العامل غير صحيح، يرجى التأكد</p>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span id="ui-loginBtn">تسجيل الدخول</span>
+                    </button>
+                </form>
+            </div>
         </div>
-      </div>
+
+        <!-- 2. شاشة المتابعة (الداشبورد) -->
+        <div id="dashboard-section" class="hidden space-y-6">
+            
+            <!-- بطاقة الترحيب -->
+            <div class="fade-in bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-slate-500 font-medium"><span id="greeting-text">صباح الخير</span> 👋</p>
+                    <h2 id="worker-name-display" class="text-xl font-bold text-slate-800"></h2>
+                </div>
+                <button id="logout-btn" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <i class="fa-solid fa-power-off text-xl"></i>
+                </button>
+            </div>
+
+            <!-- حالة 1: لم يسجل حضور بعد -->
+            <div id="status-none" class="fade-in bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
+                <div class="space-y-6">
+                    <div>
+                        <label id="ui-selectProjectLabel" class="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-blue-600"></i>
+                            اختر موقع العمل الحالي
+                        </label>
+                        <select id="project-select" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            <!-- Options will be injected by JS -->
+                        </select>
+                    </div>
+                    <button id="check-in-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg text-lg opacity-50 cursor-not-allowed" disabled>
+                        <i class="fa-solid fa-fingerprint text-xl"></i>
+                        <span id="ui-checkInBtn">تسجيل الحضور</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- حالة 2: تم تسجيل الحضور ويعمل الآن -->
+            <div id="status-working" class="hidden fade-in bg-white p-6 rounded-2xl shadow-xl border border-slate-100 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-600 rounded-full mb-4">
+                    <i class="fa-regular fa-clock text-4xl animate-pulse"></i>
+                </div>
+                <div>
+                    <p id="ui-workingAtLabel" class="text-sm text-slate-500 mb-1">تعمل الآن في:</p>
+                    <p id="current-project-name" class="text-xl font-bold text-slate-800 mb-4"></p>
+                    <div class="inline-block bg-slate-100 px-4 py-2 rounded-full text-slate-600 font-medium text-sm mb-6">
+                        <span id="ui-checkedInAtLabel">تم تسجيل الحضور الساعة:</span> 
+                        <span id="check-in-time-display" class="font-bold text-blue-600 mx-1"></span>
+                    </div>
+                </div>
+                <button id="check-out-btn" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg text-lg">
+                    <i class="fa-solid fa-door-open text-xl"></i>
+                    <span id="ui-checkOutBtn">تسجيل الانصراف</span>
+                </button>
+            </div>
+
+            <!-- حالة 3: تم الانصراف -->
+            <div id="status-completed" class="hidden fade-in bg-white p-8 rounded-2xl shadow-xl border border-slate-100 text-center">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full mb-6">
+                    <i class="fa-solid fa-circle-check text-5xl"></i>
+                </div>
+                <h3 id="ui-shiftCompletedTitle" class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
+                <p id="ui-shiftCompletedDesc" class="text-slate-500">تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.</p>
+            </div>
+
+            <!-- قسم الخدمات السريعة -->
+            <div class="fade-in bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 id="ui-servicesTitle" class="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">الخدمات السريعة</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="openModal('leave-modal')" class="flex flex-col items-center justify-center p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-blue-700 shadow-sm border border-blue-100">
+                        <i class="fa-solid fa-calendar-days text-xl mb-2"></i>
+                        <span id="ui-btnLeave" class="text-xs font-bold text-center">طلب إجازة</span>
+                    </button>
+                    <button onclick="openModal('loan-modal')" class="flex flex-col items-center justify-center p-3 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors text-emerald-700 shadow-sm border border-emerald-100">
+                        <i class="fa-solid fa-money-bill-wave text-xl mb-2"></i>
+                        <span id="ui-btnLoan" class="text-xs font-bold text-center">طلب سلفة</span>
+                    </button>
+                    <button onclick="openModal('issue-modal')" class="flex flex-col items-center justify-center p-3 bg-rose-50 rounded-xl hover:bg-rose-100 transition-colors text-rose-700 shadow-sm border border-rose-100">
+                        <i class="fa-solid fa-triangle-exclamation text-xl mb-2"></i>
+                        <span id="ui-btnIssue" class="text-xs font-bold text-center">بلاغ مشكلة</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 1. نافذة طلب الإجازة -->
+    <div id="leave-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="leave-modal-content">
+            <div class="bg-blue-600 p-4 flex justify-between items-center text-white">
+                <h3 id="ui-modalLeaveTitle" class="font-bold text-lg">تقديم طلب إجازة</h3>
+                <button onclick="closeModal('leave-modal')" class="hover:text-blue-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="leave-form" class="p-5 space-y-4">
+                <div>
+                    <label id="ui-leaveDateLabel" class="block text-sm font-semibold text-slate-700 mb-1">تاريخ بداية الإجازة</label>
+                    <input type="date" required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                </div>
+                <div>
+                    <label id="ui-leaveTypeLabel" class="block text-sm font-semibold text-slate-700 mb-1">نوع الإجازة</label>
+                    <select required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                        <option id="ui-leaveType1" value="annual">سنوية</option>
+                        <option id="ui-leaveType2" value="sick">مرضية</option>
+                        <option id="ui-leaveType3" value="unpaid">بدون راتب</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
+                    <span id="ui-leaveSubmit">إرسال الطلب</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
     </div>
-  );
 
-  return (
-    <div 
-      className={`min-h-screen bg-slate-50 font-sans ${lang === 'ar' ? 'rtl' : 'ltr'}`} 
-      dir={lang === 'ar' ? 'rtl' : 'ltr'}
-      style={{ fontFamily: lang === 'ar' ? 'Tajawal, system-ui, sans-serif' : 'Inter, system-ui, sans-serif' }}
-    >
-      {/* شريط تبديل اللغة */}
-      <div className="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end">
-        <button 
-          onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-          className="flex items-center gap-1.5 text-xs font-semibold hover:text-white transition-colors"
-        >
-          <Globe className="w-4 h-4" />
-          {lang === 'ar' ? 'English' : 'عربي'}
-        </button>
-      </div>
-
-      {/* الهيدر الرئيسي */}
-      <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-4 py-4 flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner relative overflow-hidden">
-            <Hexagon className="w-7 h-7 text-blue-400 relative z-10" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-900 to-blue-700 opacity-50"></div>
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-blue-950 leading-tight">
-              {t.companyName}
-            </h1>
-            <p className="text-xs font-medium text-slate-500 mt-0.5 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> {t.subtitle}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      {/* المحتوى الرئيسي */}
-      <main className="p-4 pb-20">
-        {!activeWorker ? renderLogin() : renderDashboard()}
-      </main>
-
-      {/* 1. نافذة طلب الإجازة */}
-      {activeModal === 'leave' && (
-        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-            <div className="bg-blue-600 p-4 flex justify-between items-center text-white">
-              <h3 className="font-bold text-base flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                {t.modalLeaveTitle}
-              </h3>
-              <button onClick={() => setActiveModal(null)} className="hover:text-blue-200">
-                <X className="w-5 h-5" />
-              </button>
+    <!-- 2. نافذة طلب سلفة -->
+    <div id="loan-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="loan-modal-content">
+            <div class="bg-emerald-600 p-4 flex justify-between items-center text-white">
+                <h3 id="ui-modalLoanTitle" class="font-bold text-lg">طلب سلفة مالية</h3>
+                <button onclick="closeModal('loan-modal')" class="hover:text-emerald-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <form onSubmit={(e) => handleServiceSubmit(e, 'leave')} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t.leaveDateLabel}</label>
-                <input 
-                  type="date" 
-                  required 
-                  value={leaveData.date}
-                  onChange={(e) => setLeaveData({...leaveData, date: e.target.value})}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-slate-800"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t.leaveTypeLabel}</label>
-                <select 
-                  value={leaveData.type}
-                  onChange={(e) => setLeaveData({...leaveData, type: e.target.value})}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-slate-800"
-                >
-                  <option value="annual">{t.leaveTypeAnnual}</option>
-                  <option value="sick">{t.leaveTypeSick}</option>
-                  <option value="unpaid">{t.leaveTypeUnpaid}</option>
-                </select>
-              </div>
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 shadow-md">
-                <Send className="w-4 h-4" />
-                <span>{t.submitRequest}</span>
-              </button>
+            <form id="loan-form" class="p-5 space-y-4">
+                <div>
+                    <label id="ui-loanAmountLabel" class="block text-sm font-semibold text-slate-700 mb-1">المبلغ المطلوب</label>
+                    <input type="number" required placeholder="0.00" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50">
+                </div>
+                <div>
+                    <label id="ui-loanReasonLabel" class="block text-sm font-semibold text-slate-700 mb-1">السبب (اختياري)</label>
+                    <textarea rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
+                    <span id="ui-loanSubmit">إرسال الطلب</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </form>
-          </div>
         </div>
-      )}
-
-      {/* 2. نافذة طلب السلفة */}
-      {activeModal === 'loan' && (
-        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-            <div className="bg-emerald-600 p-4 flex justify-between items-center text-white">
-              <h3 className="font-bold text-base flex items-center gap-2">
-                <DollarSign className="w-5 h-5" />
-                {t.modalLoanTitle}
-              </h3>
-              <button onClick={() => setActiveModal(null)} className="hover:text-emerald-200">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={(e) => handleServiceSubmit(e, 'loan')} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t.loanAmountLabel}</label>
-                <input 
-                  type="number" 
-                  required 
-                  placeholder="0.00"
-                  value={loanData.amount}
-                  onChange={(e) => setLoanData({...loanData, amount: e.target.value})}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50 text-slate-800"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t.loanReasonLabel}</label>
-                <textarea 
-                  rows="2"
-                  value={loanData.reason}
-                  onChange={(e) => setLoanData({...loanData, reason: e.target.value})}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50 text-slate-800"
-                ></textarea>
-              </div>
-              <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 shadow-md">
-                <Send className="w-4 h-4" />
-                <span>{t.submitRequest}</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* 3. نافذة بلاغ المشكلة */}
-      {activeModal === 'issue' && (
-        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-            <div className="bg-rose-600 p-4 flex justify-between items-center text-white">
-              <h3 className="font-bold text-base flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5" />
-                {t.modalIssueTitle}
-              </h3>
-              <button onClick={() => setActiveModal(null)} className="hover:text-rose-200">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={(e) => handleServiceSubmit(e, 'issue')} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t.issueTypeLabel}</label>
-                <select 
-                  value={issueData.type}
-                  onChange={(e) => setIssueData({...issueData, type: e.target.value})}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50 text-slate-800"
-                >
-                  <option value="safety">{t.issueTypeSafety}</option>
-                  <option value="equipment">{t.issueTypeEquipment}</option>
-                  <option value="other">{t.issueTypeOther}</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">{t.issueDescLabel}</label>
-                <textarea 
-                  required
-                  rows="3"
-                  value={issueData.description}
-                  onChange={(e) => setIssueData({...issueData, description: e.target.value})}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50 text-slate-800"
-                ></textarea>
-              </div>
-              <button type="submit" className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 shadow-md">
-                <Send className="w-4 h-4" />
-                <span>{t.submitIssue}</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* إشعار النجاح (Toast Notification) */}
-      {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-in fade-in zoom-in z-50">
-          <Check className="w-5 h-5 text-emerald-400" />
-          <span className="text-sm font-medium">{toastMessage}</span>
-        </div>
-      )}
-
     </div>
-  );
-}
+
+    <!-- 3. نافذة بلاغ مشكلة -->
+    <div id="issue-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="issue-modal-content">
+            <div class="bg-rose-600 p-4 flex justify-between items-center text-white">
+                <h3 id="ui-modalIssueTitle" class="font-bold text-lg">الإبلاغ عن مشكلة</h3>
+                <button onclick="closeModal('issue-modal')" class="hover:text-rose-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="issue-form" class="p-5 space-y-4">
+                <div>
+                    <label id="ui-issueTypeLabel" class="block text-sm font-semibold text-slate-700 mb-1">نوع المشكلة</label>
+                    <select required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50">
+                        <option id="ui-issueType1" value="safety">أمن وسلامة</option>
+                        <option id="ui-issueType2" value="equipment">عطل معدات</option>
+                        <option id="ui-issueType3" value="other">أخرى</option>
+                    </select>
+                </div>
+                <div>
+                    <label id="ui-issueDescLabel" class="block text-sm font-semibold text-slate-700 mb-1">وصف المشكلة</label>
+                    <textarea required rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
+                    <span id="ui-issueSubmit">إرسال البلاغ</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- رسالة النجاح (Toast Message) -->
+    <div id="success-toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-50 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+        <span id="ui-successMsg" class="font-medium text-sm whitespace-nowrap">تم إرسال طلبك بنجاح للإدارة</span>
+    </div>
+
+    <script>
+        // ----------------- قاعدة البيانات المصغرة -----------------
+        const mockWorkers = [
+            { id: "1001", name: "أحمد محمد" },
+            { id: "1002", name: "محمود علي" },
+            { id: "1003", name: "جون دوي (John Doe)" },
+        ];
+
+        const mockProjects = [
+            { id: "F-01", nameAr: "المصنع الرئيسي (أجور صناعية)", nameEn: "Main Factory (Direct Labor)" },
+            { id: "P-101", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers Project" },
+            { id: "P-102", nameAr: "مشروع مستشفى جدة", nameEn: "Jeddah Hospital Project" },
+        ];
+
+        // ----------------- القاموس اللغوي -----------------
+        const translations = {
+            ar: {
+                companyName: "شركة أركان الخليج للأعمال المعدنية",
+                subtitle: "لوحة متابعة العمل",
+                loginTitle: "تسجيل الدخول",
+                workerIdLabel: "كود العامل",
+                workerIdPlaceholder: "أدخل رقمك الوظيفي هنا",
+                loginBtn: "تسجيل الدخول",
+                loginError: "رقم العامل غير صحيح، يرجى التأكد",
+                goodMorning: "صباح الخير",
+                goodEvening: "مساء الخير",
+                selectProjectLabel: "اختر موقع العمل الحالي",
+                selectDefault: "--- اختر الموقع ---",
+                checkInBtn: "تسجيل الحضور",
+                workingAtLabel: "تعمل الآن في:",
+                checkedInAtLabel: "تم تسجيل الحضور الساعة:",
+                checkOutBtn: "تسجيل الانصراف",
+                shiftCompletedTitle: "تم إنهاء العمل بنجاح!",
+                shiftCompletedDesc: "تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.",
+                
+                // ترجمة الخدمات الجديدة
+                servicesTitle: "الخدمات السريعة",
+                btnLeave: "طلب إجازة",
+                btnLoan: "طلب سلفة",
+                btnIssue: "بلاغ مشكلة",
+                
+                modalLeaveTitle: "تقديم طلب إجازة",
+                leaveDateLabel: "تاريخ بداية الإجازة",
+                leaveTypeLabel: "نوع الإجازة",
+                leaveType1: "سنوية",
+                leaveType2: "مرضية",
+                leaveType3: "بدون راتب",
+                leaveSubmit: "إرسال الطلب",
+                
+                modalLoanTitle: "طلب سلفة مالية",
+                loanAmountLabel: "المبلغ المطلوب",
+                loanReasonLabel: "السبب (اختياري)",
+                loanSubmit: "إرسال الطلب",
+                
+                modalIssueTitle: "الإبلاغ عن مشكلة",
+                issueTypeLabel: "نوع المشكلة",
+                issueType1: "أمن وسلامة",
+                issueType2: "عطل في المعدات",
+                issueType3: "أخرى",
+                issueDescLabel: "وصف المشكلة",
+                issueSubmit: "إرسال البلاغ",
+                
+                successMsg: "تم إرسال طلبك بنجاح للإدارة"
+            },
+            en: {
+                companyName: "Arkan Al-Khaleej Metal Works",
+                subtitle: "Work Tracking Dashboard",
+                loginTitle: "Login",
+                workerIdLabel: "Worker ID",
+                workerIdPlaceholder: "Enter your ID here",
+                loginBtn: "Login",
+                loginError: "Invalid Worker ID, please check",
+                goodMorning: "Good Morning",
+                goodEvening: "Good Evening",
+                selectProjectLabel: "Select Current Location",
+                selectDefault: "--- Select Location ---",
+                checkInBtn: "Check In",
+                workingAtLabel: "Currently working at:",
+                checkedInAtLabel: "Checked in at:",
+                checkOutBtn: "Check Out",
+                shiftCompletedTitle: "Shift completed successfully!",
+                shiftCompletedDesc: "Your attendance has been saved. A new workday will start tomorrow.",
+                
+                // New Services Translations
+                servicesTitle: "Quick Services",
+                btnLeave: "Leave Request",
+                btnLoan: "Loan Request",
+                btnIssue: "Report Issue",
+                
+                modalLeaveTitle: "Submit Leave Request",
+                leaveDateLabel: "Leave Start Date",
+                leaveTypeLabel: "Leave Type",
+                leaveType1: "Annual",
+                leaveType2: "Sick",
+                leaveType3: "Unpaid",
+                leaveSubmit: "Submit Request",
+                
+                modalLoanTitle: "Financial Loan Request",
+                loanAmountLabel: "Requested Amount",
+                loanReasonLabel: "Reason (Optional)",
+                loanSubmit: "Submit Request",
+                
+                modalIssueTitle: "Report an Issue",
+                issueTypeLabel: "Issue Type",
+                issueType1: "Health & Safety",
+                issueType2: "Equipment Failure",
+                issueType3: "Other",
+                issueDescLabel: "Issue Description",
+                issueSubmit: "Submit Report",
+                
+                successMsg: "Your request has been sent successfully"
+            }
+        };
+
+        // ----------------- متغيرات الحالة (State) -----------------
+        let currentLang = 'ar';
+        let activeWorker = null;
+        let todayDate = new Date().toDateString();
+
+        // ----------------- الدوال الأساسية (Functions) -----------------
+        
+        // التحقق من اليوم الجديد
+        function checkNewDay() {
+            const savedDate = localStorage.getItem('lastAccessDate');
+            if (savedDate !== todayDate) {
+                // تصفير بيانات الحضور لأننا في يوم جديد، لكن نحتفظ بتسجيل الدخول
+                localStorage.setItem('lastAccessDate', todayDate);
+                localStorage.removeItem('attendanceStatus');
+                localStorage.removeItem('checkInTime');
+                localStorage.removeItem('selectedProject');
+            }
+        }
+
+        // تحديث واجهة المستخدم باللغة المناسبة
+        function applyTranslations() {
+            const t = translations[currentLang];
+            
+            // تغيير اتجاه الصفحة
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+            if (currentLang === 'en') {
+                document.documentElement.classList.add('ltr');
+            } else {
+                document.documentElement.classList.remove('ltr');
+            }
+
+            // تحديث النصوص
+            document.getElementById('ui-companyName').innerText = t.companyName;
+            document.getElementById('ui-subtitle').innerText = t.subtitle;
+            document.getElementById('ui-loginTitle').innerText = t.loginTitle;
+            document.getElementById('ui-workerIdLabel').innerText = t.workerIdLabel;
+            document.getElementById('worker-id-input').placeholder = t.workerIdPlaceholder;
+            document.getElementById('ui-loginBtn').innerText = t.loginBtn;
+            document.getElementById('login-error').innerText = t.loginError;
+            document.getElementById('ui-selectProjectLabel').innerHTML = `<i class="fa-solid fa-location-dot text-blue-600 ml-2"></i> ${t.selectProjectLabel}`;
+            document.getElementById('ui-checkInBtn').innerText = t.checkInBtn;
+            document.getElementById('ui-workingAtLabel').innerText = t.workingAtLabel;
+            document.getElementById('ui-checkedInAtLabel').innerText = t.checkedInAtLabel;
+            document.getElementById('ui-checkOutBtn').innerText = t.checkOutBtn;
+            document.getElementById('ui-shiftCompletedTitle').innerText = t.shiftCompletedTitle;
+            document.getElementById('ui-shiftCompletedDesc').innerText = t.shiftCompletedDesc;
+
+            // تحديث زر اللغة
+            document.getElementById('lang-text').innerText = currentLang === 'ar' ? 'English' : 'عربي';
+
+            // تحديث نصوص الخدمات والنوافذ
+            document.getElementById('ui-servicesTitle').innerText = t.servicesTitle;
+            document.getElementById('ui-btnLeave').innerText = t.btnLeave;
+            document.getElementById('ui-btnLoan').innerText = t.btnLoan;
+            document.getElementById('ui-btnIssue').innerText = t.btnIssue;
+            
+            document.getElementById('ui-modalLeaveTitle').innerText = t.modalLeaveTitle;
+            document.getElementById('ui-leaveDateLabel').innerText = t.leaveDateLabel;
+            document.getElementById('ui-leaveTypeLabel').innerText = t.leaveTypeLabel;
+            document.getElementById('ui-leaveType1').innerText = t.leaveType1;
+            document.getElementById('ui-leaveType2').innerText = t.leaveType2;
+            document.getElementById('ui-leaveType3').innerText = t.leaveType3;
+            document.getElementById('ui-leaveSubmit').innerText = t.leaveSubmit;
+
+            document.getElementById('ui-modalLoanTitle').innerText = t.modalLoanTitle;
+            document.getElementById('ui-loanAmountLabel').innerText = t.loanAmountLabel;
+            document.getElementById('ui-loanReasonLabel').innerText = t.loanReasonLabel;
+            document.getElementById('ui-loanSubmit').innerText = t.loanSubmit;
+
+            document.getElementById('ui-modalIssueTitle').innerText = t.modalIssueTitle;
+            document.getElementById('ui-issueTypeLabel').innerText = t.issueTypeLabel;
+            document.getElementById('ui-issueType1').innerText = t.issueType1;
+            document.getElementById('ui-issueType2').innerText = t.issueType2;
+            document.getElementById('ui-issueType3').innerText = t.issueType3;
+            document.getElementById('ui-issueDescLabel').innerText = t.issueDescLabel;
+            document.getElementById('ui-issueSubmit').innerText = t.issueSubmit;
+            
+            document.getElementById('ui-successMsg').innerText = t.successMsg;
+
+            // تحديث الترحيب
+            updateGreeting();
+            populateProjects();
+        }
+
+        function updateGreeting() {
+            if(!activeWorker) return;
+            const hour = new Date().getHours();
+            const t = translations[currentLang];
+            const greeting = hour < 12 ? t.goodMorning : t.goodEvening;
+            document.getElementById('greeting-text').innerText = greeting;
+            // في النسخة الإنجليزية نظهر اسم العامل كما هو حالياً (في التطبيق الحقيقي سيتم جلب الاسم الإنجليزي)
+            document.getElementById('worker-name-display').innerText = activeWorker.name;
+        }
+
+        function populateProjects() {
+            const select = document.getElementById('project-select');
+            select.innerHTML = `<option value="" disabled selected>${translations[currentLang].selectDefault}</option>`;
+            mockProjects.forEach(proj => {
+                const option = document.createElement('option');
+                option.value = proj.id;
+                option.innerText = currentLang === 'ar' ? proj.nameAr : proj.nameEn;
+                select.appendChild(option);
+            });
+        }
+
+        function showSection(sectionId) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            
+            if(sectionId) {
+                document.getElementById(sectionId).classList.remove('hidden');
+            }
+        }
+
+        function updateAttendanceUI() {
+            const status = localStorage.getItem('attendanceStatus') || 'none';
+            document.getElementById('status-none').classList.add('hidden');
+            document.getElementById('status-working').classList.add('hidden');
+            document.getElementById('status-completed').classList.add('hidden');
+
+            if (status === 'none') {
+                document.getElementById('status-none').classList.remove('hidden');
+            } else if (status === 'working') {
+                document.getElementById('status-working').classList.remove('hidden');
+                
+                // عرض بيانات العمل الحالي
+                const timeStr = localStorage.getItem('checkInTime');
+                document.getElementById('check-in-time-display').innerText = timeStr;
+                
+                const projId = localStorage.getItem('selectedProject');
+                const project = mockProjects.find(p => p.id === projId);
+                if(project) {
+                    document.getElementById('current-project-name').innerText = currentLang === 'ar' ? project.nameAr : project.nameEn;
+                }
+            } else if (status === 'completed') {
+                document.getElementById('status-completed').classList.remove('hidden');
+            }
+        }
+
+        // ----------------- ربط الأحداث (Event Listeners) -----------------
+        
+        // تغيير اللغة
+        document.getElementById('lang-toggle').addEventListener('click', () => {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            applyTranslations();
+            if(activeWorker) updateAttendanceUI();
+        });
+
+        // تفعيل زر الحضور عند اختيار مشروع
+        document.getElementById('project-select').addEventListener('change', function() {
+            const btn = document.getElementById('check-in-btn');
+            if (this.value) {
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.removeAttribute('disabled');
+            }
+        });
+
+        // تسجيل الدخول
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const idInput = document.getElementById('worker-id-input').value;
+            const worker = mockWorkers.find(w => w.id === idInput);
+            
+            if (worker) {
+                document.getElementById('login-error').classList.add('hidden');
+                activeWorker = worker;
+                localStorage.setItem('activeWorker', JSON.stringify(worker)); // حفظ تسجيل الدخول مؤقتاً
+                
+                checkNewDay();
+                updateGreeting();
+                showSection('dashboard-section');
+                updateAttendanceUI();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+
+        // تسجيل الحضور
+        document.getElementById('check-in-btn').addEventListener('click', () => {
+            const projId = document.getElementById('project-select').value;
+            if (!projId) return;
+
+            const now = new Date();
+            const timeString = now.toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            localStorage.setItem('attendanceStatus', 'working');
+            localStorage.setItem('checkInTime', timeString);
+            localStorage.setItem('selectedProject', projId);
+            
+            updateAttendanceUI();
+        });
+
+        // تسجيل الانصراف
+        document.getElementById('check-out-btn').addEventListener('click', () => {
+            localStorage.setItem('attendanceStatus', 'completed');
+            updateAttendanceUI();
+        });
+
+        // تسجيل الخروج (تغيير المستخدم)
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            activeWorker = null;
+            localStorage.removeItem('activeWorker');
+            document.getElementById('worker-id-input').value = '';
+            showSection('login-section');
+        });
+
+        // ----------------- دوال النوافذ المنبثقة والخدمات (Modals) -----------------
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + '-content');
+            modal.classList.remove('hidden');
+            // تأخير بسيط جداً لتفعيل التأثير الحركي للظهور
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + '-content');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            // إخفاء العنصر بالكامل بعد انتهاء التأثير الحركي (300 ملي ثانية)
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // إظهار رسالة النجاح (بديل عن الـ alert المزعج)
+        function showSuccessToast() {
+            const toast = document.getElementById('success-toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // إخفاء الرسالة تلقائياً بعد 3 ثواني
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // معالجة إرسال النماذج
+        const handleServiceSubmit = (e, modalId) => {
+            e.preventDefault(); // منع إعادة تحميل الصفحة
+            
+            // سيتم هنا لاحقاً إرسال البيانات (Form Data) لقاعدة البيانات الحقيقية
+            
+            closeModal(modalId);
+            setTimeout(() => {
+                showSuccessToast();
+                e.target.reset(); // تفريغ الحقول ليتمكن من تقديم طلب جديد لاحقاً
+            }, 300);
+        };
+
+        // ربط النماذج بالدوال
+        document.getElementById('leave-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'leave-modal'));
+        document.getElementById('loan-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'loan-modal'));
+        document.getElementById('issue-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'issue-modal'));
+
+        // ----------------- التهيئة عند تحميل الصفحة -----------------
+        window.onload = () => {
+            checkNewDay();
+            applyTranslations();
+            
+            // استعادة جلسة العمل إذا كانت محفوظة
+            const savedWorker = localStorage.getItem('activeWorker');
+            if(savedWorker) {
+                activeWorker = JSON.parse(savedWorker);
+                updateGreeting();
+                showSection('dashboard-section');
+                updateAttendanceUI();
+            }
+        };
+
+    </script>
+</body>
+</html>
