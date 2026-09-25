@@ -2,648 +2,710 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أركان الخليج - متابعة العمل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>أركان الخليج - بوابة العامل</title>
     
-    <!-- تحميل مكتبة Tailwind CSS للتصميم -->
+    <!-- تحميل Tailwind CSS للتصميم -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- تحميل مكتبة الأيقونات FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- تحميل مكتبة الأيقونات Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- تحميل الخطوط -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- إعدادات الخطوط الافتراضية -->
     <style>
         :root {
             --font-ar: 'Tajawal', sans-serif;
             --font-en: 'Inter', sans-serif;
         }
-        body { font-family: var(--font-ar); }
+        body { 
+            font-family: var(--font-ar); 
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f8fafc; /* slate-50 */
+        }
         .ltr body { font-family: var(--font-en); }
         
-        /* تأثيرات حركية بسيطة */
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        /* تأثيرات حركية */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide-up { animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .slide-down { animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(100%); }
+        }
+
+        /* تحسينات التصميم */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-20 text-slate-800">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- الشريط العلوي لتغيير اللغة -->
-    <div class="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end">
-        <button id="lang-toggle" class="flex items-center gap-2 text-xs font-semibold hover:text-white transition-colors">
-            <i class="fa-solid fa-globe"></i>
-            <span id="lang-text">English</span>
+    <!-- شريط اللغة -->
+    <div class="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end z-20 relative">
+        <button id="btn-lang" class="flex items-center gap-2 text-xs font-semibold hover:text-white transition-colors">
+            <i class="ph ph-globe text-lg"></i>
+            <span id="txt-lang">English</span>
         </button>
     </div>
 
-    <!-- ترويسة الشركة -->
-    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-md mx-auto px-4 py-4 flex items-center gap-4">
-            <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner">
-                <i class="fa-solid fa-industry text-blue-400 text-xl"></i>
+    <!-- الترويسة -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10 glass-effect">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center gap-3">
+            <div class="w-12 h-12 bg-blue-900 rounded-xl flex items-center justify-center shadow-inner relative overflow-hidden flex-shrink-0">
+                <i class="ph-fill ph-hexagon text-3xl text-blue-400 relative z-10"></i>
+                <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-blue-600 opacity-50"></div>
             </div>
             <div>
-                <h1 id="ui-companyName" class="text-lg font-bold text-blue-950 leading-tight">
-                    شركة أركان الخليج للأعمال المعدنية
-                </h1>
-                <p id="ui-subtitle" class="text-xs font-medium text-slate-500 mt-0.5">
-                    لوحة متابعة العمل
+                <h1 id="txt-company" class="text-lg font-bold text-blue-950 leading-tight">شركة أركان الخليج</h1>
+                <p class="text-xs font-medium text-emerald-600 mt-0.5 flex items-center gap-1">
+                    <i class="ph-fill ph-shield-check"></i> <span id="txt-subtitle">نظام الحضور الآمن</span>
                 </p>
             </div>
         </div>
     </header>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="p-4 max-w-md mx-auto mt-4">
-
-        <!-- 1. شاشة تسجيل الدخول -->
-        <div id="login-section" class="fade-in bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-            <div class="bg-slate-900 p-8 text-center">
-                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <i class="fa-solid fa-user text-white text-2xl"></i>
+    <main class="flex-1 w-full max-w-md mx-auto p-4 pb-24 flex flex-col justify-center relative">
+        
+        <!-- 1. قسم تسجيل الدخول -->
+        <div id="section-login" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 fade-in w-full">
+            <div class="bg-slate-900 p-8 text-center relative">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                    <i class="ph-fill ph-fingerprint text-7xl text-white"></i>
                 </div>
-                <h2 id="ui-loginTitle" class="text-2xl font-bold text-white mb-2">تسجيل الدخول</h2>
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative z-10">
+                    <i class="ph-fill ph-user text-3xl text-white"></i>
+                </div>
+                <h2 id="txt-login-title" class="text-2xl font-bold text-white mb-1 relative z-10">تسجيل الدخول</h2>
             </div>
-            <div class="p-8">
-                <form id="login-form" class="space-y-6">
+            <div class="p-6">
+                <form id="form-login" class="space-y-5">
                     <div>
-                        <label id="ui-workerIdLabel" class="block text-sm font-semibold text-slate-700 mb-2">كود العامل</label>
-                        <input type="number" id="worker-id-input" placeholder="أدخل رقمك الوظيفي هنا" required
-                            class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
-                        <p id="login-error" class="mt-2 text-sm text-red-600 hidden">رقم العامل غير صحيح، يرجى التأكد</p>
+                        <label id="txt-worker-id" class="block text-sm font-bold text-slate-700 mb-2">رقم العامل (كود الموظف)</label>
+                        <div class="relative">
+                            <i class="ph ph-identification-card absolute top-1/2 transform -translate-y-1/2 right-3 text-slate-400 text-xl ltr:left-3 ltr:right-auto"></i>
+                            <input type="number" id="input-worker-id" placeholder="أدخل رقمك هنا (مثال: 1001)" required
+                                class="w-full px-10 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 transition-all font-semibold text-lg text-center">
+                        </div>
+                        <div id="login-error" class="hidden mt-3 p-3 bg-red-50 border border-red-100 rounded-lg flex items-start gap-2 text-red-700 text-sm">
+                            <i class="ph-fill ph-warning-circle text-lg flex-shrink-0"></i>
+                            <span id="txt-login-error">رقم العامل غير صحيح!</span>
+                        </div>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-md">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        <span id="ui-loginBtn">تسجيل الدخول</span>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+                        <span id="txt-login-btn">دخول للنظام</span>
+                        <i class="ph-bold ph-arrow-left ltr:rotate-180"></i>
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- 2. شاشة المتابعة (الداشبورد) -->
-        <div id="dashboard-section" class="hidden space-y-6">
+        <!-- 2. لوحة التحكم (Dashboard) -->
+        <div id="section-dashboard" class="hidden space-y-5 w-full">
             
             <!-- بطاقة الترحيب -->
-            <div class="fade-in bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between fade-in">
                 <div>
-                    <p class="text-sm text-slate-500 font-medium"><span id="greeting-text">صباح الخير</span> 👋</p>
-                    <h2 id="worker-name-display" class="text-xl font-bold text-slate-800"></h2>
+                    <p class="text-xs text-slate-500 font-medium mb-1"><span id="txt-greeting">صباح الخير</span> 👋</p>
+                    <h2 id="val-worker-name" class="text-xl font-bold text-slate-800">الاسم هنا</h2>
                 </div>
-                <button id="logout-btn" class="text-slate-400 hover:text-red-500 transition-colors">
-                    <i class="fa-solid fa-power-off text-xl"></i>
+                <button id="btn-logout" class="w-10 h-10 bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full flex items-center justify-center transition-colors">
+                    <i class="ph-bold ph-power text-xl"></i>
                 </button>
             </div>
 
-            <!-- حالة 1: لم يسجل حضور بعد -->
-            <div id="status-none" class="fade-in bg-white p-6 rounded-2xl shadow-xl border border-slate-100">
-                <div class="space-y-6">
-                    <div>
-                        <label id="ui-selectProjectLabel" class="block text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-location-dot text-blue-600"></i>
-                            اختر موقع العمل الحالي
-                        </label>
-                        <select id="project-select" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
-                            <!-- Options will be injected by JS -->
+            <!-- بطاقة الحضور والانصراف -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 fade-in relative overflow-hidden">
+                
+                <!-- الحالة: لم يسجل حضور -->
+                <div id="state-checkin" class="space-y-4">
+                    <label id="txt-select-proj" class="block text-sm font-bold text-slate-700">موقع العمل الحالي:</label>
+                    <div class="relative">
+                        <i class="ph-fill ph-map-pin absolute top-1/2 transform -translate-y-1/2 right-3 text-blue-600 text-xl ltr:left-3 ltr:right-auto"></i>
+                        <select id="select-project" class="w-full pl-4 pr-10 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 font-medium appearance-none ltr:pl-10 ltr:pr-4">
+                            <!-- الخيارات تضاف بالـ JS -->
                         </select>
+                        <i class="ph-bold ph-caret-down absolute top-1/2 transform -translate-y-1/2 left-4 text-slate-400 ltr:right-4 ltr:left-auto"></i>
                     </div>
-                    <button id="check-in-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg text-lg opacity-50 cursor-not-allowed" disabled>
-                        <i class="fa-solid fa-fingerprint text-xl"></i>
-                        <span id="ui-checkInBtn">تسجيل الحضور</span>
+                    
+                    <div id="location-error" class="hidden p-3 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-2 text-rose-700 text-sm">
+                        <i class="ph-fill ph-warning text-lg flex-shrink-0"></i>
+                        <span id="txt-loc-error">أنت خارج نطاق المشروع!</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <button id="btn-do-checkin" class="col-span-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all opacity-50 cursor-not-allowed active:scale-95">
+                            <i class="ph-bold ph-fingerprint text-2xl"></i>
+                            <span id="txt-btn-checkin">تسجيل الحضور</span>
+                        </button>
+                        <button id="btn-bypass" class="col-span-2 text-xs text-slate-400 underline text-center py-2 hidden">تجاوز الفحص (للتجربة)</button>
+                    </div>
+                </div>
+
+                <!-- الحالة: جاري الفحص الأمني -->
+                <div id="state-loading" class="hidden py-8 text-center flex flex-col items-center">
+                    <i class="ph-duotone ph-spinner-gap text-5xl text-blue-500 animate-spin mb-4"></i>
+                    <h3 id="txt-sec-check" class="font-bold text-slate-700 text-lg mb-1">فحص أمني جاري...</h3>
+                    <p class="text-xs text-slate-500">يتم مطابقة الموقع الجغرافي وبصمة الجهاز</p>
+                </div>
+
+                <!-- الحالة: تم تسجيل الحضور -->
+                <div id="state-working" class="hidden text-center fade-in">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                        <i class="ph-duotone ph-briefcase text-4xl animate-pulse"></i>
+                    </div>
+                    <p id="txt-working-at" class="text-sm text-slate-500 mb-1">موقع العمل:</p>
+                    <p id="val-current-proj" class="text-xl font-bold text-slate-800 mb-4">اسم المشروع</p>
+                    
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-5 flex items-center justify-center gap-2 text-sm">
+                        <i class="ph-bold ph-clock text-blue-600"></i>
+                        <span id="txt-time-label" class="text-slate-600">وقت الدخول:</span>
+                        <span id="val-checkin-time" class="font-bold text-blue-700">08:00 AM</span>
+                    </div>
+
+                    <button id="btn-do-checkout" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+                        <i class="ph-bold ph-sign-out text-2xl"></i>
+                        <span id="txt-btn-checkout">إنهاء العمل (انصراف)</span>
                     </button>
                 </div>
-            </div>
 
-            <!-- حالة 2: تم تسجيل الحضور ويعمل الآن -->
-            <div id="status-working" class="hidden fade-in bg-white p-6 rounded-2xl shadow-xl border border-slate-100 text-center">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-600 rounded-full mb-4">
-                    <i class="fa-regular fa-clock text-4xl animate-pulse"></i>
-                </div>
-                <div>
-                    <p id="ui-workingAtLabel" class="text-sm text-slate-500 mb-1">تعمل الآن في:</p>
-                    <p id="current-project-name" class="text-xl font-bold text-slate-800 mb-4"></p>
-                    <div class="inline-block bg-slate-100 px-4 py-2 rounded-full text-slate-600 font-medium text-sm mb-6">
-                        <span id="ui-checkedInAtLabel">تم تسجيل الحضور الساعة:</span> 
-                        <span id="check-in-time-display" class="font-bold text-blue-600 mx-1"></span>
+                <!-- الحالة: تم الانصراف -->
+                <div id="state-completed" class="hidden text-center fade-in py-4">
+                    <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ph-fill ph-check-circle text-5xl"></i>
                     </div>
+                    <h3 id="txt-shift-done" class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
+                    <p id="txt-shift-desc" class="text-sm text-slate-500 leading-relaxed">تم تسجيل انصرافك وإرسال البيانات للنظام. شكراً لجهودك اليوم.</p>
                 </div>
-                <button id="check-out-btn" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg text-lg">
-                    <i class="fa-solid fa-door-open text-xl"></i>
-                    <span id="ui-checkOutBtn">تسجيل الانصراف</span>
-                </button>
             </div>
 
-            <!-- حالة 3: تم الانصراف -->
-            <div id="status-completed" class="hidden fade-in bg-white p-8 rounded-2xl shadow-xl border border-slate-100 text-center">
-                <div class="inline-flex items-center justify-center w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full mb-6">
-                    <i class="fa-solid fa-circle-check text-5xl"></i>
-                </div>
-                <h3 id="ui-shiftCompletedTitle" class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
-                <p id="ui-shiftCompletedDesc" class="text-slate-500">تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.</p>
-            </div>
-
-            <!-- قسم الخدمات السريعة -->
-            <div class="fade-in bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <h3 id="ui-servicesTitle" class="text-sm font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">الخدمات السريعة</h3>
+            <!-- الخدمات السريعة -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 fade-in">
+                <h3 id="txt-services-title" class="text-sm font-bold text-slate-800 mb-4">الخدمات السريعة</h3>
                 <div class="grid grid-cols-3 gap-3">
-                    <button onclick="openModal('leave-modal')" class="flex flex-col items-center justify-center p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-blue-700 shadow-sm border border-blue-100">
-                        <i class="fa-solid fa-calendar-days text-xl mb-2"></i>
-                        <span id="ui-btnLeave" class="text-xs font-bold text-center">طلب إجازة</span>
+                    <button onclick="openModal('modal-leave')" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-100 hover:border-blue-200 transition-all group text-slate-600 hover:text-blue-700">
+                        <i class="ph-duotone ph-calendar-plus text-3xl mb-2 text-blue-500 group-hover:scale-110 transition-transform"></i>
+                        <span id="txt-srv-leave" class="text-[11px] font-bold text-center">طلب إجازة</span>
                     </button>
-                    <button onclick="openModal('loan-modal')" class="flex flex-col items-center justify-center p-3 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors text-emerald-700 shadow-sm border border-emerald-100">
-                        <i class="fa-solid fa-money-bill-wave text-xl mb-2"></i>
-                        <span id="ui-btnLoan" class="text-xs font-bold text-center">طلب سلفة</span>
+                    <button onclick="openModal('modal-loan')" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-100 hover:border-emerald-200 transition-all group text-slate-600 hover:text-emerald-700">
+                        <i class="ph-duotone ph-money text-3xl mb-2 text-emerald-500 group-hover:scale-110 transition-transform"></i>
+                        <span id="txt-srv-loan" class="text-[11px] font-bold text-center">طلب سلفة</span>
                     </button>
-                    <button onclick="openModal('issue-modal')" class="flex flex-col items-center justify-center p-3 bg-rose-50 rounded-xl hover:bg-rose-100 transition-colors text-rose-700 shadow-sm border border-rose-100">
-                        <i class="fa-solid fa-triangle-exclamation text-xl mb-2"></i>
-                        <span id="ui-btnIssue" class="text-xs font-bold text-center">بلاغ مشكلة</span>
+                    <button onclick="openModal('modal-issue')" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-rose-50 rounded-xl border border-slate-100 hover:border-rose-200 transition-all group text-slate-600 hover:text-rose-700">
+                        <i class="ph-duotone ph-warning-octagon text-3xl mb-2 text-rose-500 group-hover:scale-110 transition-transform"></i>
+                        <span id="txt-srv-issue" class="text-[11px] font-bold text-center">بلاغ مشكلة</span>
                     </button>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <!-- 1. نافذة طلب الإجازة -->
-    <div id="leave-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="leave-modal-content">
-            <div class="bg-blue-600 p-4 flex justify-between items-center text-white">
-                <h3 id="ui-modalLeaveTitle" class="font-bold text-lg">تقديم طلب إجازة</h3>
-                <button onclick="closeModal('leave-modal')" class="hover:text-blue-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <!-- خلفية النوافذ -->
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <!-- نافذة طلب إجازة -->
+    <div id="modal-leave" class="fixed bottom-0 left-0 right-0 z-50 hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
+        <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="txt-mod-leave-title" class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-calendar-plus text-blue-600"></i> طلب إجازة
+                </h3>
+                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="ph-bold ph-x"></i></button>
             </div>
-            <form id="leave-form" class="p-5 space-y-4">
+            <form onsubmit="handleFormSubmit(event)" class="space-y-4">
                 <div>
-                    <label id="ui-leaveDateLabel" class="block text-sm font-semibold text-slate-700 mb-1">تاريخ بداية الإجازة</label>
-                    <input type="date" required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                    <label id="txt-mod-leave-date" class="block text-sm font-bold text-slate-700 mb-1">تاريخ البدء</label>
+                    <input type="date" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-slate-800 font-medium">
                 </div>
                 <div>
-                    <label id="ui-leaveTypeLabel" class="block text-sm font-semibold text-slate-700 mb-1">نوع الإجازة</label>
-                    <select required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
-                        <option id="ui-leaveType1" value="annual">سنوية</option>
-                        <option id="ui-leaveType2" value="sick">مرضية</option>
-                        <option id="ui-leaveType3" value="unpaid">بدون راتب</option>
+                    <label id="txt-mod-leave-type" class="block text-sm font-bold text-slate-700 mb-1">نوع الإجازة</label>
+                    <select required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-slate-800 font-medium">
+                        <option id="opt-leave-1" value="1">إجازة سنوية (مستحقة)</option>
+                        <option id="opt-leave-2" value="2">إجازة مرضية</option>
+                        <option id="opt-leave-3" value="3">إجازة طارئة (بدون راتب)</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
-                    <span id="ui-leaveSubmit">إرسال الطلب</span>
-                    <i class="fa-solid fa-paper-plane"></i>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-4 active:scale-95 transition-transform">
+                    <span id="txt-mod-leave-btn">إرسال الطلب للإدارة</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- 2. نافذة طلب سلفة -->
-    <div id="loan-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="loan-modal-content">
-            <div class="bg-emerald-600 p-4 flex justify-between items-center text-white">
-                <h3 id="ui-modalLoanTitle" class="font-bold text-lg">طلب سلفة مالية</h3>
-                <button onclick="closeModal('loan-modal')" class="hover:text-emerald-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <!-- نافذة طلب سلفة -->
+    <div id="modal-loan" class="fixed bottom-0 left-0 right-0 z-50 hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
+        <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="txt-mod-loan-title" class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-money text-emerald-600"></i> طلب سلفة مالية
+                </h3>
+                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="ph-bold ph-x"></i></button>
             </div>
-            <form id="loan-form" class="p-5 space-y-4">
+            <form onsubmit="handleFormSubmit(event)" class="space-y-4">
                 <div>
-                    <label id="ui-loanAmountLabel" class="block text-sm font-semibold text-slate-700 mb-1">المبلغ المطلوب</label>
-                    <input type="number" required placeholder="0.00" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50">
+                    <label id="txt-mod-loan-amt" class="block text-sm font-bold text-slate-700 mb-1">المبلغ المطلوب (ريال)</label>
+                    <input type="number" required placeholder="0.00" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50 text-slate-800 font-medium">
                 </div>
                 <div>
-                    <label id="ui-loanReasonLabel" class="block text-sm font-semibold text-slate-700 mb-1">السبب (اختياري)</label>
-                    <textarea rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50"></textarea>
+                    <label id="txt-mod-loan-rsn" class="block text-sm font-bold text-slate-700 mb-1">ملاحظات أو أسباب</label>
+                    <textarea rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50 text-slate-800 font-medium"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
-                    <span id="ui-loanSubmit">إرسال الطلب</span>
-                    <i class="fa-solid fa-paper-plane"></i>
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-4 active:scale-95 transition-transform">
+                    <span id="txt-mod-loan-btn">إرسال الطلب للإدارة</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- 3. نافذة بلاغ مشكلة -->
-    <div id="issue-modal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform duration-300" id="issue-modal-content">
-            <div class="bg-rose-600 p-4 flex justify-between items-center text-white">
-                <h3 id="ui-modalIssueTitle" class="font-bold text-lg">الإبلاغ عن مشكلة</h3>
-                <button onclick="closeModal('issue-modal')" class="hover:text-rose-200 transition-colors"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <!-- نافذة بلاغ مشكلة -->
+    <div id="modal-issue" class="fixed bottom-0 left-0 right-0 z-50 hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
+        <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="txt-mod-issue-title" class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-warning-octagon text-rose-600"></i> بلاغ عن مشكلة
+                </h3>
+                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="ph-bold ph-x"></i></button>
             </div>
-            <form id="issue-form" class="p-5 space-y-4">
+            <form onsubmit="handleFormSubmit(event)" class="space-y-4">
                 <div>
-                    <label id="ui-issueTypeLabel" class="block text-sm font-semibold text-slate-700 mb-1">نوع المشكلة</label>
-                    <select required class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50">
-                        <option id="ui-issueType1" value="safety">أمن وسلامة</option>
-                        <option id="ui-issueType2" value="equipment">عطل معدات</option>
-                        <option id="ui-issueType3" value="other">أخرى</option>
+                    <label id="txt-mod-issue-type" class="block text-sm font-bold text-slate-700 mb-1">نوع المشكلة</label>
+                    <select required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50 text-slate-800 font-medium">
+                        <option id="opt-iss-1" value="safety">أمن وسلامة مهنية</option>
+                        <option id="opt-iss-2" value="equip">عطل في معدة/آلة</option>
+                        <option id="opt-iss-3" value="other">أخرى</option>
                     </select>
                 </div>
                 <div>
-                    <label id="ui-issueDescLabel" class="block text-sm font-semibold text-slate-700 mb-1">وصف المشكلة</label>
-                    <textarea required rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50"></textarea>
+                    <label id="txt-mod-issue-desc" class="block text-sm font-bold text-slate-700 mb-1">وصف المشكلة</label>
+                    <textarea required rows="3" placeholder="اشرح المشكلة باختصار..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50 text-slate-800 font-medium"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md flex items-center justify-center gap-2">
-                    <span id="ui-issueSubmit">إرسال البلاغ</span>
-                    <i class="fa-solid fa-paper-plane"></i>
+                <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-4 active:scale-95 transition-transform">
+                    <span id="txt-mod-issue-btn">إرسال البلاغ عاجل</span>
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- رسالة النجاح (Toast Message) -->
-    <div id="success-toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-50 pointer-events-none">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
-        <span id="ui-successMsg" class="font-medium text-sm whitespace-nowrap">تم إرسال طلبك بنجاح للإدارة</span>
+    <!-- رسالة النجاح (Toast) -->
+    <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[60] pointer-events-none w-max max-w-[90%]">
+        <i class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
+        <span id="txt-toast-msg" class="font-medium text-sm">تم إرسال الطلب بنجاح!</span>
     </div>
 
     <script>
-        // ----------------- قاعدة البيانات المصغرة -----------------
-        const mockWorkers = [
-            { id: "1001", name: "أحمد محمد" },
-            { id: "1002", name: "محمود علي" },
-            { id: "1003", name: "جون دوي (John Doe)" },
+        // --- 1. البيانات الوهمية (Mock Data) ---
+        const workers = [
+            { id: "1001", nameAr: "أحمد محمد", nameEn: "Ahmed Mohammed" },
+            { id: "1002", nameAr: "محمود علي", nameEn: "Mahmoud Ali" },
+            { id: "1003", nameAr: "جون دوي", nameEn: "John Doe" },
+            { id: "1234", nameAr: "عامل تجريبي", nameEn: "Test Worker" }
         ];
 
-        const mockProjects = [
-            { id: "F-01", nameAr: "المصنع الرئيسي (أجور صناعية)", nameEn: "Main Factory (Direct Labor)" },
-            { id: "P-101", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers Project" },
-            { id: "P-102", nameAr: "مشروع مستشفى جدة", nameEn: "Jeddah Hospital Project" },
+        const projects = [
+            { id: "proj-1", nameAr: "المصنع الرئيسي (جدة)", nameEn: "Main Factory (Jeddah)" },
+            { id: "proj-2", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers" },
+            { id: "proj-3", nameAr: "موقع الصيانة الخارجي", nameEn: "Outdoor Maint. Site" }
         ];
 
-        // ----------------- القاموس اللغوي -----------------
-        const translations = {
+        // --- 2. القاموس اللغوي (Translations) ---
+        const dict = {
             ar: {
-                companyName: "شركة أركان الخليج للأعمال المعدنية",
-                subtitle: "لوحة متابعة العمل",
+                lang: "English",
+                company: "شركة أركان الخليج",
+                subtitle: "نظام الحضور الآمن",
                 loginTitle: "تسجيل الدخول",
-                workerIdLabel: "كود العامل",
-                workerIdPlaceholder: "أدخل رقمك الوظيفي هنا",
-                loginBtn: "تسجيل الدخول",
-                loginError: "رقم العامل غير صحيح، يرجى التأكد",
-                goodMorning: "صباح الخير",
-                goodEvening: "مساء الخير",
-                selectProjectLabel: "اختر موقع العمل الحالي",
-                selectDefault: "--- اختر الموقع ---",
-                checkInBtn: "تسجيل الحضور",
-                workingAtLabel: "تعمل الآن في:",
-                checkedInAtLabel: "تم تسجيل الحضور الساعة:",
-                checkOutBtn: "تسجيل الانصراف",
-                shiftCompletedTitle: "تم إنهاء العمل بنجاح!",
-                shiftCompletedDesc: "تم إرسال بيانات دوامك للإدارة. سيتم بدء يوم عمل جديد غداً.",
+                workerId: "رقم العامل (كود الموظف)",
+                loginBtn: "دخول للنظام",
+                loginErr: "رقم العامل غير صحيح، تأكد منه مجدداً!",
+                gm: "صباح الخير",
+                ge: "مساء الخير",
+                selProj: "موقع العمل الحالي (اختر من القائمة):",
+                selDef: "--- اختر موقع عملك ---",
+                locErr: "عفواً! أنت خارج النطاق الجغرافي للمشروع.",
+                checkIn: "تسجيل الحضور",
+                secCheck: "فحص أمني جاري...",
+                workAt: "تعمل حالياً في:",
+                timeLbl: "وقت الدخول:",
+                checkOut: "إنهاء العمل (انصراف)",
+                doneTitle: "تم إنهاء العمل بنجاح!",
+                doneDesc: "تم إرسال بيانات الانصراف للإدارة. يمكنك إغلاق التطبيق الآن.",
                 
-                // ترجمة الخدمات الجديدة
-                servicesTitle: "الخدمات السريعة",
-                btnLeave: "طلب إجازة",
-                btnLoan: "طلب سلفة",
-                btnIssue: "بلاغ مشكلة",
+                srvTitle: "الخدمات السريعة",
+                srvLeave: "طلب إجازة", srvLoan: "طلب سلفة", srvIssue: "بلاغ مشكلة",
                 
-                modalLeaveTitle: "تقديم طلب إجازة",
-                leaveDateLabel: "تاريخ بداية الإجازة",
-                leaveTypeLabel: "نوع الإجازة",
-                leaveType1: "سنوية",
-                leaveType2: "مرضية",
-                leaveType3: "بدون راتب",
-                leaveSubmit: "إرسال الطلب",
+                modLeaveTitle: "تقديم طلب إجازة", modLeaveDate: "تاريخ البدء", modLeaveType: "نوع الإجازة", modLeaveBtn: "إرسال الطلب للإدارة",
+                optLeave1: "إجازة سنوية (مستحقة)", optLeave2: "إجازة مرضية", optLeave3: "إجازة طارئة (بدون راتب)",
                 
-                modalLoanTitle: "طلب سلفة مالية",
-                loanAmountLabel: "المبلغ المطلوب",
-                loanReasonLabel: "السبب (اختياري)",
-                loanSubmit: "إرسال الطلب",
+                modLoanTitle: "طلب سلفة مالية", modLoanAmt: "المبلغ المطلوب (ريال)", modLoanRsn: "ملاحظات أو أسباب", modLoanBtn: "إرسال الطلب للإدارة",
                 
-                modalIssueTitle: "الإبلاغ عن مشكلة",
-                issueTypeLabel: "نوع المشكلة",
-                issueType1: "أمن وسلامة",
-                issueType2: "عطل في المعدات",
-                issueType3: "أخرى",
-                issueDescLabel: "وصف المشكلة",
-                issueSubmit: "إرسال البلاغ",
+                modIssueTitle: "بلاغ عن مشكلة", modIssueType: "نوع المشكلة", modIssueDesc: "وصف المشكلة", modIssueBtn: "إرسال البلاغ عاجل",
+                optIss1: "أمن وسلامة مهنية", optIss2: "عطل في معدة/آلة", optIss3: "أخرى",
                 
-                successMsg: "تم إرسال طلبك بنجاح للإدارة"
+                toastMsg: "تم إرسال طلبك بنجاح للإدارة!"
             },
             en: {
-                companyName: "Arkan Al-Khaleej Metal Works",
-                subtitle: "Work Tracking Dashboard",
-                loginTitle: "Login",
-                workerIdLabel: "Worker ID",
-                workerIdPlaceholder: "Enter your ID here",
-                loginBtn: "Login",
-                loginError: "Invalid Worker ID, please check",
-                goodMorning: "Good Morning",
-                goodEvening: "Good Evening",
-                selectProjectLabel: "Select Current Location",
-                selectDefault: "--- Select Location ---",
-                checkInBtn: "Check In",
-                workingAtLabel: "Currently working at:",
-                checkedInAtLabel: "Checked in at:",
-                checkOutBtn: "Check Out",
-                shiftCompletedTitle: "Shift completed successfully!",
-                shiftCompletedDesc: "Your attendance has been saved. A new workday will start tomorrow.",
+                lang: "عربي",
+                company: "Arkan Al-Khaleej",
+                subtitle: "Secure Attendance System",
+                loginTitle: "Worker Login",
+                workerId: "Worker ID Number",
+                loginBtn: "System Login",
+                loginErr: "Invalid Worker ID, please check again!",
+                gm: "Good Morning",
+                ge: "Good Evening",
+                selProj: "Current Work Location:",
+                selDef: "--- Select your location ---",
+                locErr: "Error! You are out of project geofence.",
+                checkIn: "Check In",
+                secCheck: "Security Check...",
+                workAt: "Currently working at:",
+                timeLbl: "Time In:",
+                checkOut: "End Shift (Check Out)",
+                doneTitle: "Shift Ended Successfully!",
+                doneDesc: "Check-out data sent to admin. You may close the app.",
                 
-                // New Services Translations
-                servicesTitle: "Quick Services",
-                btnLeave: "Leave Request",
-                btnLoan: "Loan Request",
-                btnIssue: "Report Issue",
+                srvTitle: "Quick Services",
+                srvLeave: "Leave Req", srvLoan: "Loan Req", srvIssue: "Report Issue",
                 
-                modalLeaveTitle: "Submit Leave Request",
-                leaveDateLabel: "Leave Start Date",
-                leaveTypeLabel: "Leave Type",
-                leaveType1: "Annual",
-                leaveType2: "Sick",
-                leaveType3: "Unpaid",
-                leaveSubmit: "Submit Request",
+                modLeaveTitle: "Leave Request", modLeaveDate: "Start Date", modLeaveType: "Leave Type", modLeaveBtn: "Submit Request",
+                optLeave1: "Annual Leave", optLeave2: "Sick Leave", optLeave3: "Unpaid Leave",
                 
-                modalLoanTitle: "Financial Loan Request",
-                loanAmountLabel: "Requested Amount",
-                loanReasonLabel: "Reason (Optional)",
-                loanSubmit: "Submit Request",
+                modLoanTitle: "Loan Request", modLoanAmt: "Amount (SAR)", modLoanRsn: "Reason / Notes", modLoanBtn: "Submit Request",
                 
-                modalIssueTitle: "Report an Issue",
-                issueTypeLabel: "Issue Type",
-                issueType1: "Health & Safety",
-                issueType2: "Equipment Failure",
-                issueType3: "Other",
-                issueDescLabel: "Issue Description",
-                issueSubmit: "Submit Report",
+                modIssueTitle: "Report Issue", modIssueType: "Issue Type", modIssueDesc: "Description", modIssueBtn: "Submit Urgent Report",
+                optIss1: "Health & Safety", optIss2: "Equipment Failure", optIss3: "Other",
                 
-                successMsg: "Your request has been sent successfully"
+                toastMsg: "Your request was submitted successfully!"
             }
         };
 
-        // ----------------- متغيرات الحالة (State) -----------------
-        let currentLang = 'ar';
-        let activeWorker = null;
-        let todayDate = new Date().toDateString();
-
-        // ----------------- الدوال الأساسية (Functions) -----------------
+        // --- 3. حالة التطبيق (State) ---
+        let lang = 'ar';
+        let currentUser = null;
+        // status يمكن أن تكون: none (لم يسجل), working (يعمل), completed (انصرف)
+        let attendanceStatus = 'none'; 
         
-        // التحقق من اليوم الجديد
-        function checkNewDay() {
-            const savedDate = localStorage.getItem('lastAccessDate');
-            if (savedDate !== todayDate) {
-                // تصفير بيانات الحضور لأننا في يوم جديد، لكن نحتفظ بتسجيل الدخول
-                localStorage.setItem('lastAccessDate', todayDate);
-                localStorage.removeItem('attendanceStatus');
-                localStorage.removeItem('checkInTime');
-                localStorage.removeItem('selectedProject');
-            }
+        // --- 4. الدوال الأساسية للمنطق (Logic) ---
+
+        // تبديل اللغة وتحديث الواجهة
+        function toggleLang() {
+            lang = lang === 'ar' ? 'en' : 'ar';
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+            if(lang === 'en') document.documentElement.classList.add('ltr');
+            else document.documentElement.classList.remove('ltr');
+            
+            updateTexts();
         }
 
-        // تحديث واجهة المستخدم باللغة المناسبة
-        function applyTranslations() {
-            const t = translations[currentLang];
+        // تحديث جميع النصوص في الصفحة
+        function updateTexts() {
+            const t = dict[lang];
+            document.getElementById('txt-lang').innerText = t.lang;
+            document.getElementById('txt-company').innerText = t.company;
+            document.getElementById('txt-subtitle').innerText = t.subtitle;
+            document.getElementById('txt-login-title').innerText = t.loginTitle;
+            document.getElementById('txt-worker-id').innerText = t.workerId;
+            document.getElementById('txt-login-btn').innerText = t.loginBtn;
+            document.getElementById('txt-login-error').innerText = t.loginErr;
+            document.getElementById('input-worker-id').placeholder = lang === 'ar' ? 'أدخل رقمك هنا...' : 'Enter ID here...';
             
-            // تغيير اتجاه الصفحة
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLang;
-            if (currentLang === 'en') {
-                document.documentElement.classList.add('ltr');
-            } else {
-                document.documentElement.classList.remove('ltr');
-            }
-
-            // تحديث النصوص
-            document.getElementById('ui-companyName').innerText = t.companyName;
-            document.getElementById('ui-subtitle').innerText = t.subtitle;
-            document.getElementById('ui-loginTitle').innerText = t.loginTitle;
-            document.getElementById('ui-workerIdLabel').innerText = t.workerIdLabel;
-            document.getElementById('worker-id-input').placeholder = t.workerIdPlaceholder;
-            document.getElementById('ui-loginBtn').innerText = t.loginBtn;
-            document.getElementById('login-error').innerText = t.loginError;
-            document.getElementById('ui-selectProjectLabel').innerHTML = `<i class="fa-solid fa-location-dot text-blue-600 ml-2"></i> ${t.selectProjectLabel}`;
-            document.getElementById('ui-checkInBtn').innerText = t.checkInBtn;
-            document.getElementById('ui-workingAtLabel').innerText = t.workingAtLabel;
-            document.getElementById('ui-checkedInAtLabel').innerText = t.checkedInAtLabel;
-            document.getElementById('ui-checkOutBtn').innerText = t.checkOutBtn;
-            document.getElementById('ui-shiftCompletedTitle').innerText = t.shiftCompletedTitle;
-            document.getElementById('ui-shiftCompletedDesc').innerText = t.shiftCompletedDesc;
-
-            // تحديث زر اللغة
-            document.getElementById('lang-text').innerText = currentLang === 'ar' ? 'English' : 'عربي';
-
-            // تحديث نصوص الخدمات والنوافذ
-            document.getElementById('ui-servicesTitle').innerText = t.servicesTitle;
-            document.getElementById('ui-btnLeave').innerText = t.btnLeave;
-            document.getElementById('ui-btnLoan').innerText = t.btnLoan;
-            document.getElementById('ui-btnIssue').innerText = t.btnIssue;
+            document.getElementById('txt-select-proj').innerText = t.selProj;
+            document.getElementById('txt-loc-error').innerText = t.locErr;
+            document.getElementById('txt-btn-checkin').innerText = t.checkIn;
+            document.getElementById('txt-sec-check').innerText = t.secCheck;
+            document.getElementById('txt-working-at').innerText = t.workAt;
+            document.getElementById('txt-time-label').innerText = t.timeLbl;
+            document.getElementById('txt-btn-checkout').innerText = t.checkOut;
+            document.getElementById('txt-shift-done').innerText = t.doneTitle;
+            document.getElementById('txt-shift-desc').innerText = t.doneDesc;
             
-            document.getElementById('ui-modalLeaveTitle').innerText = t.modalLeaveTitle;
-            document.getElementById('ui-leaveDateLabel').innerText = t.leaveDateLabel;
-            document.getElementById('ui-leaveTypeLabel').innerText = t.leaveTypeLabel;
-            document.getElementById('ui-leaveType1').innerText = t.leaveType1;
-            document.getElementById('ui-leaveType2').innerText = t.leaveType2;
-            document.getElementById('ui-leaveType3').innerText = t.leaveType3;
-            document.getElementById('ui-leaveSubmit').innerText = t.leaveSubmit;
-
-            document.getElementById('ui-modalLoanTitle').innerText = t.modalLoanTitle;
-            document.getElementById('ui-loanAmountLabel').innerText = t.loanAmountLabel;
-            document.getElementById('ui-loanReasonLabel').innerText = t.loanReasonLabel;
-            document.getElementById('ui-loanSubmit').innerText = t.loanSubmit;
-
-            document.getElementById('ui-modalIssueTitle').innerText = t.modalIssueTitle;
-            document.getElementById('ui-issueTypeLabel').innerText = t.issueTypeLabel;
-            document.getElementById('ui-issueType1').innerText = t.issueType1;
-            document.getElementById('ui-issueType2').innerText = t.issueType2;
-            document.getElementById('ui-issueType3').innerText = t.issueType3;
-            document.getElementById('ui-issueDescLabel').innerText = t.issueDescLabel;
-            document.getElementById('ui-issueSubmit').innerText = t.issueSubmit;
+            document.getElementById('txt-services-title').innerText = t.srvTitle;
+            document.getElementById('txt-srv-leave').innerText = t.srvLeave;
+            document.getElementById('txt-srv-loan').innerText = t.srvLoan;
+            document.getElementById('txt-srv-issue').innerText = t.srvIssue;
             
-            document.getElementById('ui-successMsg').innerText = t.successMsg;
+            document.getElementById('txt-mod-leave-title').innerHTML = `<i class="ph-fill ph-calendar-plus text-blue-600"></i> ${t.modLeaveTitle}`;
+            document.getElementById('txt-mod-leave-date').innerText = t.modLeaveDate;
+            document.getElementById('txt-mod-leave-type').innerText = t.modLeaveType;
+            document.getElementById('txt-mod-leave-btn').innerText = t.modLeaveBtn;
+            document.getElementById('opt-leave-1').innerText = t.optLeave1;
+            document.getElementById('opt-leave-2').innerText = t.optLeave2;
+            document.getElementById('opt-leave-3').innerText = t.optLeave3;
 
-            // تحديث الترحيب
+            document.getElementById('txt-mod-loan-title').innerHTML = `<i class="ph-fill ph-money text-emerald-600"></i> ${t.modLoanTitle}`;
+            document.getElementById('txt-mod-loan-amt').innerText = t.modLoanAmt;
+            document.getElementById('txt-mod-loan-rsn').innerText = t.modLoanRsn;
+            document.getElementById('txt-mod-loan-btn').innerText = t.modLoanBtn;
+
+            document.getElementById('txt-mod-issue-title').innerHTML = `<i class="ph-fill ph-warning-octagon text-rose-600"></i> ${t.modIssueTitle}`;
+            document.getElementById('txt-mod-issue-type').innerText = t.modIssueType;
+            document.getElementById('txt-mod-issue-desc').innerText = t.modIssueDesc;
+            document.getElementById('txt-mod-issue-btn').innerText = t.modIssueBtn;
+            document.getElementById('opt-iss-1').innerText = t.optIss1;
+            document.getElementById('opt-iss-2').innerText = t.optIss2;
+            document.getElementById('opt-iss-3').innerText = t.optIss3;
+            
+            document.getElementById('txt-toast-msg').innerText = t.toastMsg;
+
             updateGreeting();
-            populateProjects();
+            renderProjects();
+            
+            // تحديث اسم المشروع إذا كان يعمل
+            if(attendanceStatus === 'working') {
+                const pId = localStorage.getItem('arkan_proj_id');
+                const p = projects.find(x => x.id === pId);
+                if(p) document.getElementById('val-current-proj').innerText = lang === 'ar' ? p.nameAr : p.nameEn;
+            }
         }
 
+        // تحديث التحية بناءً على الوقت
         function updateGreeting() {
-            if(!activeWorker) return;
+            if(!currentUser) return;
             const hour = new Date().getHours();
-            const t = translations[currentLang];
-            const greeting = hour < 12 ? t.goodMorning : t.goodEvening;
-            document.getElementById('greeting-text').innerText = greeting;
-            // في النسخة الإنجليزية نظهر اسم العامل كما هو حالياً (في التطبيق الحقيقي سيتم جلب الاسم الإنجليزي)
-            document.getElementById('worker-name-display').innerText = activeWorker.name;
+            const t = dict[lang];
+            document.getElementById('txt-greeting').innerText = hour < 12 ? t.gm : t.ge;
+            document.getElementById('val-worker-name').innerText = lang === 'ar' ? currentUser.nameAr : currentUser.nameEn;
         }
 
-        function populateProjects() {
-            const select = document.getElementById('project-select');
-            select.innerHTML = `<option value="" disabled selected>${translations[currentLang].selectDefault}</option>`;
-            mockProjects.forEach(proj => {
-                const option = document.createElement('option');
-                option.value = proj.id;
-                option.innerText = currentLang === 'ar' ? proj.nameAr : proj.nameEn;
-                select.appendChild(option);
+        // بناء قائمة المشاريع
+        function renderProjects() {
+            const select = document.getElementById('select-project');
+            select.innerHTML = `<option value="" disabled selected>${dict[lang].selDef}</option>`;
+            projects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = lang === 'ar' ? p.nameAr : p.nameEn;
+                select.appendChild(opt);
             });
         }
 
-        function showSection(sectionId) {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.add('hidden');
+        // الانتقال بين الشاشات
+        function switchView(view) {
+            document.getElementById('section-login').classList.add('hidden');
+            document.getElementById('section-dashboard').classList.add('hidden');
             
-            if(sectionId) {
-                document.getElementById(sectionId).classList.remove('hidden');
-            }
-        }
-
-        function updateAttendanceUI() {
-            const status = localStorage.getItem('attendanceStatus') || 'none';
-            document.getElementById('status-none').classList.add('hidden');
-            document.getElementById('status-working').classList.add('hidden');
-            document.getElementById('status-completed').classList.add('hidden');
-
-            if (status === 'none') {
-                document.getElementById('status-none').classList.remove('hidden');
-            } else if (status === 'working') {
-                document.getElementById('status-working').classList.remove('hidden');
-                
-                // عرض بيانات العمل الحالي
-                const timeStr = localStorage.getItem('checkInTime');
-                document.getElementById('check-in-time-display').innerText = timeStr;
-                
-                const projId = localStorage.getItem('selectedProject');
-                const project = mockProjects.find(p => p.id === projId);
-                if(project) {
-                    document.getElementById('current-project-name').innerText = currentLang === 'ar' ? project.nameAr : project.nameEn;
-                }
-            } else if (status === 'completed') {
-                document.getElementById('status-completed').classList.remove('hidden');
-            }
-        }
-
-        // ----------------- ربط الأحداث (Event Listeners) -----------------
-        
-        // تغيير اللغة
-        document.getElementById('lang-toggle').addEventListener('click', () => {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            applyTranslations();
-            if(activeWorker) updateAttendanceUI();
-        });
-
-        // تفعيل زر الحضور عند اختيار مشروع
-        document.getElementById('project-select').addEventListener('change', function() {
-            const btn = document.getElementById('check-in-btn');
-            if (this.value) {
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.removeAttribute('disabled');
-            }
-        });
-
-        // تسجيل الدخول
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const idInput = document.getElementById('worker-id-input').value;
-            const worker = mockWorkers.find(w => w.id === idInput);
-            
-            if (worker) {
+            if(view === 'dashboard') {
+                document.getElementById('section-dashboard').classList.remove('hidden');
+                updateDashboardState();
+            } else {
+                document.getElementById('section-login').classList.remove('hidden');
+                document.getElementById('input-worker-id').value = '';
                 document.getElementById('login-error').classList.add('hidden');
-                activeWorker = worker;
-                localStorage.setItem('activeWorker', JSON.stringify(worker)); // حفظ تسجيل الدخول مؤقتاً
+            }
+        }
+
+        // تحديث واجهة الحضور بناءً على الحالة
+        function updateDashboardState() {
+            document.getElementById('state-checkin').classList.add('hidden');
+            document.getElementById('state-loading').classList.add('hidden');
+            document.getElementById('state-working').classList.add('hidden');
+            document.getElementById('state-completed').classList.add('hidden');
+            
+            if(attendanceStatus === 'none') {
+                document.getElementById('state-checkin').classList.remove('hidden');
+                // تفعيل زر الحضور إذا تم اختيار مشروع
+                const projVal = document.getElementById('select-project').value;
+                const btnCheckin = document.getElementById('btn-do-checkin');
+                if(projVal) {
+                    btnCheckin.classList.remove('opacity-50', 'cursor-not-allowed');
+                    document.getElementById('btn-bypass').classList.remove('hidden');
+                } else {
+                    btnCheckin.classList.add('opacity-50', 'cursor-not-allowed');
+                    document.getElementById('btn-bypass').classList.add('hidden');
+                }
+            } 
+            else if(attendanceStatus === 'working') {
+                document.getElementById('state-working').classList.remove('hidden');
+                document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
+                const pId = localStorage.getItem('arkan_proj_id');
+                const p = projects.find(x => x.id === pId);
+                if(p) document.getElementById('val-current-proj').innerText = lang === 'ar' ? p.nameAr : p.nameEn;
+            } 
+            else if(attendanceStatus === 'completed') {
+                document.getElementById('state-completed').classList.remove('hidden');
+            }
+        }
+
+        // --- 5. دوال الإجراءات (Actions) ---
+
+        function login(e) {
+            e.preventDefault();
+            const id = document.getElementById('input-worker-id').value;
+            const worker = workers.find(w => w.id === id);
+            
+            if(worker) {
+                currentUser = worker;
+                localStorage.setItem('arkan_user_id', worker.id);
+                document.getElementById('login-error').classList.add('hidden');
                 
-                checkNewDay();
+                // التأكد من يوم جديد لإعادة التصفير
+                const today = new Date().toDateString();
+                const savedDay = localStorage.getItem('arkan_date');
+                if(today !== savedDay) {
+                    localStorage.setItem('arkan_date', today);
+                    localStorage.removeItem('arkan_status');
+                    attendanceStatus = 'none';
+                } else {
+                    attendanceStatus = localStorage.getItem('arkan_status') || 'none';
+                }
+                
                 updateGreeting();
-                showSection('dashboard-section');
-                updateAttendanceUI();
+                switchView('dashboard');
             } else {
                 document.getElementById('login-error').classList.remove('hidden');
             }
-        });
+        }
 
-        // تسجيل الحضور
-        document.getElementById('check-in-btn').addEventListener('click', () => {
-            const projId = document.getElementById('project-select').value;
-            if (!projId) return;
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('arkan_user_id');
+            switchView('login');
+        }
 
-            const now = new Date();
-            const timeString = now.toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US', { hour: '2-digit', minute: '2-digit' });
-            
-            localStorage.setItem('attendanceStatus', 'working');
-            localStorage.setItem('checkInTime', timeString);
-            localStorage.setItem('selectedProject', projId);
-            
-            updateAttendanceUI();
-        });
+        function simulateSecurityCheck() {
+            const projVal = document.getElementById('select-project').value;
+            if(!projVal) return;
 
-        // تسجيل الانصراف
-        document.getElementById('check-out-btn').addEventListener('click', () => {
-            localStorage.setItem('attendanceStatus', 'completed');
-            updateAttendanceUI();
-        });
+            document.getElementById('location-error').classList.add('hidden');
+            document.getElementById('state-checkin').classList.add('hidden');
+            document.getElementById('state-loading').classList.remove('hidden');
 
-        // تسجيل الخروج (تغيير المستخدم)
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            activeWorker = null;
-            localStorage.removeItem('activeWorker');
-            document.getElementById('worker-id-input').value = '';
-            showSection('login-section');
-        });
-
-        // ----------------- دوال النوافذ المنبثقة والخدمات (Modals) -----------------
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(modalId + '-content');
-            modal.classList.remove('hidden');
-            // تأخير بسيط جداً لتفعيل التأثير الحركي للظهور
+            // محاكاة تأخير فحص الجي بي إس والبصمة
             setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {hour:'2-digit', minute:'2-digit'});
+                
+                attendanceStatus = 'working';
+                localStorage.setItem('arkan_status', 'working');
+                localStorage.setItem('arkan_time', timeStr);
+                localStorage.setItem('arkan_proj_id', projVal);
+                
+                updateDashboardState();
+            }, 2000); // 2 ثانية
+        }
+
+        function checkOut() {
+            attendanceStatus = 'completed';
+            localStorage.setItem('arkan_status', 'completed');
+            updateDashboardState();
+        }
+
+        // --- 6. النوافذ المنبثقة والرسائل ---
+
+        function openModal(id) {
+            const overlay = document.getElementById('modal-overlay');
+            const modal = document.getElementById(id);
+            
+            overlay.classList.remove('hidden');
+            modal.classList.remove('hidden');
+            
+            // تفعيل حركات الظهور
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modal.classList.remove('translate-y-full');
             }, 10);
         }
 
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(modalId + '-content');
-            modal.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            // إخفاء العنصر بالكامل بعد انتهاء التأثير الحركي (300 ملي ثانية)
+        function closeModals() {
+            const overlay = document.getElementById('modal-overlay');
+            const modals = ['modal-leave', 'modal-loan', 'modal-issue'];
+            
+            overlay.classList.add('opacity-0');
+            modals.forEach(id => {
+                document.getElementById(id).classList.add('translate-y-full');
+            });
+            
             setTimeout(() => {
-                modal.classList.add('hidden');
+                overlay.classList.add('hidden');
+                modals.forEach(id => document.getElementById(id).classList.add('hidden'));
             }, 300);
         }
 
-        // إظهار رسالة النجاح (بديل عن الـ alert المزعج)
-        function showSuccessToast() {
-            const toast = document.getElementById('success-toast');
-            toast.classList.remove('translate-y-20', 'opacity-0');
+        function handleFormSubmit(e) {
+            e.preventDefault(); // منع تحديث الصفحة
+            closeModals();
+            e.target.reset(); // تفريغ النموذج
             
-            // إخفاء الرسالة تلقائياً بعد 3 ثواني
+            // إظهار رسالة النجاح
             setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+                const toast = document.getElementById('toast-success');
+                toast.classList.remove('-translate-y-20', 'opacity-0');
+                
+                setTimeout(() => {
+                    toast.classList.add('-translate-y-20', 'opacity-0');
+                }, 3000);
+            }, 400);
         }
 
-        // معالجة إرسال النماذج
-        const handleServiceSubmit = (e, modalId) => {
-            e.preventDefault(); // منع إعادة تحميل الصفحة
-            
-            // سيتم هنا لاحقاً إرسال البيانات (Form Data) لقاعدة البيانات الحقيقية
-            
-            closeModal(modalId);
-            setTimeout(() => {
-                showSuccessToast();
-                e.target.reset(); // تفريغ الحقول ليتمكن من تقديم طلب جديد لاحقاً
-            }, 300);
-        };
+        // --- 7. ربط الأحداث وتشغيل التطبيق ---
 
-        // ربط النماذج بالدوال
-        document.getElementById('leave-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'leave-modal'));
-        document.getElementById('loan-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'loan-modal'));
-        document.getElementById('issue-form').addEventListener('submit', (e) => handleServiceSubmit(e, 'issue-modal'));
+        document.getElementById('btn-lang').addEventListener('click', toggleLang);
+        document.getElementById('form-login').addEventListener('submit', login);
+        document.getElementById('btn-logout').addEventListener('click', logout);
+        
+        // عند تغيير اختيار المشروع
+        document.getElementById('select-project').addEventListener('change', () => {
+            updateDashboardState(); // سيفعل الزر
+        });
 
-        // ----------------- التهيئة عند تحميل الصفحة -----------------
+        // زر الحضور (مع فحص أمني وتأخير)
+        document.getElementById('btn-do-checkin').addEventListener('click', () => {
+            if(document.getElementById('select-project').value) simulateSecurityCheck();
+        });
+        
+        // زر التجاوز (للتجربة السريعة)
+        document.getElementById('btn-bypass').addEventListener('click', () => {
+            if(document.getElementById('select-project').value) simulateSecurityCheck();
+        });
+
+        document.getElementById('btn-do-checkout').addEventListener('click', checkOut);
+
+        // إغلاق النافذة عند الضغط على الخلفية السوداء
+        document.getElementById('modal-overlay').addEventListener('click', closeModals);
+
+        // التهيئة الأولية عند تحميل الصفحة
         window.onload = () => {
-            checkNewDay();
-            applyTranslations();
+            renderProjects();
+            updateTexts();
             
-            // استعادة جلسة العمل إذا كانت محفوظة
-            const savedWorker = localStorage.getItem('activeWorker');
-            if(savedWorker) {
-                activeWorker = JSON.parse(savedWorker);
-                updateGreeting();
-                showSection('dashboard-section');
-                updateAttendanceUI();
+            // التحقق من وجود تسجيل دخول سابق
+            const savedId = localStorage.getItem('arkan_user_id');
+            if(savedId) {
+                const worker = workers.find(w => w.id === savedId);
+                if(worker) {
+                    currentUser = worker;
+                    
+                    const today = new Date().toDateString();
+                    if(localStorage.getItem('arkan_date') === today) {
+                        attendanceStatus = localStorage.getItem('arkan_status') || 'none';
+                    } else {
+                        localStorage.setItem('arkan_date', today);
+                        localStorage.removeItem('arkan_status');
+                        attendanceStatus = 'none';
+                    }
+                    
+                    updateGreeting();
+                    switchView('dashboard');
+                    return;
+                }
             }
+            switchView('login');
         };
-
     </script>
 </body>
 </html>
