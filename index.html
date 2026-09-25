@@ -316,9 +316,9 @@
         ];
 
         const projects = [
-            { id: "proj-1", nameAr: "المصنع الرئيسي (جدة)", nameEn: "Main Factory (Jeddah)" },
-            { id: "proj-2", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers" },
-            { id: "proj-3", nameAr: "موقع الصيانة الخارجي", nameEn: "Outdoor Maint. Site" }
+            { id: "proj-1", nameAr: "المصنع الرئيسي (جدة)", nameEn: "Main Factory (Jeddah)", lat: 21.4858, lng: 39.1925, radius: 500 },
+            { id: "proj-2", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers", lat: 24.7136, lng: 46.6753, radius: 1000 },
+            { id: "proj-3", nameAr: "موقع الصيانة الخارجي", nameEn: "Outdoor Maint. Site", lat: 21.3891, lng: 39.8579, radius: 800 }
         ];
 
         // --- 2. القاموس اللغوي (Translations) ---
@@ -331,11 +331,13 @@
                 workerId: "رقم العامل (كود الموظف)",
                 loginBtn: "دخول للنظام",
                 loginErr: "رقم العامل غير صحيح، تأكد منه مجدداً!",
+                deviceBlocked: "تم حظر الدخول! هذا الجهاز مسجل لعامل آخر.",
                 gm: "صباح الخير",
                 ge: "مساء الخير",
                 selProj: "موقع العمل الحالي (اختر من القائمة):",
                 selDef: "--- اختر موقع عملك ---",
                 locErr: "عفواً! أنت خارج النطاق الجغرافي للمشروع.",
+                gpsDenied: "يرجى تفعيل صلاحية الموقع (GPS) للمتابعة.",
                 checkIn: "تسجيل الحضور",
                 secCheck: "فحص أمني جاري...",
                 workAt: "تعمل حالياً في:",
@@ -365,11 +367,13 @@
                 workerId: "Worker ID Number",
                 loginBtn: "System Login",
                 loginErr: "Invalid Worker ID, please check again!",
+                deviceBlocked: "Access Denied! Device registered to another worker.",
                 gm: "Good Morning",
                 ge: "Good Evening",
                 selProj: "Current Work Location:",
                 selDef: "--- Select your location ---",
                 locErr: "Error! You are out of project geofence.",
+                gpsDenied: "Please enable GPS location to continue.",
                 checkIn: "Check In",
                 secCheck: "Security Check...",
                 workAt: "Currently working at:",
@@ -547,11 +551,28 @@
             e.preventDefault();
             const id = document.getElementById('input-worker-id').value;
             const worker = workers.find(w => w.id === id);
+            const errDiv = document.getElementById('login-error');
+            const errTxt = document.getElementById('txt-login-error');
             
             if(worker) {
+                // فحص ارتباط الجهاز (Device Binding)
+                const registeredOwner = localStorage.getItem('arkan_device_owner');
+                
+                if (registeredOwner && registeredOwner !== id) {
+                    // الجهاز مسجل لشخص آخر
+                    errTxt.innerText = dict[lang].deviceBlocked;
+                    errDiv.classList.remove('hidden');
+                    return;
+                }
+                
+                if (!registeredOwner) {
+                    // أول مرة يدخل من هذا الجهاز، قم بتسجيله باسمه
+                    localStorage.setItem('arkan_device_owner', id);
+                }
+
                 currentUser = worker;
                 localStorage.setItem('arkan_user_id', worker.id);
-                document.getElementById('login-error').classList.add('hidden');
+                errDiv.classList.add('hidden');
                 
                 // التأكد من يوم جديد لإعادة التصفير
                 const today = new Date().toDateString();
@@ -574,29 +595,81 @@
         function logout() {
             currentUser = null;
             localStorage.removeItem('arkan_user_id');
+            // ملاحظة: لا نحذف arkan_device_owner هنا لضمان بقاء الجهاز مرتبطاً بالعامل
             switchView('login');
         }
 
-        function simulateSecurityCheck() {
+        // حساب المسافة الدقيقة باستخدام معادلة Haversine
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // نصف قطر الأرض بالأمتار
+            const p1 = lat1 * Math.PI / 180;
+            const p2 = lat2 * Math.PI / 180;
+            const deltaP = (lat2 - lat1) * Math.PI / 180;
+            const deltaLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(deltaP/2) * Math.sin(deltaP/2) +
+                      Math.cos(p1) * Math.cos(p2) *
+                      Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function performRealSecurityCheck(isBypass = false) {
             const projVal = document.getElementById('select-project').value;
             if(!projVal) return;
+            
+            const project = projects.find(p => p.id === projVal);
 
             document.getElementById('location-error').classList.add('hidden');
             document.getElementById('state-checkin').classList.add('hidden');
             document.getElementById('state-loading').classList.remove('hidden');
 
-            // محاكاة تأخير فحص الجي بي إس والبصمة
-            setTimeout(() => {
+            const finalizeCheckIn = () => {
                 const now = new Date();
                 const timeStr = now.toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {hour:'2-digit', minute:'2-digit'});
-                
                 attendanceStatus = 'working';
                 localStorage.setItem('arkan_status', 'working');
                 localStorage.setItem('arkan_time', timeStr);
                 localStorage.setItem('arkan_proj_id', projVal);
-                
                 updateDashboardState();
-            }, 2000); // 2 ثانية
+            };
+
+            const showError = (msg) => {
+                document.getElementById('txt-loc-error').innerText = msg;
+                document.getElementById('location-error').classList.remove('hidden');
+                document.getElementById('state-loading').classList.add('hidden');
+                document.getElementById('state-checkin').classList.remove('hidden');
+            };
+
+            // تجاوز الفحص (لأغراض التجربة للمدير فقط)
+            if (isBypass) {
+                setTimeout(finalizeCheckIn, 1500);
+                return;
+            }
+
+            // الفحص الفعلي للـ GPS
+            if (!navigator.geolocation) {
+                showError(dict[lang].gpsDenied);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude, accuracy } = position.coords;
+                    const distance = calculateDistance(latitude, longitude, project.lat, project.lng);
+                    
+                    if (distance > project.radius) {
+                        // خارج النطاق
+                        showError(`${dict[lang].locErr} (المسافة: ${Math.round(distance)}m > ${project.radius}m)`);
+                    } else {
+                        // داخل النطاق بنجاح
+                        finalizeCheckIn();
+                    }
+                },
+                (error) => {
+                    showError(dict[lang].gpsDenied + ' (Error: ' + error.code + ')');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
 
         function checkOut() {
@@ -665,12 +738,12 @@
 
         // زر الحضور (مع فحص أمني وتأخير)
         document.getElementById('btn-do-checkin').addEventListener('click', () => {
-            if(document.getElementById('select-project').value) simulateSecurityCheck();
+            if(document.getElementById('select-project').value) performRealSecurityCheck(false);
         });
         
         // زر التجاوز (للتجربة السريعة)
         document.getElementById('btn-bypass').addEventListener('click', () => {
-            if(document.getElementById('select-project').value) simulateSecurityCheck();
+            if(document.getElementById('select-project').value) performRealSecurityCheck(true);
         });
 
         document.getElementById('btn-do-checkout').addEventListener('click', checkOut);
