@@ -5,37 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>أركان الخليج - بوابة العامل</title>
     
-    <!-- تحميل Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- تحميل مكتبة الأيقونات -->
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <!-- تحميل الخطوط -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root { --font-ar: 'Tajawal', sans-serif; --font-en: 'Inter', sans-serif; }
-        body { font-family: var(--font-ar); background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-ar); -webkit-tap-highlight-color: transparent; background-color: #f8fafc; }
         .ltr body { font-family: var(--font-en); }
+        
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         
-        /* حركة شريط التعميمات */
+        /* حركة التعميمات */
         .marquee { overflow: hidden; white-space: nowrap; box-sizing: border-box; }
         .marquee-content { display: inline-block; animation: marquee 20s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, 0); } }
-        .ltr .marquee-content { animation: marquee-ltr 20s linear infinite; padding-right: 100%; padding-left: 0;}
-        @keyframes marquee-ltr { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
 
+    <!-- شريط النظام والتنبيهات -->
     <div class="bg-slate-900 text-slate-300 py-1.5 px-4 flex justify-between items-center z-20 relative">
         <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            النظام المدمج
+            نظام سحابي متصل (Cloud Sync)
         </div>
         <button onclick="toggleLang()" class="flex items-center gap-1.5 text-[11px] font-semibold hover:text-white transition-colors">
             <i class="ph ph-globe text-sm"></i>
@@ -43,10 +44,10 @@
         </button>
     </div>
 
+    <!-- الترويسة -->
     <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30 glass-effect">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- زر القائمة الجانبية (يظهر فقط بعد تسجيل الدخول) -->
                 <button id="btn-menu-toggle" onclick="toggleSidebar()" class="hidden w-10 h-10 bg-slate-50 hover:bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 transition-colors">
                     <i class="ph-bold ph-list text-xl"></i>
                 </button>
@@ -71,10 +72,10 @@
         </div>
     </header>
 
+    <!-- القائمة الجانبية -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
     
-    <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col ltr:right-auto ltr:left-0 ltr:-translate-x-full">
-        <!-- معلومات العامل في القائمة -->
+    <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-6 bg-slate-900 text-white flex flex-col items-center justify-center relative overflow-hidden">
             <div class="absolute top-0 right-0 p-4 opacity-10"><i class="ph-fill ph-fingerprint text-7xl"></i></div>
             <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-3 border-4 border-slate-800 relative z-10">
@@ -82,14 +83,13 @@
             </div>
             <h3 id="sidebar-worker-name" class="font-bold text-lg relative z-10">اسم العامل</h3>
             <p id="sidebar-worker-id" class="text-xs text-blue-300 font-mono mt-1 relative z-10">ID: 0000</p>
-            <button onclick="toggleSidebar()" class="absolute top-4 left-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors ltr:left-auto ltr:right-4">
+            <button onclick="toggleSidebar()" class="absolute top-4 left-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors">
                 <i class="ph-bold ph-x"></i>
             </button>
         </div>
         
-        <!-- روابط القائمة (التبويبات) -->
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-            <button onclick="openSidebarTab('tab-home')" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 tab-btn active-tab bg-blue-50/50 text-blue-700 border-blue-100" data-target="tab-home">
+            <button onclick="openSidebarTab('tab-home')" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold tab-btn active-tab bg-blue-50/50 text-blue-700 border border-blue-100" data-target="tab-home">
                 <i class="ph-duotone ph-house text-xl text-blue-600"></i>
                 <span id="txt-menu-home">الرئيسية (الحضور)</span>
             </button>
@@ -134,7 +134,7 @@
                     <div>
                         <label id="txt-worker-id" class="block text-sm font-bold text-slate-700 mb-2">رقم العامل (كود الموظف)</label>
                         <div class="relative">
-                            <i class="ph ph-identification-card absolute top-1/2 transform -translate-y-1/2 right-3 text-slate-400 text-xl ltr:left-3 ltr:right-auto"></i>
+                            <i class="ph ph-identification-card absolute top-1/2 transform -translate-y-1/2 right-3 text-slate-400 text-xl"></i>
                             <input type="text" id="input-worker-id" placeholder="أدخل رقمك هنا (مثال: 1001)" required
                                 class="w-full px-10 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 transition-all font-semibold text-lg text-center">
                         </div>
@@ -143,28 +143,28 @@
                             <span id="txt-login-error">رقم العامل غير صحيح أو الجهاز مسجل لغيرك!</span>
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+                    <button type="submit" id="btn-login-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 disabled:opacity-50">
+                        <i class="ph-duotone ph-spinner animate-spin hidden" id="login-spinner"></i>
                         <span id="txt-login-btn">دخول للنظام</span>
-                        <i class="ph-bold ph-arrow-left ltr:rotate-180"></i>
+                        <i class="ph-bold ph-arrow-left ltr:rotate-180" id="login-arrow"></i>
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- حاوية شاشات التطبيق الداخلي (التبويبات) -->
+        <!-- حاوية شاشات التطبيق الداخلي -->
         <div id="section-dashboard" class="hidden w-full h-full flex flex-col justify-start">
             
-            <!-- التبويب 1: الرئيسية (الحضور والتعميمات) -->
+            <!-- التبويب 1: الرئيسية -->
             <div id="tab-home" class="tab-content fade-in space-y-4">
-                <!-- شريط التعميمات المحدث -->
+                
                 <div id="box-announcements" class="hidden bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-3 flex items-center gap-3 shadow-sm">
                     <i class="ph-fill ph-megaphone text-2xl text-blue-500 flex-shrink-0"></i>
                     <div class="flex-1 marquee text-sm font-bold" id="text-announcement">
-                        <!-- يُملأ بالـ JS -->
+                        <!-- يعبأ من السحابة -->
                     </div>
                 </div>
 
-                <!-- بطاقة الحضور والانصراف (تم الإبقاء على اللوجيك السابق بدقة) -->
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 relative overflow-hidden">
                     <div id="state-checkin" class="space-y-4">
                         <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2 border-b border-slate-100 pb-2">
@@ -191,10 +191,9 @@
                         </div>
                     </div>
 
-                    <!-- حالات الحضور الأخرى (جاري الفحص، بالعمل، انصرف) -->
                     <div id="state-loading" class="hidden py-8 text-center flex flex-col items-center">
                         <i class="ph-duotone ph-spinner-gap text-5xl text-blue-500 animate-spin mb-4"></i>
-                        <h3 class="font-bold text-slate-700 text-lg mb-1">فحص أمني جاري...</h3>
+                        <h3 class="font-bold text-slate-700 text-lg mb-1">فحص ومزامنة...</h3>
                     </div>
 
                     <div id="state-working" class="hidden text-center">
@@ -219,68 +218,73 @@
                             <i class="ph-fill ph-check-circle text-5xl"></i>
                         </div>
                         <h3 id="txt-shift-done" class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
-                        <p id="txt-shift-desc" class="text-sm text-slate-500 leading-relaxed">تم تسجيل انصرافك وإرسال البيانات للإدارة.</p>
+                        <p id="txt-shift-desc" class="text-sm text-slate-500 leading-relaxed">تم مزامنة الانصراف مع الإدارة المركزية.</p>
                     </div>
                 </div>
             </div>
 
+            <!-- التبويب 2: المهام (مع فلتر التاريخ) -->
             <div id="tab-tasks" class="tab-content hidden fade-in space-y-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="text-base font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3 flex items-center gap-2">
-                        <i class="ph-duotone ph-clipboard-text text-xl text-amber-500"></i> المهام الموكلة إليك اليوم
-                    </h3>
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i class="ph-duotone ph-clipboard-text text-xl text-amber-500"></i> المهام الموكلة
+                        </h3>
+                        <input type="date" id="filter-tasks-date" onchange="renderTasks()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer">
+                    </div>
                     <div id="list-tasks" class="space-y-3">
-                        <!-- يُملأ بالـ JS -->
+                        <!-- يُملأ من السحابة -->
                     </div>
                 </div>
             </div>
 
+            <!-- التبويب 3: الخدمات -->
             <div id="tab-services" class="tab-content hidden fade-in space-y-4">
                 <h3 class="font-bold text-slate-800 px-2 flex items-center gap-2"><i class="ph-duotone ph-squares-four text-emerald-500 text-xl"></i> الخدمات الإدارية السريعة</h3>
                 <div class="grid grid-cols-1 gap-4">
-                    <!-- تصميم جديد للخدمات (بطاقات أفقية واضحة) -->
                     <button onclick="openModal('modal-leave')" class="w-full flex items-center text-right p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-300 hover:shadow-md transition-all group">
-                        <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 ml-4 ltr:ml-0 ltr:mr-4 flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <div class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 ml-4 flex-shrink-0 group-hover:scale-110 transition-transform">
                             <i class="ph-duotone ph-calendar-plus text-3xl"></i>
                         </div>
                         <div class="flex-1">
                             <h4 id="txt-srv-leave" class="font-bold text-slate-800 text-lg mb-0.5">طلب إجازة</h4>
                             <p class="text-xs text-slate-500">تقديم طلب إجازة سنوية، مرضية، أو طارئة للإدارة.</p>
                         </div>
-                        <i class="ph-bold ph-caret-left text-slate-300 group-hover:text-blue-500 ltr:rotate-180"></i>
                     </button>
 
                     <button onclick="openModal('modal-loan')" class="w-full flex items-center text-right p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-emerald-300 hover:shadow-md transition-all group">
-                        <div class="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 ml-4 ltr:ml-0 ltr:mr-4 flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <div class="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 ml-4 flex-shrink-0 group-hover:scale-110 transition-transform">
                             <i class="ph-duotone ph-money text-3xl"></i>
                         </div>
                         <div class="flex-1">
                             <h4 id="txt-srv-loan" class="font-bold text-slate-800 text-lg mb-0.5">طلب سلفة</h4>
                             <p class="text-xs text-slate-500">طلب سلفة مالية مقدمة من راتبك الشهري.</p>
                         </div>
-                        <i class="ph-bold ph-caret-left text-slate-300 group-hover:text-emerald-500 ltr:rotate-180"></i>
                     </button>
 
                     <button onclick="openModal('modal-issue')" class="w-full flex items-center text-right p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-rose-300 hover:shadow-md transition-all group">
-                        <div class="w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 ml-4 ltr:ml-0 ltr:mr-4 flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <div class="w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 ml-4 flex-shrink-0 group-hover:scale-110 transition-transform">
                             <i class="ph-duotone ph-warning-octagon text-3xl"></i>
                         </div>
                         <div class="flex-1">
                             <h4 id="txt-srv-issue" class="font-bold text-slate-800 text-lg mb-0.5">بلاغ عن مشكلة</h4>
                             <p class="text-xs text-slate-500">الإبلاغ عن أعطال في المعدات أو مشاكل أمن وسلامة.</p>
                         </div>
-                        <i class="ph-bold ph-caret-left text-slate-300 group-hover:text-rose-500 ltr:rotate-180"></i>
                     </button>
                 </div>
             </div>
 
+            <!-- التبويب 4: متابعة الطلبات (مع فلتر التاريخ) -->
             <div id="tab-history" class="tab-content hidden fade-in space-y-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 min-h-[300px]">
-                    <h3 class="text-base font-bold text-slate-800 mb-4 border-b border-slate-100 pb-3 flex items-center gap-2">
-                        <i class="ph-duotone ph-clock-counter-clockwise text-xl text-purple-500"></i> متابعة حالة طلباتي السابقة
-                    </h3>
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <i class="ph-duotone ph-clock-counter-clockwise text-xl text-purple-500"></i> حالة طلباتي
+                        </h3>
+                        <input type="date" id="filter-history-date" onchange="renderRequestsHistory()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer">
+                    </div>
                     <div id="list-requests-history" class="space-y-3">
-                        <!-- يُملأ بالـ JS -->
+                        <!-- يُملأ من السحابة -->
                     </div>
                 </div>
             </div>
@@ -288,9 +292,9 @@
         </div>
     </main>
 
+    <!-- نوافذ الطلبات المنبثقة -->
     <div id="modal-overlay-form" onclick="closeModals()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
 
-    <!-- نافذة طلب إجازة -->
     <div id="modal-leave" class="fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
         <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
             <div class="flex justify-between items-center mb-6">
@@ -304,12 +308,11 @@
                         <option value="annual">إجازة سنوية</option><option value="sick">إجازة مرضية</option><option value="unpaid">بدون راتب</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-4 flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال الطلب للإدارة</button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-4 flex items-center justify-center gap-2 transition-colors shadow-lg"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال الطلب للإدارة</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة طلب سلفة -->
     <div id="modal-loan" class="fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
         <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
             <div class="flex justify-between items-center mb-6">
@@ -319,12 +322,11 @@
             <form onsubmit="handleFormSubmit(event, 'loan')" class="space-y-4">
                 <div><label class="block text-sm font-bold text-slate-700 mb-1">المبلغ المطلوب (ريال)</label><input type="number" required placeholder="0.00" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 bg-slate-50"></div>
                 <div><label class="block text-sm font-bold text-slate-700 mb-1">ملاحظات أو أسباب</label><textarea rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 bg-slate-50"></textarea></div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl mt-4 flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال الطلب للإدارة</button>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl mt-4 flex items-center justify-center gap-2 transition-colors shadow-lg"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال الطلب للإدارة</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة بلاغ مشكلة -->
     <div id="modal-issue" class="fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
         <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
             <div class="flex justify-between items-center mb-6">
@@ -338,156 +340,139 @@
                     </select>
                 </div>
                 <div><label class="block text-sm font-bold text-slate-700 mb-1">وصف المشكلة</label><textarea required rows="3" placeholder="اشرح المشكلة باختصار..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 bg-slate-50"></textarea></div>
-                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl mt-4 flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال البلاغ عاجل</button>
+                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-4 rounded-xl mt-4 flex items-center justify-center gap-2 transition-colors shadow-lg"><i class="ph-bold ph-paper-plane-tilt"></i> إرسال البلاغ عاجل</button>
             </form>
         </div>
     </div>
 
-    <!-- توست الإشعارات -->
+    <!-- إشعار التوست -->
     <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[70] pointer-events-none w-max max-w-[90%]">
         <i class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
         <span id="txt-toast-msg" class="font-medium text-sm">تمت العملية بنجاح!</span>
     </div>
 
-    <script>
-        // --- 1. البيانات المشتركة (Shared Data) ---
-        const defaultData = {
-            workers: [
-                { id: "1001", name: "أحمد محمد محمود", wage: 150 },
-                { id: "1002", name: "محمود علي السيد", wage: 120 }
-            ],
-            projects: [
-                { id: "P-01", name: "المصنع الرئيسي (جدة)", lat: 21.4858, lng: 39.1925, radius: 500 },
-                { id: "P-02", name: "مشروع أبراج الرياض", lat: 24.7136, lng: 46.6753, radius: 1000 }
-            ],
-            tasks: [
-                { id: 1, workerId: "1001", text: "استلام مواد البناء من المورد والتوقيع عليها.", status: "pending", date: new Date().toISOString().split('T')[0] },
-                { id: 2, workerId: "1001", text: "صيانة ماكينة التقطيع رقم 3 في القسم ب.", status: "started", date: new Date().toISOString().split('T')[0] }
-            ],
-            announcements: [
-                { id: 1, text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة (PPE) كأحذية الأمان والخوذة لضمان سلامتكم في المواقع.", date: "اليوم" }
-            ]
-        };
+    <!-- Firebase System & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        function initSharedData() {
-            if(!localStorage.getItem('app_workers')) localStorage.setItem('app_workers', JSON.stringify(defaultData.workers));
-            if(!localStorage.getItem('app_projects')) localStorage.setItem('app_projects', JSON.stringify(defaultData.projects));
-            if(!localStorage.getItem('app_attendance')) localStorage.setItem('app_attendance', JSON.stringify([]));
-            if(!localStorage.getItem('app_requests')) localStorage.setItem('app_requests', JSON.stringify([]));
-            if(!localStorage.getItem('app_tasks')) localStorage.setItem('app_tasks', JSON.stringify(defaultData.tasks));
-            if(!localStorage.getItem('app_announcements')) localStorage.setItem('app_announcements', JSON.stringify(defaultData.announcements));
-        }
-
-        // --- 2. إدارة الحالة (State) ---
-        let lang = 'ar';
+        // Firebase Configuration (Injected by environment or fallback)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'arkan-app-live';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "mock" };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        let fbWorkers = [], fbProjects = [], fbTasks = [], fbRequests = [], fbAttendance = [], fbAnnouncements = [];
+        let isAuthReady = false;
         let currentUser = null;
-        let attendanceStatus = 'none'; 
+        let attendanceStatus = 'none';
+        let lang = 'ar';
 
-        const dict = {
-            ar: { btnStart: "بدء التنفيذ", btnDone: "إنجاز", txtCompleted: "مكتملة", emptyTasks: "لا توجد مهام موكلة إليك اليوم.", emptyRequests: "لم تقم برفع أي طلبات حتى الآن.", statusPending: "قيد المراجعة", statusApproved: "تمت الموافقة", statusRejected: "مرفوض" },
-            en: { btnStart: "Start", btnDone: "Done", txtCompleted: "Completed", emptyTasks: "No tasks assigned for today.", emptyRequests: "No request history found.", statusPending: "Pending", statusApproved: "Approved", statusRejected: "Rejected" }
-        };
-
-        function toggleLang() {
-            lang = lang === 'ar' ? 'en' : 'ar';
-            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.lang = lang;
-            if(lang === 'en') document.documentElement.classList.add('ltr');
-            else document.documentElement.classList.remove('ltr');
-            document.getElementById('txt-lang').innerText = lang === 'ar' ? 'English' : 'عربي';
-            renderTasks(); renderRequestsHistory();
+        // Helper to get local current date string (YYYY-MM-DD)
+        function getLocalDateString() {
+            const d = new Date();
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
         }
 
-        // --- 3. إدارة القائمة الجانبية والتبويبات (UI Navigation) ---
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar-drawer');
-            const overlay = document.getElementById('sidebar-overlay');
-            const isRtl = document.documentElement.dir === 'rtl';
+        // --- Firebase Initial Setup ---
+        async function initCloud() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined') await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+                isAuthReady = true;
+                startRealTimeListeners();
+            } catch(err) { console.error("Cloud Auth Error", err); }
+        }
+
+        function getColRef(colName) { return collection(db, 'artifacts', appId, 'public', 'data', colName); }
+
+        function startRealTimeListeners() {
+            if(!auth.currentUser) return;
             
-            if (sidebar.classList.contains(isRtl ? 'translate-x-full' : '-translate-x-full')) {
-                // فتح
-                sidebar.classList.remove(isRtl ? 'translate-x-full' : '-translate-x-full');
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-            } else {
-                // إغلاق
-                sidebar.classList.add(isRtl ? 'translate-x-full' : '-translate-x-full');
-                overlay.classList.add('opacity-0');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
+            onSnapshot(getColRef('workers'), snap => { fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); checkSavedSession(); });
+            onSnapshot(getColRef('projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); renderProjects(); if(currentUser) updateDashboardState(); });
+            onSnapshot(getColRef('tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
+            onSnapshot(getColRef('requests'), snap => { fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); renderRequestsHistory(); });
+            onSnapshot(getColRef('attendance'), snap => { fbAttendance = snap.docs.map(d=>({id:d.id, ...d.data()})); if(currentUser) checkSavedSession(); });
+            onSnapshot(getColRef('announcements'), snap => { 
+                fbAnnouncements = snap.docs.map(d=>({id:d.id, ...d.data()})); 
+                // Default announcement if empty
+                if(fbAnnouncements.length === 0) fbAnnouncements = [{text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة (PPE) كأحذية الأمان والخوذة لضمان سلامتكم في المواقع."}];
+                renderAnnouncements(); 
+            });
+        }
+
+        // --- Core UI Logic ---
+        function checkSavedSession() {
+            const savedId = localStorage.getItem('arkan_user_id');
+            if(savedId && fbWorkers.length > 0) {
+                const worker = fbWorkers.find(w => w.id === savedId);
+                if(worker) {
+                    currentUser = worker;
+                    document.getElementById('sidebar-worker-name').innerText = worker.nameAr || worker.name;
+                    document.getElementById('sidebar-worker-id').innerText = `ID: ${worker.id}`;
+                    
+                    const todayStr = getLocalDateString();
+                    if(localStorage.getItem('arkan_date') === todayStr) {
+                        attendanceStatus = localStorage.getItem('arkan_status') || 'none';
+                    } else {
+                        localStorage.setItem('arkan_date', todayStr);
+                        localStorage.setItem('arkan_status', 'none');
+                        attendanceStatus = 'none';
+                    }
+                    
+                    document.getElementById('btn-menu-toggle').classList.remove('hidden');
+                    document.getElementById('nav-notifications').classList.remove('hidden');
+                    document.getElementById('section-login').classList.add('hidden');
+                    document.getElementById('section-dashboard').classList.remove('hidden');
+                    
+                    updateDashboardState();
+                    openSidebarTab('tab-home');
+                }
             }
         }
 
-        function openSidebarTab(tabId) {
-            // إخفاء كل المحتوى
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            // إظهار المحتوى المطلوب
-            document.getElementById(tabId).classList.remove('hidden');
-            
-            // تغيير تنسيق الزر النشط في القائمة
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                if(btn.dataset.target === tabId) {
-                    btn.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-bold transition-colors tab-btn active-tab bg-blue-50/50 text-blue-700 border border-blue-100';
-                } else {
-                    btn.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 tab-btn';
-                }
-            });
-
-            // إغلاق القائمة
-            toggleSidebar();
-
-            // تحديث البيانات بحسب التبويب
-            if(tabId === 'tab-tasks') renderTasks();
-            if(tabId === 'tab-history') renderRequestsHistory();
-        }
-
-        // --- 4. تسجيل الدخول والأمان (Login & Binding) ---
-        function login(e) {
+        async function login(e) {
             e.preventDefault();
-            const id = document.getElementById('input-worker-id').value;
-            const workers = JSON.parse(localStorage.getItem('app_workers') || '[]');
-            const worker = workers.find(w => w.id === id);
+            if(!isAuthReady) return;
             
-            const errDiv = document.getElementById('login-error');
+            const btnSubmit = document.getElementById('btn-login-submit');
+            btnSubmit.disabled = true;
+            document.getElementById('login-spinner').classList.remove('hidden');
+            document.getElementById('login-arrow').classList.add('hidden');
+
+            const id = document.getElementById('input-worker-id').value;
+            const worker = fbWorkers.find(w => w.id === id);
             
             if(worker) {
-                // فحص ربط الجهاز (Security: Device Binding)
                 const owner = localStorage.getItem('arkan_device_owner');
                 if (owner && owner !== id) {
-                    document.getElementById('txt-login-error').innerText = lang === 'ar' ? "تم حظر الدخول! الجهاز مسجل لعامل آخر." : "Access Denied! Device registered to another worker.";
-                    errDiv.classList.remove('hidden'); return;
+                    document.getElementById('txt-login-error').innerText = "تم حظر الدخول! الجهاز مسجل لعامل آخر.";
+                    document.getElementById('login-error').classList.remove('hidden');
+                    resetLoginBtn(btnSubmit); return;
                 }
                 if (!owner) localStorage.setItem('arkan_device_owner', id); 
 
                 currentUser = worker;
                 localStorage.setItem('arkan_user_id', worker.id);
-                errDiv.classList.add('hidden');
+                document.getElementById('login-error').classList.add('hidden');
                 
-                // تحديث اسم العامل في القائمة الجانبية
-                document.getElementById('sidebar-worker-name').innerText = worker.name;
-                document.getElementById('sidebar-worker-id').innerText = `ID: ${worker.id}`;
-                
-                // فحص اليوم الجديد
-                const today = new Date().toDateString();
-                if(localStorage.getItem('arkan_date') !== today) {
-                    localStorage.setItem('arkan_date', today);
-                    localStorage.setItem('arkan_status', 'none');
-                    attendanceStatus = 'none';
-                } else {
-                    attendanceStatus = localStorage.getItem('arkan_status') || 'none';
-                }
-                
-                document.getElementById('btn-menu-toggle').classList.remove('hidden');
-                document.getElementById('nav-notifications').classList.remove('hidden');
-                
-                document.getElementById('section-login').classList.add('hidden');
-                document.getElementById('section-dashboard').classList.remove('hidden');
-                
-                updateDashboardState();
-                openSidebarTab('tab-home'); // فتح الرئيسية افتراضياً
+                checkSavedSession();
             } else {
-                document.getElementById('txt-login-error').innerText = lang === 'ar' ? "رقم العامل غير صحيح!" : "Invalid Worker ID!";
-                errDiv.classList.remove('hidden');
+                document.getElementById('txt-login-error').innerText = "رقم العامل غير صحيح في السحابة!";
+                document.getElementById('login-error').classList.remove('hidden');
             }
+            resetLoginBtn(btnSubmit);
+        }
+
+        function resetLoginBtn(btn) {
+            btn.disabled = false;
+            document.getElementById('login-spinner').classList.add('hidden');
+            document.getElementById('login-arrow').classList.remove('hidden');
         }
 
         function logout() {
@@ -498,10 +483,10 @@
             document.getElementById('section-dashboard').classList.add('hidden');
             document.getElementById('section-login').classList.remove('hidden');
             document.getElementById('input-worker-id').value = '';
-            toggleSidebar(); // إغلاق القائمة إذا كانت مفتوحة
+            toggleSidebar();
         }
 
-        // --- 5. لوحة التحكم والبيانات (Dashboard Updates) ---
+        // --- Dashboard Rendering ---
         function updateDashboardState() {
             document.getElementById('state-checkin').classList.add('hidden');
             document.getElementById('state-loading').classList.add('hidden');
@@ -521,50 +506,40 @@
                 document.getElementById('state-working').classList.remove('hidden');
                 document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
                 const pId = localStorage.getItem('arkan_proj_id');
-                const projects = JSON.parse(localStorage.getItem('app_projects') || '[]');
-                const p = projects.find(x => x.id === pId);
-                if(p) document.getElementById('val-current-proj').innerText = p.name;
+                const p = fbProjects.find(x => x.id === pId);
+                if(p) document.getElementById('val-current-proj').innerText = p.nameAr || p.name;
             } 
             else if(attendanceStatus === 'completed') {
                 document.getElementById('state-completed').classList.remove('hidden');
             }
-
-            renderProjects();
-            renderAnnouncements();
-            renderTasks();
-            renderRequestsHistory();
         }
 
         function renderProjects() {
-            const projects = JSON.parse(localStorage.getItem('app_projects') || '[]');
             const select = document.getElementById('select-project');
             const currentVal = select.value;
             select.innerHTML = `<option value="" disabled ${!currentVal ? 'selected' : ''}>--- اختر موقع العمل ---</option>`;
-            projects.forEach(p => {
+            fbProjects.forEach(p => {
                 const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.innerText = p.name;
+                opt.value = p.id; opt.innerText = p.nameAr || p.name;
                 if(p.id === currentVal) opt.selected = true;
                 select.appendChild(opt);
             });
         }
 
         function renderAnnouncements() {
-            const announcements = JSON.parse(localStorage.getItem('app_announcements') || '[]');
             const box = document.getElementById('box-announcements');
             const textEl = document.getElementById('text-announcement');
-            if(announcements.length > 0) {
-                textEl.innerHTML = `<span class="marquee-content">${announcements[announcements.length - 1].text}</span>`;
+            if(fbAnnouncements.length > 0) {
+                textEl.innerHTML = `<span class="marquee-content">${fbAnnouncements[fbAnnouncements.length - 1].text}</span>`;
                 box.classList.remove('hidden');
             } else { box.classList.add('hidden'); }
         }
 
+        // Cloud Task Rendering & Filtering
         function renderTasks() {
             if(!currentUser) return;
-            const t = dict[lang] || dict['ar'];
-            const tasks = JSON.parse(localStorage.getItem('app_tasks') || '[]');
-            const todayStr = new Date().toISOString().split('T')[0]; // توحيد التاريخ
-            const myTasks = tasks.filter(task => task.workerId === currentUser.id && task.date === todayStr);
+            const filterDate = document.getElementById('filter-tasks-date').value;
+            const myTasks = fbTasks.filter(t => t.workerId === currentUser.id && t.date === filterDate);
             
             const listTasks = document.getElementById('list-tasks');
             const badges = [document.getElementById('badge-tasks'), document.getElementById('badge-menu-tasks')];
@@ -572,22 +547,20 @@
             const pendingCount = myTasks.filter(task => task.status !== 'completed').length;
             if(pendingCount > 0) {
                 badges.forEach(b => { b.innerText = pendingCount; b.classList.remove('hidden'); });
-            } else {
-                badges.forEach(b => b.classList.add('hidden'));
-            }
+            } else { badges.forEach(b => b.classList.add('hidden')); }
 
             if(myTasks.length > 0) {
                 listTasks.innerHTML = myTasks.map(task => {
                     let btnHtml = ''; let statusStyle = '';
                     if(task.status === 'pending') {
                         statusStyle = 'bg-slate-50 border-slate-200';
-                        btnHtml = `<button onclick="updateTaskStatus(${task.id}, 'started')" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-blue-700 transition-colors">${t.btnStart}</button>`;
+                        btnHtml = `<button onclick="updateTaskStatus('${task.id}', 'started')" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold shadow-sm hover:bg-blue-700 transition-colors">بدء التنفيذ</button>`;
                     } else if(task.status === 'started') {
                         statusStyle = 'bg-blue-50 border-blue-200';
-                        btnHtml = `<button onclick="updateTaskStatus(${task.id}, 'completed')" class="bg-emerald-500 text-white text-xs px-4 py-2 rounded-lg font-bold flex items-center gap-1 shadow-sm hover:bg-emerald-600 transition-colors"><i class="ph-bold ph-check"></i> ${t.btnDone}</button>`;
+                        btnHtml = `<button onclick="updateTaskStatus('${task.id}', 'completed')" class="bg-emerald-500 text-white text-xs px-4 py-2 rounded-lg font-bold flex items-center gap-1 shadow-sm hover:bg-emerald-600 transition-colors"><i class="ph-bold ph-check"></i> إنجاز</button>`;
                     } else if(task.status === 'completed') {
                         statusStyle = 'bg-emerald-50 border-emerald-100 opacity-70';
-                        btnHtml = `<span class="text-xs text-emerald-600 font-bold flex items-center gap-1"><i class="ph-bold ph-check-circle"></i> ${t.txtCompleted}</span>`;
+                        btnHtml = `<span class="text-xs text-emerald-600 font-bold flex items-center gap-1"><i class="ph-bold ph-check-circle"></i> مكتملة</span>`;
                     }
                     return `
                     <div class="p-4 border rounded-xl flex items-center justify-between gap-4 ${statusStyle} transition-all">
@@ -596,37 +569,35 @@
                     </div>`
                 }).join('');
             } else {
-                listTasks.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-check-circle text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">${t.emptyTasks}</p></div>`;
+                listTasks.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-check-circle text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد مهام موكلة إليك في هذا اليوم.</p></div>`;
             }
         }
 
-        function updateTaskStatus(taskId, newStatus) {
-            let tasks = JSON.parse(localStorage.getItem('app_tasks') || '[]');
-            const index = tasks.findIndex(t => t.id === taskId);
-            if(index > -1) {
-                tasks[index].status = newStatus;
-                localStorage.setItem('app_tasks', JSON.stringify(tasks));
-                renderTasks();
-                showToast(lang === 'ar' ? "تم تحديث حالة المهمة بنجاح!" : "Task status updated!");
-            }
+        async function updateTaskStatus(taskId, newStatus) {
+            if(!auth.currentUser) return;
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId), { status: newStatus });
+                showToast("تم تحديث حالة المهمة، الإدارة تراها الآن!");
+            } catch(e) { console.error("Update task error", e); }
         }
 
+        // Cloud Requests History & Filtering
         function renderRequestsHistory() {
             if(!currentUser) return;
-            const t = dict[lang] || dict['ar'];
-            const requests = JSON.parse(localStorage.getItem('app_requests') || '[]');
-            const myRequests = requests.filter(r => r.workerId === currentUser.id).reverse();
+            const filterDate = document.getElementById('filter-history-date').value;
+            // Filter logic: request dates are stored with time, so we check if the string contains the filterDate
+            const myRequests = fbRequests.filter(r => r.workerId === currentUser.id && r.dateStr === filterDate).sort((a,b) => b.createdAt - a.createdAt);
             const listContainer = document.getElementById('list-requests-history');
 
             if(myRequests.length === 0) {
-                listContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-folder-open text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">${t.emptyRequests}</p></div>`;
+                listContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-folder-open text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد طلبات مرفوعة في هذا اليوم.</p></div>`;
                 return;
             }
 
             const statusConfig = {
-                'pending': { text: t.statusPending, class: 'bg-amber-100 text-amber-700 border-amber-200', icon: 'ph-hourglass-high' },
-                'approved': { text: t.statusApproved, class: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: 'ph-check-circle' },
-                'rejected': { text: t.statusRejected, class: 'bg-rose-100 text-rose-700 border-rose-200', icon: 'ph-x-circle' }
+                'pending': { text: 'قيد المراجعة', class: 'bg-amber-100 text-amber-700 border-amber-200', icon: 'ph-hourglass-high' },
+                'approved': { text: 'تمت الموافقة', class: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: 'ph-check-circle' },
+                'rejected': { text: 'مرفوض', class: 'bg-rose-100 text-rose-700 border-rose-200', icon: 'ph-x-circle' }
             };
 
             listContainer.innerHTML = myRequests.map(r => {
@@ -645,49 +616,48 @@
             `}).join('');
         }
 
-        // --- 6. نظام الـ GPS والتحقق من الموقع ---
+        // --- GPS & Cloud Attendance ---
         function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; 
-            const p1 = lat1 * Math.PI/180, p2 = lat2 * Math.PI/180;
+            const R = 6371e3; const p1 = lat1 * Math.PI/180, p2 = lat2 * Math.PI/180;
             const dp = (lat2 - lat1) * Math.PI/180, dl = (lon2 - lon1) * Math.PI/180;
             const a = Math.sin(dp/2)*Math.sin(dp/2) + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        function performCheckIn(isBypass) {
+        async function performCheckIn(isBypass) {
             const projId = document.getElementById('select-project').value;
-            if(!projId) return;
-            
-            const projects = JSON.parse(localStorage.getItem('app_projects') || '[]');
-            const project = projects.find(p => p.id === projId);
+            if(!projId || !auth.currentUser) return;
+            const project = fbProjects.find(p => p.id === projId);
             if(!project) return;
 
             document.getElementById('location-error').classList.add('hidden');
             document.getElementById('state-checkin').classList.add('hidden');
             document.getElementById('state-loading').classList.remove('hidden');
 
-            const finalizeCheckIn = () => {
+            const finalizeCheckIn = async () => {
                 const now = new Date();
                 const timeStr = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}); 
-                const dateStr = now.toISOString().split('T')[0];
+                const dateStr = getLocalDateString();
                 
                 attendanceStatus = 'working';
                 localStorage.setItem('arkan_status', 'working');
                 localStorage.setItem('arkan_time', timeStr);
                 localStorage.setItem('arkan_proj_id', projId);
                 
-                const attendance = JSON.parse(localStorage.getItem('app_attendance') || '[]');
-                attendance.push({
-                    id: Date.now(), workerId: currentUser.id, workerName: currentUser.name, projectId: project.id, projectName: project.name, timeIn: timeStr, timeOut: null, date: dateStr, status: 'working'
-                });
-                localStorage.setItem('app_attendance', JSON.stringify(attendance));
-                updateDashboardState();
+                try {
+                    await addDoc(getColRef('attendance'), {
+                        workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
+                        projectId: project.id, projectName: project.nameAr || project.name, 
+                        timeIn: timeStr, timeOut: null, date: dateStr, status: 'working', createdAt: Date.now()
+                    });
+                    updateDashboardState();
+                } catch(e) { console.error("Check-in error", e); }
             };
 
             if (isBypass) { setTimeout(finalizeCheckIn, 1000); return; }
 
             if (!navigator.geolocation) {
-                document.getElementById('txt-loc-error').innerText = lang === 'ar' ? "الـ GPS غير مفعل بالجهاز" : "GPS not enabled";
+                document.getElementById('txt-loc-error').innerText = "الـ GPS غير مفعل بالجهاز";
                 document.getElementById('location-error').classList.remove('hidden');
                 document.getElementById('state-loading').classList.add('hidden');
                 document.getElementById('state-checkin').classList.remove('hidden');
@@ -698,40 +668,102 @@
                 (pos) => {
                     const distance = calculateDistance(pos.coords.latitude, pos.coords.longitude, project.lat, project.lng);
                     if (distance > project.radius) {
-                        document.getElementById('txt-loc-error').innerText = lang === 'ar' ? `أنت خارج النطاق بمسافة ${Math.round(distance)} متر!` : `Out of range by ${Math.round(distance)}m`;
+                        document.getElementById('txt-loc-error').innerText = `أنت خارج النطاق بمسافة ${Math.round(distance)} متر!`;
                         document.getElementById('location-error').classList.remove('hidden');
                         document.getElementById('state-loading').classList.add('hidden');
                         document.getElementById('state-checkin').classList.remove('hidden');
                     } else finalizeCheckIn();
                 },
                 (err) => { 
-                    document.getElementById('txt-loc-error').innerText = lang === 'ar' ? "يرجى إعطاء صلاحية الموقع (GPS)" : "Please grant location access";
+                    document.getElementById('txt-loc-error').innerText = "يرجى إعطاء صلاحية الموقع (GPS)";
                     document.getElementById('location-error').classList.remove('hidden');
                     document.getElementById('state-loading').classList.add('hidden');
                     document.getElementById('state-checkin').classList.remove('hidden');
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
+                }, { enableHighAccuracy: true, timeout: 10000 }
             );
         }
 
-        function checkOut() {
-            const attendance = JSON.parse(localStorage.getItem('app_attendance') || '[]');
-            const today = new Date().toISOString().split('T')[0];
+        async function checkOut() {
+            if(!auth.currentUser) return;
+            const today = getLocalDateString();
             
-            for(let i = attendance.length - 1; i >= 0; i--) {
-                if(attendance[i].workerId === currentUser.id && attendance[i].date === today && attendance[i].status === 'working') {
-                    attendance[i].timeOut = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-                    attendance[i].status = 'completed';
-                    break;
-                }
-            }
-            localStorage.setItem('app_attendance', JSON.stringify(attendance));
+            // Find current active attendance in memory (from cloud sync)
+            const activeAtt = fbAttendance.find(a => a.workerId === currentUser.id && a.date === today && a.status === 'working');
+            
             attendanceStatus = 'completed';
             localStorage.setItem('arkan_status', 'completed');
             updateDashboardState();
+
+            if(activeAtt) {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'attendance', activeAtt.id), {
+                        timeOut: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}),
+                        status: 'completed'
+                    });
+                } catch(e) { console.error("Checkout err", e); }
+            }
         }
 
-        // --- 7. نوافذ الخدمات السريعة (Forms) ---
+        // --- Cloud Forms Submission ---
+        async function handleFormSubmit(e, reqType) {
+            e.preventDefault(); 
+            if(!auth.currentUser) return;
+
+            let typeName = "", details = "";
+            if(reqType === 'leave') {
+                typeName = "طلب إجازة";
+                const date = e.target.querySelector('input[type="date"]').value;
+                const select = e.target.querySelector('select');
+                details = `تاريخ البدء: ${date} | النوع: ${select.options[select.selectedIndex].text}`;
+            } else if (reqType === 'loan') {
+                typeName = "طلب سلفة";
+                const amt = e.target.querySelector('input[type="number"]').value;
+                const reason = e.target.querySelector('textarea').value;
+                details = `المبلغ: ${amt} ريال | السبب: ${reason || 'بدون'}`;
+            } else if (reqType === 'issue') {
+                typeName = "بلاغ مشكلة";
+                const select = e.target.querySelector('select');
+                const desc = e.target.querySelector('textarea').value;
+                details = `التصنيف: ${select.options[select.selectedIndex].text} | التفاصيل: ${desc}`;
+            }
+
+            try {
+                await addDoc(getColRef('requests'), {
+                    workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
+                    type: reqType, typeName: typeName, details: details, 
+                    date: new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'}),
+                    dateStr: getLocalDateString(), // Date for filtering
+                    status: 'pending', createdAt: Date.now()
+                });
+                closeModals(); e.target.reset(); showToast('تم إرسال الطلب للسحابة بنجاح!');
+            } catch(err) { console.error("Form err", err); }
+        }
+
+        // --- UI Interactions ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar-drawer');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full'); overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function openSidebarTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if(btn.dataset.target === tabId) btn.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-bold transition-colors tab-btn active-tab bg-blue-50/50 text-blue-700 border border-blue-100';
+                else btn.className = 'w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 tab-btn';
+            });
+            toggleSidebar();
+            if(tabId === 'tab-tasks') renderTasks();
+            if(tabId === 'tab-history') renderRequestsHistory();
+        }
+
         function openModal(id) {
             const overlay = document.getElementById('modal-overlay-form');
             const modal = document.getElementById(id);
@@ -754,77 +786,30 @@
             setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3000);
         }
 
-        function handleFormSubmit(e, reqType) {
-            e.preventDefault(); 
-            let typeName = "", details = "";
-            
-            if(reqType === 'leave') {
-                typeName = "طلب إجازة";
-                const date = e.target.querySelector('input[type="date"]').value;
-                const select = e.target.querySelector('select');
-                details = `تاريخ البدء: ${date} | النوع: ${select.options[select.selectedIndex].text}`;
-            } else if (reqType === 'loan') {
-                typeName = "طلب سلفة";
-                const amt = e.target.querySelector('input[type="number"]').value;
-                const reason = e.target.querySelector('textarea').value;
-                details = `المبلغ: ${amt} ريال | السبب: ${reason || 'بدون'}`;
-            } else if (reqType === 'issue') {
-                typeName = "بلاغ مشكلة";
-                const select = e.target.querySelector('select');
-                const desc = e.target.querySelector('textarea').value;
-                details = `التصنيف: ${select.options[select.selectedIndex].text} | التفاصيل: ${desc}`;
-            }
+        // Export functions to window to allow HTML inline handlers
+        window.login = login;
+        window.logout = logout;
+        window.toggleSidebar = toggleSidebar;
+        window.openSidebarTab = openSidebarTab;
+        window.performCheckIn = performCheckIn;
+        window.checkOut = checkOut;
+        window.openModal = openModal;
+        window.closeModals = closeModals;
+        window.handleFormSubmit = handleFormSubmit;
+        window.updateDashboardState = updateDashboardState;
+        window.updateTaskStatus = updateTaskStatus;
+        window.renderTasks = renderTasks;
+        window.renderRequestsHistory = renderRequestsHistory;
 
-            const requests = JSON.parse(localStorage.getItem('app_requests') || '[]');
-            requests.push({
-                id: Date.now(), workerId: currentUser.id, workerName: currentUser.name, type: reqType, typeName: typeName,
-                details: details, date: new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'}) + ' - ' + new Date().toLocaleDateString('ar-SA'),
-                status: 'pending'
-            });
-            localStorage.setItem('app_requests', JSON.stringify(requests));
-
-            closeModals(); e.target.reset(); showToast('تم إرسال الطلب للإدارة بنجاح!');
-            renderRequestsHistory(); // تحديث شاشة الطلبات فوراً
-        }
-
-        // --- 8. الإقلاع والتحديث اللحظي ---
+        // Boot
         window.onload = () => {
-            initSharedData(); 
-            const savedId = localStorage.getItem('arkan_user_id');
-            if(savedId) {
-                const workers = JSON.parse(localStorage.getItem('app_workers') || '[]');
-                const worker = workers.find(w => w.id === savedId);
-                if(worker) {
-                    currentUser = worker;
-                    document.getElementById('sidebar-worker-name').innerText = worker.name;
-                    document.getElementById('sidebar-worker-id').innerText = `ID: ${worker.id}`;
-                    
-                    const today = new Date().toDateString();
-                    if(localStorage.getItem('arkan_date') === today) {
-                        attendanceStatus = localStorage.getItem('arkan_status') || 'none';
-                    } else {
-                        localStorage.setItem('arkan_date', today);
-                        localStorage.setItem('arkan_status', 'none');
-                        attendanceStatus = 'none';
-                    }
-                    
-                    document.getElementById('btn-menu-toggle').classList.remove('hidden');
-                    document.getElementById('nav-notifications').classList.remove('hidden');
-                    document.getElementById('section-login').classList.add('hidden');
-                    document.getElementById('section-dashboard').classList.remove('hidden');
-                    
-                    updateDashboardState();
-                    openSidebarTab('tab-home');
-                    return;
-                }
-            }
+            // Set date filters to today's date automatically
+            const today = getLocalDateString();
+            document.getElementById('filter-tasks-date').value = today;
+            document.getElementById('filter-history-date').value = today;
+            
+            initCloud(); // Initialize Firebase
         };
-
-        window.addEventListener('storage', (e) => {
-            if(e.key === 'app_requests') renderRequestsHistory();
-            if(e.key === 'app_tasks') renderTasks();
-            if(e.key === 'app_announcements') renderAnnouncements();
-        });
     </script>
 </body>
 </html>
