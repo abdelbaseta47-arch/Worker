@@ -336,84 +336,77 @@
     </main>
 
     <!-- توست الإشعارات -->
-    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-[60] pointer-events-none">
-        <i id="toast-icon" class="ph-fill ph-check-circle text-emerald-400 text-2xl"></i>
-        <span id="toast-msg" class="font-bold text-sm">تمت العملية بنجاح</span>
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-[60] pointer-events-none">
+        <i id="toast-icon" class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
+        <span id="toast-msg" class="font-medium text-sm">تمت العملية بنجاح</span>
     </div>
 
     <script>
-        // --- 1. إدارة البيانات في المتصفح (LocalStorage) ---
-        // بما أن النظام حاليا بدون سيرفر، سنعتمد على localStorage لمشاركة البيانات مع صفحة العامل
+        // --- 1. إدارة البيانات الوهمية (Mock Data in LocalStorage) ---
+        // في التطبيق الحقيقي سيتم جلب هذه البيانات من API (قاعدة البيانات)
 
-        const initDefaultData = () => {
-            // بيانات العمال الافتراضية إذا لم تكن موجودة
-            if(!localStorage.getItem('arkan_workers')) {
-                const defaultWorkers = [
-                    { id: "1001", nameAr: "أحمد محمد", nameEn: "Ahmed Mohammed", wage: 150 },
-                    { id: "1002", nameAr: "محمود علي", nameEn: "Mahmoud Ali", wage: 120 },
-                    { id: "1003", nameAr: "جون دوي", nameEn: "John Doe", wage: 100 }
-                ];
-                localStorage.setItem('arkan_workers', JSON.stringify(defaultWorkers));
-            }
-
-            // بيانات المشاريع الافتراضية
-            if(!localStorage.getItem('arkan_projects')) {
-                const defaultProjects = [
-                    { id: "P-01", nameAr: "المصنع الرئيسي (جدة)", nameEn: "Main Factory (Jeddah)", lat: 21.4858, lng: 39.1925, radius: 500 },
-                    { id: "P-02", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers", lat: 24.7136, lng: 46.6753, radius: 1000 }
-                ];
-                localStorage.setItem('arkan_projects', JSON.stringify(defaultProjects));
-            }
-
-            // هيكل فارغ للحضور والطلبات إذا لم تكن موجودة
-            if(!localStorage.getItem('arkan_attendance_log')) localStorage.setItem('arkan_attendance_log', JSON.stringify([]));
-            if(!localStorage.getItem('arkan_requests_log')) localStorage.setItem('arkan_requests_log', JSON.stringify([]));
+        const defaultData = {
+            workers: [
+                { id: "1001", name: "أحمد محمد محمود", wage: 150, deviceLinked: false },
+                { id: "1002", name: "محمود علي السيد", wage: 120, deviceLinked: false },
+                { id: "1003", name: "جون دوي", wage: 100, deviceLinked: false }
+            ],
+            projects: [
+                { id: "P-01", name: "المصنع الرئيسي (جدة)", lat: 21.4858, lng: 39.1925, radius: 500 },
+                { id: "P-02", name: "مشروع أبراج الرياض", lat: 24.7136, lng: 46.6753, radius: 1000 }
+            ],
+            attendance: [],
+            requests: []
         };
 
-        // دوال القراءة والكتابة المبسطة
-        const getData = (key) => JSON.parse(localStorage.getItem(key) || '[]');
-        const saveData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+        // تهيئة LocalStorage إذا كانت فارغة (توحيد المفاتيح مع صفحة العامل)
+        function initData() {
+            if(!localStorage.getItem('app_workers')) localStorage.setItem('app_workers', JSON.stringify(defaultData.workers));
+            if(!localStorage.getItem('app_projects')) localStorage.setItem('app_projects', JSON.stringify(defaultData.projects));
+            if(!localStorage.getItem('app_attendance')) localStorage.setItem('app_attendance', JSON.stringify(defaultData.attendance));
+            if(!localStorage.getItem('app_requests')) localStorage.setItem('app_requests', JSON.stringify(defaultData.requests));
+        }
 
-        // --- STREAMING_CHUNK:برمجة وظائف التنقل في لوحة التحكم... ---
-        // --- 2. التحكم في واجهة المستخدم (UI Navigation) ---
+        // قراءة البيانات
+        function getData(key) {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+
+        // كتابة البيانات
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // --- 2. التحكم في واجهة المستخدم (UI Logic) ---
 
         const views = ['dashboard', 'attendance', 'requests', 'workers', 'projects'];
         const titles = {
-            'dashboard': 'نظرة عامة والتحليل',
-            'attendance': 'سجل الحضور والانصراف',
-            'requests': 'إدارة طلبات العمال',
-            'workers': 'سجل بيانات العمال',
-            'projects': 'مواقع ومشاريع العمل'
+            'dashboard': 'نظرة عامة',
+            'attendance': 'سجل الحضور اليومي',
+            'requests': 'إدارة الطلبات',
+            'workers': 'سجل العمال',
+            'projects': 'مواقع العمل'
         };
 
         function switchTab(viewId) {
-            // تحديث العنوان العلوي
             document.getElementById('header-title').innerText = titles[viewId];
-            
-            // إخفاء كل الأقسام وتصفير أزرار القائمة
             views.forEach(v => {
                 document.getElementById('view-' + v).classList.add('hidden');
-                const btn = document.getElementById('nav-' + v);
-                btn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all text-slate-300';
+                document.getElementById('nav-' + v).className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all text-slate-300';
             });
-            
-            // إظهار القسم المطلوب وتفعيل زره
             document.getElementById('view-' + viewId).classList.remove('hidden');
-            const activeBtn = document.getElementById('nav-' + viewId);
             
-            // تنسيق خاص لزر الطلبات لاحتوائه على شارة (Badge)
+            const activeBtnClass = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md';
             if(viewId === 'requests') {
-                 activeBtn.className = 'nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md';
+                 document.getElementById('nav-' + viewId).className = 'nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md';
             } else {
-                 activeBtn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md';
+                 document.getElementById('nav-' + viewId).className = activeBtnClass;
             }
 
-            // إغلاق القائمة الجانبية في الشاشات الصغيرة بعد الاختيار
             if(window.innerWidth < 1024 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
                 toggleSidebar();
             }
 
-            // استدعاء دالة جلب البيانات الخاصة بالقسم المختار
             if(viewId === 'dashboard') renderDashboard();
             if(viewId === 'attendance') renderAttendanceTable();
             if(viewId === 'requests') renderRequests();
@@ -421,12 +414,10 @@
             if(viewId === 'projects') renderProjects();
         }
 
-        // فتح وإغلاق القائمة الجانبية للموبايل
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
             const isRtl = document.documentElement.dir === 'rtl';
-            
             if (sidebar.classList.contains(isRtl ? 'translate-x-full' : '-translate-x-full')) {
                 sidebar.classList.remove(isRtl ? 'translate-x-full' : '-translate-x-full');
                 overlay.classList.remove('hidden');
@@ -436,121 +427,103 @@
             }
         }
 
-        // إظهار وإخفاء نماذج الإضافة
         function toggleForm(id) {
             document.getElementById(id).classList.toggle('hidden');
         }
 
-        // دالة عرض الإشعارات
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
             const icon = document.getElementById('toast-icon');
-            
-            icon.className = type === 'success' 
-                ? 'ph-fill ph-check-circle text-emerald-400 text-2xl' 
-                : 'ph-fill ph-warning-circle text-rose-400 text-2xl';
-
+            if(type === 'success') {
+                icon.className = 'ph-fill ph-check-circle text-emerald-400 text-xl';
+            } else {
+                icon.className = 'ph-fill ph-warning-circle text-rose-400 text-xl';
+            }
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
         }
 
-        // --- STREAMING_CHUNK:برمجة العرض لشاشة النظرة العامة (Dashboard)... ---
-        // --- 3. دوال عرض البيانات (Render Functions) ---
+        // --- 3. دوال بناء وعرض البيانات (Render Functions) ---
 
-        // أ- شاشة النظرة العامة
         function renderDashboard() {
-            const workers = getData('arkan_workers');
-            const attendance = getData('arkan_attendance_log');
-            const requests = getData('arkan_requests_log');
-            const projects = getData('arkan_projects');
-
-            // تحديث الإحصائيات العلوية
-            const todayDate = new Date().toISOString().split('T')[0];
-            const todayAttendance = attendance.filter(a => a.date === todayDate);
-            const pendingRequests = requests.filter(r => r.status === 'pending');
+            const workers = getData('app_workers');
+            const attendance = getData('app_attendance');
+            const requests = getData('app_requests').filter(r => r.status === 'pending');
+            const projects = getData('app_projects');
 
             document.getElementById('stat-total-workers').innerText = workers.length;
-            document.getElementById('stat-present-today').innerText = todayAttendance.length;
-            document.getElementById('stat-pending-requests').innerText = pendingRequests.length;
+            document.getElementById('stat-present-today').innerText = attendance.filter(a => a.date === new Date().toISOString().split('T')[0] && a.status === 'working').length;
+            document.getElementById('stat-pending-requests').innerText = requests.length;
             document.getElementById('stat-active-projects').innerText = projects.length;
 
-            // تحديث شارة الإشعارات في القائمة الجانبية (Badge)
             const badge = document.getElementById('badge-requests');
-            badge.innerText = pendingRequests.length;
-            badge.style.display = pendingRequests.length > 0 ? 'block' : 'none';
+            badge.innerText = requests.length;
+            badge.style.display = requests.length > 0 ? 'block' : 'none';
 
-            // عرض أحدث 5 حركات حضور في القائمة المختصرة
+            const recentAtt = attendance.slice(-4).reverse();
             const ulAtt = document.getElementById('list-recent-attendance');
-            ulAtt.innerHTML = todayAttendance.slice(-5).reverse().map(a => `
+            ulAtt.innerHTML = recentAtt.map(a => `
                 <li class="px-5 py-3 flex justify-between items-center hover:bg-slate-50 transition-colors">
                     <div>
                         <p class="font-bold text-sm text-slate-800">${a.workerName}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">${a.projectName}</p>
+                        <p class="text-xs text-slate-500">${a.projectName}</p>
                     </div>
                     <div class="text-left">
-                        <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold ${a.status === 'working' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
-                            ${a.status === 'working' ? 'حاضر بالعمل' : 'أنهى وانصرف'}
+                        <span class="inline-block px-2 py-1 rounded-md text-xs font-bold ${a.status === 'working' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                            ${a.status === 'working' ? 'حاضر الآن' : 'انصرف'}
                         </span>
-                        <p class="text-[11px] font-mono text-slate-400 mt-1">${a.timeIn}</p>
+                        <p class="text-[10px] text-slate-400 mt-1">${a.timeIn}</p>
                     </div>
                 </li>
-            `).join('') || '<li class="p-6 text-center text-sm font-medium text-slate-500">لم يسجل أي عامل حضوره اليوم بعد.</li>';
+            `).join('') || '<li class="p-5 text-center text-sm text-slate-500">لا يوجد حركات مسجلة</li>';
 
-            // عرض أحدث الطلبات
+            const recentReq = requests.slice(-4).reverse();
             const ulReq = document.getElementById('list-recent-requests');
             const typeIcons = {
-                'leave': '<div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm"><i class="ph-fill ph-calendar-plus text-lg"></i></div>',
-                'loan': '<div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-sm"><i class="ph-fill ph-money text-lg"></i></div>',
-                'issue': '<div class="w-9 h-9 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-sm"><i class="ph-fill ph-warning-octagon text-lg"></i></div>'
+                'leave': '<div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-calendar-plus"></i></div>',
+                'loan': '<div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="ph-fill ph-money"></i></div>',
+                'issue': '<div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center"><i class="ph-fill ph-warning-octagon"></i></div>'
             };
 
-            ulReq.innerHTML = pendingRequests.slice(-4).reverse().map(r => `
+            ulReq.innerHTML = recentReq.map(r => `
                 <li class="px-5 py-3 flex gap-3 items-center hover:bg-slate-50 transition-colors">
-                    ${typeIcons[r.type]}
-                    <div class="flex-1 min-w-0">
+                    ${typeIcons[r.type] || typeIcons['issue']}
+                    <div class="flex-1">
                         <p class="font-bold text-sm text-slate-800">${r.workerName}</p>
-                        <p class="text-xs text-slate-500 truncate mt-0.5">${r.typeName}</p>
+                        <p class="text-xs text-slate-500 truncate max-w-[200px]">${r.details}</p>
                     </div>
-                    <button onclick="switchTab('requests')" class="text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">معاينة</button>
+                    <button onclick="switchTab('requests')" class="text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100">عرض</button>
                 </li>
-            `).join('') || '<li class="p-6 text-center text-sm font-medium text-slate-500">لا توجد طلبات جديدة بانتظار المراجعة.</li>';
+            `).join('') || '<li class="p-5 text-center text-sm text-slate-500">لا توجد طلبات جديدة</li>';
         }
 
-        // --- STREAMING_CHUNK:برمجة العرض لجدول الحضور... ---
-        // ب- جدول الحضور الكامل
         function renderAttendanceTable() {
-            let attendance = getData('arkan_attendance_log');
+            let attendance = getData('app_attendance');
             const filterDate = document.getElementById('filter-date').value;
-            
-            // تصفية السجل بناءً على التاريخ المختار
-            if(filterDate) {
-                attendance = attendance.filter(a => a.date === filterDate);
-            }
+            if(filterDate) attendance = attendance.filter(a => a.date === filterDate);
 
             const tbody = document.getElementById('table-attendance');
             tbody.innerHTML = attendance.map(a => `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4">
                         <p class="font-bold text-slate-800">${a.workerName}</p>
-                        <p class="text-xs text-slate-500 font-mono mt-0.5">#${a.workerId}</p>
+                        <p class="text-xs text-slate-500">#${a.workerId}</p>
                     </td>
-                    <td class="px-6 py-4 text-sm font-semibold text-slate-700">${a.projectName}</td>
-                    <td class="px-6 py-4 text-sm text-blue-700 font-bold font-mono">${a.timeIn}</td>
-                    <td class="px-6 py-4 text-sm text-slate-500 font-mono font-medium">${a.timeOut || '---'}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-slate-700">${a.projectName}</td>
+                    <td class="px-6 py-4 text-sm text-blue-600 font-bold">${a.timeIn}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500">${a.timeOut || '-'}</td>
                     <td class="px-6 py-4">
                         ${a.status === 'working' 
-                            ? '<span class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 flex items-center gap-1.5 w-max shadow-sm"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> يعمل الآن</span>' 
-                            : '<span class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 shadow-sm w-max block text-center">أنهى وانصرف</span>'}
+                            ? '<span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200 flex items-center gap-1 w-max"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> بالعمل</span>' 
+                            : '<span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">منصرف</span>'}
                     </td>
                 </tr>
-            `).join('') || `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">لا توجد حركات مسجلة لهذا اليوم.</td></tr>`;
+            `).join('') || `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">لا يوجد حركات مسجلة لهذا اليوم.</td></tr>`;
         }
 
-        // --- STREAMING_CHUNK:برمجة العرض لطلبات العمال... ---
-        // ج- طلبات العمال
         function renderRequests() {
-            const requests = getData('arkan_requests_log').filter(r => r.status === 'pending');
+            const requests = getData('app_requests').filter(r => r.status === 'pending');
             const grid = document.getElementById('grid-requests');
             const emptyState = document.getElementById('empty-requests');
 
@@ -561,7 +534,6 @@
             }
 
             emptyState.classList.add('hidden');
-
             const typeStyles = {
                 'leave': { color: 'blue', icon: 'ph-calendar-plus' },
                 'loan': { color: 'emerald', icon: 'ph-money' },
@@ -569,65 +541,48 @@
             };
 
             grid.innerHTML = requests.map(r => {
-                const style = typeStyles[r.type];
+                const style = typeStyles[r.type] || typeStyles['issue'];
                 return `
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
                     <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-${style.color}-50/50">
-                        <span class="text-xs font-bold px-3 py-1.5 rounded-md bg-${style.color}-100 text-${style.color}-700 flex items-center gap-1.5 shadow-sm border border-${style.color}-200">
-                            <i class="ph-fill ${style.icon} text-sm"></i> ${r.typeName}
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-${style.color}-100 text-${style.color}-700 flex items-center gap-1">
+                            <i class="ph-fill ${style.icon}"></i> ${r.typeName}
                         </span>
-                        <span class="text-[11px] font-semibold text-slate-500">${r.date}</span>
+                        <span class="text-[10px] text-slate-400">${r.date}</span>
                     </div>
-                    <div class="p-5 flex-1 bg-white">
-                        <div class="flex items-center gap-2 mb-3">
-                            <i class="ph-fill ph-user-circle text-2xl text-slate-400"></i>
-                            <h4 class="font-bold text-slate-800 text-base">${r.workerName}</h4>
-                        </div>
-                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-sm text-slate-700 leading-relaxed font-medium">
-                            ${r.details}
-                        </div>
+                    <div class="p-5 flex-1">
+                        <h4 class="font-bold text-slate-800 text-lg mb-1">${r.workerName}</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100 mt-3">${r.details}</p>
                     </div>
-                    <div class="p-4 border-t border-slate-100 grid grid-cols-2 gap-3 bg-slate-50/50">
-                        <button onclick="handleRequest('${r.id}', 'approved')" class="bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1">
-                            <i class="ph-bold ph-check"></i> موافقة
-                        </button>
-                        <button onclick="handleRequest('${r.id}', 'rejected')" class="bg-white border border-rose-200 hover:bg-rose-50 hover:border-rose-300 text-rose-600 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1">
-                            <i class="ph-bold ph-x"></i> رفض
-                        </button>
+                    <div class="p-4 border-t border-slate-100 grid grid-cols-2 gap-3 bg-slate-50/30">
+                        <button onclick="handleRequest(${r.id}, 'approved')" class="bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">موافقة</button>
+                        <button onclick="handleRequest(${r.id}, 'rejected')" class="bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">رفض</button>
                     </div>
                 </div>
             `}).join('');
         }
 
-        // --- STREAMING_CHUNK:برمجة العرض للعمال والمشاريع... ---
-        // د- العمال
         function renderWorkers() {
-            const workers = getData('arkan_workers');
+            const workers = getData('app_workers');
             const tbody = document.getElementById('table-workers');
-
-            // المالك المسجل في النظام كجهاز مربوط
-            const boundDeviceOwner = localStorage.getItem('arkan_device_owner');
 
             tbody.innerHTML = workers.map(w => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 font-bold font-mono text-slate-600">#${w.id}</td>
+                    <td class="px-6 py-4 font-bold text-slate-700">#${w.id}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-sm"><i class="ph-fill ph-user text-lg"></i></div>
-                            <div>
-                                <span class="font-bold text-slate-800 block">${w.nameAr}</span>
-                                <span class="text-[10px] text-slate-400 block uppercase tracking-wide">${w.nameEn}</span>
-                            </div>
+                            <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500"><i class="ph-fill ph-user"></i></div>
+                            <span class="font-bold text-slate-800">${w.name}</span>
                         </div>
                     </td>
-                    <td class="px-6 py-4 font-bold text-emerald-600 font-mono text-base">${w.wage} <span class="text-xs text-slate-400 font-sans font-medium">ر.س/يوم</span></td>
+                    <td class="px-6 py-4 font-bold text-emerald-600">${w.wage} ر.س</td>
                     <td class="px-6 py-4 text-xs font-medium">
-                        ${boundDeviceOwner === w.id 
-                            ? '<span class="text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-md border border-blue-200 shadow-sm flex items-center w-max gap-1"><i class="ph-fill ph-device-mobile"></i> جهاز مقترن</span>' 
-                            : '<span class="text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-md border border-slate-200 flex items-center w-max gap-1"><i class="ph-regular ph-device-mobile"></i> غير مقترن</span>'}
+                        ${w.deviceLinked 
+                            ? '<span class="text-blue-600 bg-blue-50 px-2 py-1 rounded-md border border-blue-100">جهاز مرتبط</span>' 
+                            : '<span class="text-slate-500 bg-slate-100 px-2 py-1 rounded-md border border-slate-200">غير مرتبط</span>'}
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <button onclick="deleteWorker('${w.id}')" class="w-8 h-8 inline-flex rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white items-center justify-center transition-colors border border-rose-100 hover:border-rose-500 shadow-sm" title="حذف العامل">
+                    <td class="px-6 py-4">
+                        <button onclick="deleteWorker('${w.id}')" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors" title="حذف العامل">
                             <i class="ph-bold ph-trash"></i>
                         </button>
                     </td>
@@ -635,160 +590,148 @@
             `).join('');
         }
 
-        // هـ- المشاريع
         function renderProjects() {
-            const projects = getData('arkan_projects');
+            const projects = getData('app_projects');
             const grid = document.getElementById('grid-projects');
 
             grid.innerHTML = projects.map(p => `
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hover:border-blue-300 transition-colors relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full flex justify-end p-4 opacity-50 group-hover:scale-110 transition-transform">
-                        <i class="ph-fill ph-map-pin text-blue-200 text-3xl"></i>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:border-blue-200 transition-colors relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full flex justify-end p-3 opacity-50">
+                        <i class="ph-fill ph-map-pin text-blue-200 text-2xl"></i>
                     </div>
                     <div class="relative z-10">
-                        <span class="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block shadow-sm">${p.id}</span>
-                        <h4 class="font-bold text-slate-800 text-lg">${p.nameAr}</h4>
-                        <p class="text-xs text-slate-400 mb-4 font-medium">${p.nameEn}</p>
-                        
-                        <div class="space-y-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <div class="flex justify-between border-b border-slate-200 pb-1.5">
-                                <span class="text-slate-500 font-semibold">دائرة العرض (Lat):</span>
-                                <span class="font-mono text-slate-700 font-bold">${p.lat}</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">${p.id}</span>
+                        <h4 class="font-bold text-slate-800 text-lg mb-4">${p.name}</h4>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between border-b border-slate-50 pb-1">
+                                <span class="text-slate-500">إحداثيات (Lat):</span>
+                                <span class="font-mono text-slate-700">${p.lat}</span>
                             </div>
-                            <div class="flex justify-between border-b border-slate-200 pb-1.5 pt-1">
-                                <span class="text-slate-500 font-semibold">خط الطول (Lng):</span>
-                                <span class="font-mono text-slate-700 font-bold">${p.lng}</span>
+                            <div class="flex justify-between border-b border-slate-50 pb-1">
+                                <span class="text-slate-500">إحداثيات (Lng):</span>
+                                <span class="font-mono text-slate-700">${p.lng}</span>
                             </div>
-                            <div class="flex justify-between pt-1">
-                                <span class="text-slate-500 font-semibold">نطاق الحضور (بصمة الـ GPS):</span>
-                                <span class="font-bold text-emerald-600 bg-emerald-50 px-1.5 rounded">${p.radius} متر</span>
+                            <div class="flex justify-between pb-1">
+                                <span class="text-slate-500">نطاق البصمة:</span>
+                                <span class="font-bold text-emerald-600">${p.radius} متر</span>
                             </div>
                         </div>
                     </div>
-                    <button onclick="deleteProject('${p.id}')" class="mt-4 w-full bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 py-2.5 rounded-xl text-sm font-bold transition-colors border border-slate-200 shadow-sm flex items-center justify-center gap-1.5">
-                        <i class="ph-bold ph-trash"></i> إزالة المشروع
-                    </button>
+                    <button onclick="deleteProject('${p.id}')" class="mt-4 w-full bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-600 py-2 rounded-lg text-xs font-bold transition-colors border border-slate-100">حذف المشروع</button>
                 </div>
             `).join('');
         }
 
-        // --- STREAMING_CHUNK:برمجة وظائف الإضافة والحذف (CRUD Actions)... ---
         // --- 4. العمليات (Actions/CRUD) ---
 
         function addWorker(e) {
             e.preventDefault();
             const id = document.getElementById('w-id').value;
-            const nameAr = document.getElementById('w-name-ar').value;
-            const nameEn = document.getElementById('w-name-en').value;
+            const name = document.getElementById('w-name').value;
             const wage = document.getElementById('w-wage').value;
 
-            const workers = getData('arkan_workers');
+            const workers = getData('app_workers');
             if(workers.find(w => w.id === id)) {
-                showToast('خطأ: كود العامل مستخدم مسبقاً!', 'error');
+                showToast('رقم الكود مستخدم مسبقاً!', 'error');
                 return;
             }
 
-            workers.push({ id, nameAr, nameEn, wage: Number(wage) });
-            saveData('arkan_workers', workers);
+            workers.push({ id, name, wage: Number(wage), deviceLinked: false });
+            saveData('app_workers', workers);
             
             e.target.reset();
             document.getElementById('form-worker-container').classList.add('hidden');
             renderWorkers();
-            showToast('تم إضافة العامل للنظام بنجاح.');
+            showToast('تم إضافة العامل بنجاح');
             
             if(!document.getElementById('view-dashboard').classList.contains('hidden')) renderDashboard();
         }
 
         function deleteWorker(id) {
-            if(confirm('تحذير: هل أنت متأكد من حذف بيانات هذا العامل نهائياً؟')) {
-                let workers = getData('arkan_workers');
+            if(confirm('هل أنت متأكد من حذف هذا العامل؟')) {
+                let workers = getData('app_workers');
                 workers = workers.filter(w => w.id !== id);
-                saveData('arkan_workers', workers);
-                
-                // تنظيف جهاز العامل المربوط إذا تم حذفه
-                if(localStorage.getItem('arkan_device_owner') === id) {
-                    localStorage.removeItem('arkan_device_owner');
-                }
-
+                saveData('app_workers', workers);
                 renderWorkers();
-                showToast('تم حذف العامل بنجاح.');
+                showToast('تم الحذف بنجاح');
             }
         }
 
         function addProject(e) {
             e.preventDefault();
             const id = document.getElementById('p-id').value.toUpperCase();
-            const nameAr = document.getElementById('p-name-ar').value;
-            const nameEn = document.getElementById('p-name-en').value;
+            const name = document.getElementById('p-name').value;
             const lat = document.getElementById('p-lat').value;
             const lng = document.getElementById('p-lng').value;
             const radius = document.getElementById('p-radius').value;
 
-            const projects = getData('arkan_projects');
+            const projects = getData('app_projects');
             if(projects.find(p => p.id === id)) {
-                showToast('خطأ: كود المشروع مستخدم مسبقاً!', 'error');
+                showToast('كود المشروع مستخدم مسبقاً!', 'error');
                 return;
             }
 
-            projects.push({ id, nameAr, nameEn, lat: Number(lat), lng: Number(lng), radius: Number(radius) });
-            saveData('arkan_projects', projects);
+            projects.push({ id, name, lat: Number(lat), lng: Number(lng), radius: Number(radius) });
+            saveData('app_projects', projects);
             
             e.target.reset();
             document.getElementById('form-project-container').classList.add('hidden');
             renderProjects();
-            showToast('تم إضافة المشروع بنجاح.');
+            showToast('تم إضافة المشروع بنجاح');
         }
 
         function deleteProject(id) {
-            if(confirm('هل أنت متأكد من حذف هذا المشروع من النظام؟ لن يتمكن العمال من تسجيل الدخول عليه.')) {
-                let projects = getData('arkan_projects');
+            if(confirm('هل أنت متأكد من حذف هذا المشروع؟')) {
+                let projects = getData('app_projects');
                 projects = projects.filter(p => p.id !== id);
-                saveData('arkan_projects', projects);
+                saveData('app_projects', projects);
                 renderProjects();
-                showToast('تم حذف المشروع بنجاح.');
+                showToast('تم الحذف بنجاح');
             }
         }
 
         function handleRequest(id, newStatus) {
-            let requests = getData('arkan_requests_log');
+            let requests = getData('app_requests');
             const reqIndex = requests.findIndex(r => r.id === id);
             
             if(reqIndex > -1) {
                 requests[reqIndex].status = newStatus;
-                saveData('arkan_requests_log', requests);
+                saveData('app_requests', requests);
                 renderRequests();
                 
-                const msg = newStatus === 'approved' ? 'تمت الموافقة على الطلب.' : 'تم رفض الطلب.';
+                const msg = newStatus === 'approved' ? 'تمت الموافقة على الطلب' : 'تم رفض الطلب';
                 showToast(msg);
                 
-                // تحديث العداد في القائمة الجانبية
                 const pendingCount = requests.filter(r => r.status === 'pending').length;
                 const badge = document.getElementById('badge-requests');
                 badge.innerText = pendingCount;
                 badge.style.display = pendingCount > 0 ? 'block' : 'none';
-                
-                // تحديث لوحة المعلومات إذا كانت مفتوحة
-                if(!document.getElementById('view-dashboard').classList.contains('hidden')) renderDashboard();
             }
         }
 
-        // --- STREAMING_CHUNK:التشغيل الأولي عند تحميل الصفحة... ---
-        // --- 5. التشغيل الأولي (Initialization) ---
+        // --- 5. التشغيل الأولي (Initialization) و التحديث التلقائي ---
         
         window.onload = () => {
-            initDefaultData();
+            initData();
             
-            // تعيين تاريخ اليوم في الهيدر العلوي
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-SA', options);
-            
-            // تعيين تاريخ اليوم كقيمة افتراضية لفلتر سجل الحضور
             document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
 
-            // عرض لوحة التحكم الرئيسية فور الدخول
             switchTab('dashboard');
         };
 
+        // تحديث لوحة الإدارة تلقائياً عند قيام العامل بإجراء من نافذة أخرى في نفس المتصفح
+        window.addEventListener('storage', (e) => {
+            if(e.key && e.key.startsWith('app_')) {
+                const activeView = views.find(v => !document.getElementById('view-' + v).classList.contains('hidden'));
+                if(activeView === 'dashboard') renderDashboard();
+                if(activeView === 'attendance') renderAttendanceTable();
+                if(activeView === 'requests') renderRequests();
+                if(activeView === 'workers') renderWorkers();
+                if(activeView === 'projects') renderProjects();
+            }
+        });
+
     </script>
 </body>
-</html>
