@@ -116,6 +116,7 @@
 
     <main class="flex-1 w-full max-w-md mx-auto p-4 pb-24 relative overflow-hidden flex flex-col justify-center">
         
+        <!-- شاشة تسجيل الدخول -->
         <div id="section-login" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 fade-in w-full">
             <div class="bg-slate-900 p-8 text-center relative">
                 <div class="absolute top-0 right-0 p-4 opacity-10"><i class="ph-fill ph-fingerprint text-7xl text-white"></i></div>
@@ -179,6 +180,7 @@
                                 <i class="ph-bold ph-fingerprint text-2xl"></i>
                                 <span id="txt-btn-checkin">تسجيل الحضور</span>
                             </button>
+                            <!-- زر تجربة تجاوز الـ GPS متاح للمدير لسهولة الاختبار -->
                             <button id="btn-bypass" onclick="performCheckIn(true)" class="text-[10px] text-slate-400 underline text-center py-1 hidden">تجاوز الفحص الجغرافي (Admin)</button>
                         </div>
                     </div>
@@ -338,29 +340,38 @@
     </div>
 
     <script type="module">
+        // Firebase Cloud System Initialization
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'arkan-app-live';
-        let firebaseConfig = null;
+        // تم استخدام الكود الخاص بك بشكل مباشر هنا
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-L23_5r9kQinJAwKxjbL1AKs7dNEa1FQ",
+            authDomain: "arkan-system-cdf54.firebaseapp.com",
+            projectId: "arkan-system-cdf54",
+            storageBucket: "arkan-system-cdf54.firebasestorage.app",
+            messagingSenderId: "1055893569120",
+            appId: "1:1055893569120:web:a26ed07661d827af2d8d05",
+            measurementId: "G-0ETG069F09"
+        };
+        
         let app, auth, db;
         let isAuthReady = false;
-        let cloudErrorMsg = null;
         
         try {
-            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "mock" };
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
         } catch (e) {
-            cloudErrorMsg = "لا يمكن الاتصال بالسحابة بسبب نقص الإعدادات.";
+            console.error("Firebase init error", e);
         }
         
         let fbWorkers = [], fbProjects = [], fbTasks = [], fbRequests = [], fbAttendance = [], fbAnnouncements = [];
         let currentUser = null;
         let attendanceStatus = 'none';
 
+        // دالة مساعدة لجلب التاريخ الموحد
         function getLocalDateString() {
             const d = new Date();
             d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -370,41 +381,51 @@
         async function initCloud() {
             if(!app) return;
             try {
-                // نظام الطوارئ للمصادقة: يحاول الدخول بتوكن المنصة، وإذا انتهت صلاحيته يدخل كـ Anonymous لضمان استمرار العمل
-                if (typeof __initial_auth_token !== 'undefined') {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch(tokenErr) {
-                        console.warn("Custom token expired or invalid, using anonymous auth...", tokenErr);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
+                // الدخول مجهول باستخدام Firebase Auth
+                await signInAnonymously(auth);
                 isAuthReady = true;
                 startRealTimeListeners();
             } catch(err) { 
-                cloudErrorMsg = "فشل الاتصال السحابي. يرجى تجربة فتح التطبيق من نافذة (Preview).";
+                const errTxt = document.getElementById('txt-login-error');
+                errTxt.innerText = "فشل الاتصال: تأكد من تفعيل Authentication (Anonymous) في فايربيز!";
+                document.getElementById('login-error').classList.remove('hidden');
                 console.error(err); 
             }
         }
 
-        function getColRef(colName) { return collection(db, 'artifacts', appId, 'public', 'data', colName); }
-
         function startRealTimeListeners() {
             if(!auth.currentUser) return;
-            onSnapshot(getColRef('app_workers'), snap => { fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); checkSavedSession(); });
-            onSnapshot(getColRef('app_projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); renderProjects(); if(currentUser) updateDashboardState(); });
-            onSnapshot(getColRef('app_tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
-            onSnapshot(getColRef('app_requests'), snap => { fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); renderRequestsHistory(); });
-            onSnapshot(getColRef('app_attendance'), snap => { fbAttendance = snap.docs.map(d=>({id:d.id, ...d.data()})); if(currentUser) checkSavedSession(); });
-            onSnapshot(getColRef('announcements'), snap => { 
+            
+            // قراءة البيانات من الجداول مباشرة وبشكل لحظي
+            onSnapshot(collection(db, 'app_workers'), snap => { 
+                fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); 
+                checkSavedSession(); 
+            });
+            onSnapshot(collection(db, 'app_projects'), snap => { 
+                fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); 
+                renderProjects(); 
+                if(currentUser) updateDashboardState(); 
+            });
+            onSnapshot(collection(db, 'app_tasks'), snap => { 
+                fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); 
+                renderTasks(); 
+            });
+            onSnapshot(collection(db, 'app_requests'), snap => { 
+                fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); 
+                renderRequestsHistory(); 
+            });
+            onSnapshot(collection(db, 'app_attendance'), snap => { 
+                fbAttendance = snap.docs.map(d=>({id:d.id, ...d.data()})); 
+                if(currentUser) checkSavedSession(); 
+            });
+            onSnapshot(collection(db, 'announcements'), snap => { 
                 fbAnnouncements = snap.docs.map(d=>({id:d.id, ...d.data()})); 
-                if(fbAnnouncements.length === 0) fbAnnouncements = [{text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة كأحذية الأمان."}];
+                if(fbAnnouncements.length === 0) fbAnnouncements = [{text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة (PPE) كأحذية الأمان."}];
                 renderAnnouncements(); 
             });
         }
 
+        // تقييد الجهاز لعامل واحد
         function enforceDeviceBinding() {
             const owner = localStorage.getItem('arkan_device_owner');
             if (owner) {
@@ -418,13 +439,14 @@
             }
         }
 
+        // فحص الجلسة المحفوظة
         function checkSavedSession() {
             const savedId = localStorage.getItem('arkan_user_id');
             if(savedId && fbWorkers.length > 0) {
                 const worker = fbWorkers.find(w => w.id === savedId);
                 if(worker) {
                     currentUser = worker;
-                    document.getElementById('sidebar-worker-name').innerText = worker.nameAr || worker.name;
+                    document.getElementById('sidebar-worker-name').innerText = worker.name;
                     document.getElementById('sidebar-worker-id').innerText = `ID: ${worker.id}`;
                     
                     const todayStr = getLocalDateString();
@@ -447,20 +469,15 @@
             }
         }
 
+        // عملية تسجيل الدخول
         async function login(e) {
             e.preventDefault();
             const errDiv = document.getElementById('login-error');
             const errTxt = document.getElementById('txt-login-error');
             const btnSubmit = document.getElementById('btn-login-submit');
 
-            if(cloudErrorMsg || firebaseConfig?.apiKey === 'mock') {
-                errTxt.innerText = cloudErrorMsg || "يرجى اختبار النظام السحابي عبر نافذة الـ Preview، أو تزويد إعدادات Firebase الخاصة بك.";
-                errDiv.classList.remove('hidden');
-                return;
-            }
-
             if(!isAuthReady) {
-                errTxt.innerText = "جاري الاتصال بالسحابة، يرجى الانتظار ثوانٍ والمحاولة.";
+                errTxt.innerText = "جاري الاتصال بالسحابة، يرجى الانتظار أو تأكد من إعداداتك.";
                 errDiv.classList.remove('hidden');
                 return;
             }
@@ -472,23 +489,22 @@
             const id = document.getElementById('input-worker-id').value;
             let worker = fbWorkers.find(w => w.id === id);
             
-            // Auto-Seed worker 1001 for testing if database is completely empty
+            // توليد عامل تلقائي للتجربة لو الداتا بيز لسه فاضية
             if (!worker && id === "1001" && fbWorkers.length === 0) {
                 try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_workers', '1001'), { id: '1001', name: 'أحمد محمد', nameAr: 'أحمد محمد', wage: 150, createdAt: Date.now() });
-                    worker = { id: '1001', name: 'أحمد محمد', nameAr: 'أحمد محمد' };
+                    await setDoc(doc(db, 'app_workers', '1001'), { id: '1001', name: 'أحمد محمد', wage: 150, createdAt: Date.now() });
+                    worker = { id: '1001', name: 'أحمد محمد' };
                 } catch(e) {}
             }
 
             if(worker) {
                 const owner = localStorage.getItem('arkan_device_owner');
                 if (owner && owner !== id) {
-                    errTxt.innerText = "هذا الجهاز مرتبط بعامل آخر! لا يمكنك تسجيل الدخول بحساب مختلف.";
+                    errTxt.innerText = "هذا الجهاز مرتبط بعامل آخر! لا يمكنك الدخول بكود مختلف.";
                     errDiv.classList.remove('hidden');
                     resetLoginBtn(btnSubmit); return;
                 }
                 
-                // Device Binding
                 if (!owner) {
                     localStorage.setItem('arkan_device_owner', id); 
                     enforceDeviceBinding();
@@ -500,7 +516,7 @@
                 
                 checkSavedSession();
             } else {
-                errTxt.innerText = "كود العامل غير مسجل في قاعدة بيانات الإدارة!";
+                errTxt.innerText = "كود العامل غير مسجل في النظام!";
                 errDiv.classList.remove('hidden');
             }
             resetLoginBtn(btnSubmit);
@@ -542,7 +558,7 @@
                 document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
                 const pId = localStorage.getItem('arkan_proj_id');
                 const p = fbProjects.find(x => x.id === pId);
-                if(p) document.getElementById('val-current-proj').innerText = p.nameAr || p.name;
+                if(p) document.getElementById('val-current-proj').innerText = p.name;
             } 
             else if(attendanceStatus === 'completed') {
                 document.getElementById('state-completed').classList.remove('hidden');
@@ -555,7 +571,7 @@
             select.innerHTML = `<option value="" disabled ${!currentVal ? 'selected' : ''}>--- اختر موقع العمل ---</option>`;
             fbProjects.forEach(p => {
                 const opt = document.createElement('option');
-                opt.value = p.id; opt.innerText = p.nameAr || p.name;
+                opt.value = p.id; opt.innerText = p.name;
                 if(p.id === currentVal) opt.selected = true;
                 select.appendChild(opt);
             });
@@ -570,6 +586,7 @@
             } else { box.classList.add('hidden'); }
         }
 
+        // جلب المهام مفلترة بالتاريخ المحدد من قبل العامل
         function renderTasks() {
             if(!currentUser) return;
             const filterDate = document.getElementById('filter-tasks-date').value;
@@ -611,11 +628,12 @@
         async function updateTaskStatus(taskId, newStatus) {
             if(!auth.currentUser) return;
             try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_tasks', taskId), { status: newStatus });
+                await updateDoc(doc(db, 'app_tasks', taskId), { status: newStatus });
                 showToast("تم تحديث الحالة، وتظهر الآن عند الإدارة!");
             } catch(e) { console.error("Update task error", e); }
         }
 
+        // جلب الطلبات مفلترة بالتاريخ
         function renderRequestsHistory() {
             if(!currentUser) return;
             const filterDate = document.getElementById('filter-history-date').value;
@@ -649,6 +667,7 @@
             `}).join('');
         }
 
+        // حساب المسافة الجغرافية (نظام الـ GPS)
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3; const p1 = lat1 * Math.PI/180, p2 = lat2 * Math.PI/180;
             const dp = (lat2 - lat1) * Math.PI/180, dl = (lon2 - lon1) * Math.PI/180;
@@ -677,9 +696,9 @@
                 localStorage.setItem('arkan_proj_id', projId);
                 
                 try {
-                    await addDoc(getColRef('app_attendance'), {
-                        workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
-                        projectId: project.id, projectName: project.nameAr || project.name, 
+                    await addDoc(collection(db, 'app_attendance'), {
+                        workerId: currentUser.id, workerName: currentUser.name, 
+                        projectId: project.id, projectName: project.name, 
                         timeIn: timeStr, timeOut: null, date: dateStr, status: 'working', createdAt: Date.now()
                     });
                     updateDashboardState();
@@ -699,7 +718,7 @@
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     const distance = calculateDistance(pos.coords.latitude, pos.coords.longitude, project.lat, project.lng);
-                    if (distance > project.radius) {
+                    if (distance > (project.radius || 500)) {
                         document.getElementById('txt-loc-error').innerText = `أنت خارج النطاق بمسافة ${Math.round(distance)} متر!`;
                         document.getElementById('location-error').classList.remove('hidden');
                         document.getElementById('state-loading').classList.add('hidden');
@@ -726,7 +745,7 @@
 
             if(activeAtt) {
                 try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_attendance', activeAtt.id), {
+                    await updateDoc(doc(db, 'app_attendance', activeAtt.id), {
                         timeOut: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}),
                         status: 'completed'
                     });
@@ -757,8 +776,8 @@
             }
 
             try {
-                await addDoc(getColRef('app_requests'), {
-                    workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
+                await addDoc(collection(db, 'app_requests'), {
+                    workerId: currentUser.id, workerName: currentUser.name, 
                     type: reqType, typeName: typeName, details: details, 
                     date: new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'}),
                     dateStr: getLocalDateString(), 
