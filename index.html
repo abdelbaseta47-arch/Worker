@@ -32,7 +32,6 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
 
-    <!-- شريط النظام والتنبيهات -->
     <div class="bg-slate-900 text-slate-300 py-1.5 px-4 flex justify-between items-center z-20 relative">
         <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -72,7 +71,6 @@
         </div>
     </header>
 
-    <!-- القائمة الجانبية -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
     
     <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
@@ -120,7 +118,6 @@
 
     <main class="flex-1 w-full max-w-md mx-auto p-4 pb-24 relative overflow-hidden flex flex-col justify-center">
         
-        <!-- قسم تسجيل الدخول -->
         <div id="section-login" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 fade-in w-full">
             <div class="bg-slate-900 p-8 text-center relative">
                 <div class="absolute top-0 right-0 p-4 opacity-10"><i class="ph-fill ph-fingerprint text-7xl text-white"></i></div>
@@ -136,8 +133,9 @@
                         <div class="relative">
                             <i class="ph ph-identification-card absolute top-1/2 transform -translate-y-1/2 right-3 text-slate-400 text-xl"></i>
                             <input type="text" id="input-worker-id" placeholder="أدخل رقمك هنا (مثال: 1001)" required
-                                class="w-full px-10 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 transition-all font-semibold text-lg text-center">
+                                class="w-full px-10 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 transition-all font-bold text-lg text-center">
                         </div>
+                        <p id="txt-device-locked" class="text-[10px] text-emerald-600 font-bold mt-1.5 hidden flex items-center gap-1"><i class="ph-fill ph-lock-key"></i> هذا الجهاز مرتبط بملفك الشخصي فقط.</p>
                         <div id="login-error" class="hidden mt-3 p-3 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-2 text-rose-700 text-sm">
                             <i class="ph-fill ph-warning-circle text-lg flex-shrink-0"></i>
                             <span id="txt-login-error">رقم العامل غير صحيح أو الجهاز مسجل لغيرك!</span>
@@ -152,7 +150,6 @@
             </div>
         </div>
 
-        <!-- حاوية شاشات التطبيق الداخلي -->
         <div id="section-dashboard" class="hidden w-full h-full flex flex-col justify-start">
             
             <!-- التبويب 1: الرئيسية -->
@@ -187,7 +184,7 @@
                                 <i class="ph-bold ph-fingerprint text-2xl"></i>
                                 <span id="txt-btn-checkin">تسجيل الحضور</span>
                             </button>
-                            <button id="btn-bypass" onclick="performCheckIn(true)" class="text-[10px] text-slate-400 underline text-center py-1 hidden">تجاوز الفحص (Admin)</button>
+                            <button id="btn-bypass" onclick="performCheckIn(true)" class="text-[10px] text-slate-400 underline text-center py-1 hidden">تجاوز الفحص الجغرافي (Admin)</button>
                         </div>
                     </div>
 
@@ -230,6 +227,7 @@
                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <i class="ph-duotone ph-clipboard-text text-xl text-amber-500"></i> المهام الموكلة
                         </h3>
+                        <!-- الفلتر اليومي للمهام -->
                         <input type="date" id="filter-tasks-date" onchange="renderTasks()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer">
                     </div>
                     <div id="list-tasks" class="space-y-3">
@@ -281,6 +279,7 @@
                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <i class="ph-duotone ph-clock-counter-clockwise text-xl text-purple-500"></i> حالة طلباتي
                         </h3>
+                        <!-- الفلتر اليومي للطلبات -->
                         <input type="date" id="filter-history-date" onchange="renderRequestsHistory()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer">
                     </div>
                     <div id="list-requests-history" class="space-y-3">
@@ -292,7 +291,6 @@
         </div>
     </main>
 
-    <!-- نوافذ الطلبات المنبثقة -->
     <div id="modal-overlay-form" onclick="closeModals()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
 
     <div id="modal-leave" class="fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
@@ -351,41 +349,48 @@
         <span id="txt-toast-msg" class="font-medium text-sm">تمت العملية بنجاح!</span>
     </div>
 
-    <!-- Firebase System & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (Injected by environment or fallback)
+        // Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'arkan-app-live';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "mock" };
         
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let app, auth, db;
+        let isAuthReady = false;
+        let cloudErrorMsg = null;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            cloudErrorMsg = "لا يمكن الاتصال بالسحابة بسبب نقص الإعدادات.";
+        }
         
         let fbWorkers = [], fbProjects = [], fbTasks = [], fbRequests = [], fbAttendance = [], fbAnnouncements = [];
-        let isAuthReady = false;
         let currentUser = null;
         let attendanceStatus = 'none';
-        let lang = 'ar';
 
-        // Helper to get local current date string (YYYY-MM-DD)
         function getLocalDateString() {
             const d = new Date();
             d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
             return d.toISOString().split('T')[0];
         }
 
-        // --- Firebase Initial Setup ---
         async function initCloud() {
+            if(!app) return;
             try {
                 if (typeof __initial_auth_token !== 'undefined') await signInWithCustomToken(auth, __initial_auth_token);
                 else await signInAnonymously(auth);
                 isAuthReady = true;
                 startRealTimeListeners();
-            } catch(err) { console.error("Cloud Auth Error", err); }
+            } catch(err) { 
+                cloudErrorMsg = "فشل المصادقة السحابية. تأكد من صحة الرابط.";
+                console.error(err); 
+            }
         }
 
         function getColRef(colName) { return collection(db, 'artifacts', appId, 'public', 'data', colName); }
@@ -393,20 +398,33 @@
         function startRealTimeListeners() {
             if(!auth.currentUser) return;
             
-            onSnapshot(getColRef('workers'), snap => { fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); checkSavedSession(); });
-            onSnapshot(getColRef('projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); renderProjects(); if(currentUser) updateDashboardState(); });
-            onSnapshot(getColRef('tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
-            onSnapshot(getColRef('requests'), snap => { fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); renderRequestsHistory(); });
-            onSnapshot(getColRef('attendance'), snap => { fbAttendance = snap.docs.map(d=>({id:d.id, ...d.data()})); if(currentUser) checkSavedSession(); });
+            // Listen to collections mapping perfectly with Admin page
+            onSnapshot(getColRef('app_workers'), snap => { fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); checkSavedSession(); });
+            onSnapshot(getColRef('app_projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); renderProjects(); if(currentUser) updateDashboardState(); });
+            onSnapshot(getColRef('app_tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
+            onSnapshot(getColRef('app_requests'), snap => { fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); renderRequestsHistory(); });
+            onSnapshot(getColRef('app_attendance'), snap => { fbAttendance = snap.docs.map(d=>({id:d.id, ...d.data()})); if(currentUser) checkSavedSession(); });
             onSnapshot(getColRef('announcements'), snap => { 
                 fbAnnouncements = snap.docs.map(d=>({id:d.id, ...d.data()})); 
-                // Default announcement if empty
-                if(fbAnnouncements.length === 0) fbAnnouncements = [{text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة (PPE) كأحذية الأمان والخوذة لضمان سلامتكم في المواقع."}];
+                if(fbAnnouncements.length === 0) fbAnnouncements = [{text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة كأحذية الأمان."}];
                 renderAnnouncements(); 
             });
         }
 
-        // --- Core UI Logic ---
+        // --- Core UI & Logic ---
+        
+        function enforceDeviceBinding() {
+            // Locking the input to the single worker id if previously registered
+            const owner = localStorage.getItem('arkan_device_owner');
+            if (owner) {
+                const input = document.getElementById('input-worker-id');
+                input.value = owner;
+                input.readOnly = true; // Lock it so they can't type another ID!
+                input.classList.add('bg-slate-200', 'text-slate-500', 'cursor-not-allowed', 'opacity-80');
+                document.getElementById('txt-device-locked').classList.remove('hidden');
+            }
+        }
+
         function checkSavedSession() {
             const savedId = localStorage.getItem('arkan_user_id');
             if(savedId && fbWorkers.length > 0) {
@@ -438,33 +456,59 @@
 
         async function login(e) {
             e.preventDefault();
-            if(!isAuthReady) return;
-            
+            const errDiv = document.getElementById('login-error');
+            const errTxt = document.getElementById('txt-login-error');
             const btnSubmit = document.getElementById('btn-login-submit');
+
+            if(cloudErrorMsg || typeof __firebase_config === 'undefined') {
+                errTxt.innerText = cloudErrorMsg || "لتسجيل الدخول السحابي، يجب تشغيل النظام من بيئة تطويرية مدعومة.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            if(!isAuthReady) {
+                errTxt.innerText = "جاري الاتصال بقاعدة البيانات السحابية، يرجى الانتظار ثوانٍ والمحاولة.";
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            
             btnSubmit.disabled = true;
             document.getElementById('login-spinner').classList.remove('hidden');
             document.getElementById('login-arrow').classList.add('hidden');
 
             const id = document.getElementById('input-worker-id').value;
-            const worker = fbWorkers.find(w => w.id === id);
+            let worker = fbWorkers.find(w => w.id === id);
             
+            // Auto-Seed worker 1001 for testing if database is completely empty
+            if (!worker && id === "1001" && fbWorkers.length === 0) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_workers', '1001'), { id: '1001', name: 'أحمد محمد', nameAr: 'أحمد محمد', wage: 150, createdAt: Date.now() });
+                    worker = { id: '1001', name: 'أحمد محمد', nameAr: 'أحمد محمد' };
+                } catch(e) {}
+            }
+
             if(worker) {
                 const owner = localStorage.getItem('arkan_device_owner');
                 if (owner && owner !== id) {
-                    document.getElementById('txt-login-error').innerText = "تم حظر الدخول! الجهاز مسجل لعامل آخر.";
-                    document.getElementById('login-error').classList.remove('hidden');
+                    errTxt.innerText = "هذا الجهاز مرتبط بعامل آخر! لا يمكنك تسجيل الدخول بحساب مختلف.";
+                    errDiv.classList.remove('hidden');
                     resetLoginBtn(btnSubmit); return;
                 }
-                if (!owner) localStorage.setItem('arkan_device_owner', id); 
+                
+                // Bind device completely
+                if (!owner) {
+                    localStorage.setItem('arkan_device_owner', id); 
+                    enforceDeviceBinding(); // Lock the field visually for the future
+                }
 
                 currentUser = worker;
                 localStorage.setItem('arkan_user_id', worker.id);
-                document.getElementById('login-error').classList.add('hidden');
+                errDiv.classList.add('hidden');
                 
                 checkSavedSession();
             } else {
-                document.getElementById('txt-login-error').innerText = "رقم العامل غير صحيح في السحابة!";
-                document.getElementById('login-error').classList.remove('hidden');
+                errTxt.innerText = "كود العامل غير مسجل في قاعدة بيانات الإدارة!";
+                errDiv.classList.remove('hidden');
             }
             resetLoginBtn(btnSubmit);
         }
@@ -482,11 +526,10 @@
             document.getElementById('nav-notifications').classList.add('hidden');
             document.getElementById('section-dashboard').classList.add('hidden');
             document.getElementById('section-login').classList.remove('hidden');
-            document.getElementById('input-worker-id').value = '';
             toggleSidebar();
         }
 
-        // --- Dashboard Rendering ---
+        // --- Dashboard Syncing ---
         function updateDashboardState() {
             document.getElementById('state-checkin').classList.add('hidden');
             document.getElementById('state-loading').classList.add('hidden');
@@ -535,10 +578,11 @@
             } else { box.classList.add('hidden'); }
         }
 
-        // Cloud Task Rendering & Filtering
+        // --- Daily Filter Logic (Tasks & Requests) ---
         function renderTasks() {
             if(!currentUser) return;
             const filterDate = document.getElementById('filter-tasks-date').value;
+            // Fetch tasks for THIS WORKER and specifically THIS DATE selected
             const myTasks = fbTasks.filter(t => t.workerId === currentUser.id && t.date === filterDate);
             
             const listTasks = document.getElementById('list-tasks');
@@ -569,28 +613,27 @@
                     </div>`
                 }).join('');
             } else {
-                listTasks.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-check-circle text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد مهام موكلة إليك في هذا اليوم.</p></div>`;
+                listTasks.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-check-circle text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا يوجد لديك مهام مطلوبة لتاريخ ${filterDate}</p></div>`;
             }
         }
 
         async function updateTaskStatus(taskId, newStatus) {
             if(!auth.currentUser) return;
             try {
-                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId), { status: newStatus });
-                showToast("تم تحديث حالة المهمة، الإدارة تراها الآن!");
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_tasks', taskId), { status: newStatus });
+                showToast("تم تحديث الحالة، وتظهر الآن عند الإدارة!");
             } catch(e) { console.error("Update task error", e); }
         }
 
-        // Cloud Requests History & Filtering
         function renderRequestsHistory() {
             if(!currentUser) return;
             const filterDate = document.getElementById('filter-history-date').value;
-            // Filter logic: request dates are stored with time, so we check if the string contains the filterDate
+            // Fetch requests for THIS WORKER and specifically THIS DATE selected
             const myRequests = fbRequests.filter(r => r.workerId === currentUser.id && r.dateStr === filterDate).sort((a,b) => b.createdAt - a.createdAt);
             const listContainer = document.getElementById('list-requests-history');
 
             if(myRequests.length === 0) {
-                listContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-folder-open text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد طلبات مرفوعة في هذا اليوم.</p></div>`;
+                listContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-folder-open text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد طلبات سابقة في تاريخ ${filterDate}</p></div>`;
                 return;
             }
 
@@ -610,13 +653,13 @@
                     </div>
                     <p class="text-xs text-slate-600 mb-2 bg-white p-3 rounded-lg border border-slate-100">${r.details}</p>
                     <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
-                        <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1"><i class="ph-duotone ph-clock"></i> ${r.date}</span>
+                        <span class="text-[10px] text-slate-400 font-medium flex items-center gap-1"><i class="ph-duotone ph-clock"></i> رفعت الساعة: ${r.date}</span>
                     </div>
                 </div>
             `}).join('');
         }
 
-        // --- GPS & Cloud Attendance ---
+        // --- GPS Logic ---
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3; const p1 = lat1 * Math.PI/180, p2 = lat2 * Math.PI/180;
             const dp = (lat2 - lat1) * Math.PI/180, dl = (lon2 - lon1) * Math.PI/180;
@@ -645,7 +688,7 @@
                 localStorage.setItem('arkan_proj_id', projId);
                 
                 try {
-                    await addDoc(getColRef('attendance'), {
+                    await addDoc(getColRef('app_attendance'), {
                         workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
                         projectId: project.id, projectName: project.nameAr || project.name, 
                         timeIn: timeStr, timeOut: null, date: dateStr, status: 'working', createdAt: Date.now()
@@ -686,8 +729,6 @@
         async function checkOut() {
             if(!auth.currentUser) return;
             const today = getLocalDateString();
-            
-            // Find current active attendance in memory (from cloud sync)
             const activeAtt = fbAttendance.find(a => a.workerId === currentUser.id && a.date === today && a.status === 'working');
             
             attendanceStatus = 'completed';
@@ -696,7 +737,7 @@
 
             if(activeAtt) {
                 try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'attendance', activeAtt.id), {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'app_attendance', activeAtt.id), {
                         timeOut: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}),
                         status: 'completed'
                     });
@@ -704,7 +745,6 @@
             }
         }
 
-        // --- Cloud Forms Submission ---
         async function handleFormSubmit(e, reqType) {
             e.preventDefault(); 
             if(!auth.currentUser) return;
@@ -728,18 +768,17 @@
             }
 
             try {
-                await addDoc(getColRef('requests'), {
+                await addDoc(getColRef('app_requests'), {
                     workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
                     type: reqType, typeName: typeName, details: details, 
                     date: new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'}),
-                    dateStr: getLocalDateString(), // Date for filtering
+                    dateStr: getLocalDateString(), // Essential for daily filtering
                     status: 'pending', createdAt: Date.now()
                 });
-                closeModals(); e.target.reset(); showToast('تم إرسال الطلب للسحابة بنجاح!');
+                closeModals(); e.target.reset(); showToast('تم إرسال الطلب، الإدارة تراه الآن!');
             } catch(err) { console.error("Form err", err); }
         }
 
-        // --- UI Interactions ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar-drawer');
             const overlay = document.getElementById('sidebar-overlay');
@@ -786,7 +825,7 @@
             setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3000);
         }
 
-        // Export functions to window to allow HTML inline handlers
+        // Window exports
         window.login = login;
         window.logout = logout;
         window.toggleSidebar = toggleSidebar;
@@ -801,14 +840,13 @@
         window.renderTasks = renderTasks;
         window.renderRequestsHistory = renderRequestsHistory;
 
-        // Boot
         window.onload = () => {
-            // Set date filters to today's date automatically
             const today = getLocalDateString();
             document.getElementById('filter-tasks-date').value = today;
             document.getElementById('filter-history-date').value = today;
             
-            initCloud(); // Initialize Firebase
+            enforceDeviceBinding(); // Locks input if they already logged in before on this device
+            initCloud(); 
         };
     </script>
 </body>
