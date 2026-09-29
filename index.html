@@ -24,7 +24,6 @@
         
         .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         
-        /* حركة التعميمات */
         .marquee { overflow: hidden; white-space: nowrap; box-sizing: border-box; }
         .marquee-content { display: inline-block; animation: marquee 20s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, 0); } }
@@ -35,7 +34,7 @@
     <div class="bg-slate-900 text-slate-300 py-1.5 px-4 flex justify-between items-center z-20 relative">
         <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            نظام سحابي متصل (Cloud Sync)
+            نظام سحابي متصل
         </div>
         <button onclick="toggleLang()" class="flex items-center gap-1.5 text-[11px] font-semibold hover:text-white transition-colors">
             <i class="ph ph-globe text-sm"></i>
@@ -43,7 +42,6 @@
         </button>
     </div>
 
-    <!-- الترويسة -->
     <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30 glass-effect">
         <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -104,7 +102,7 @@
             </button>
             <button onclick="openSidebarTab('tab-history')" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 tab-btn" data-target="tab-history">
                 <i class="ph-duotone ph-clock-counter-clockwise text-xl text-purple-500"></i>
-                <span id="txt-menu-history">متابعة طلباتي السابقة</span>
+                <span id="txt-menu-history">متابعة طلباتي</span>
             </button>
         </nav>
 
@@ -157,9 +155,7 @@
                 
                 <div id="box-announcements" class="hidden bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-3 flex items-center gap-3 shadow-sm">
                     <i class="ph-fill ph-megaphone text-2xl text-blue-500 flex-shrink-0"></i>
-                    <div class="flex-1 marquee text-sm font-bold" id="text-announcement">
-                        <!-- يعبأ من السحابة -->
-                    </div>
+                    <div class="flex-1 marquee text-sm font-bold" id="text-announcement"></div>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 relative overflow-hidden">
@@ -170,7 +166,6 @@
                         <label id="txt-select-proj" class="block text-sm font-bold text-slate-700">موقع العمل الحالي:</label>
                         <div class="relative">
                             <select id="select-project" onchange="updateDashboardState()" class="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 font-medium">
-                                <!-- الخيارات -->
                             </select>
                         </div>
                         
@@ -227,12 +222,9 @@
                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <i class="ph-duotone ph-clipboard-text text-xl text-amber-500"></i> المهام الموكلة
                         </h3>
-                        <!-- الفلتر اليومي للمهام -->
                         <input type="date" id="filter-tasks-date" onchange="renderTasks()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer">
                     </div>
-                    <div id="list-tasks" class="space-y-3">
-                        <!-- يُملأ من السحابة -->
-                    </div>
+                    <div id="list-tasks" class="space-y-3"></div>
                 </div>
             </div>
 
@@ -279,12 +271,9 @@
                         <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <i class="ph-duotone ph-clock-counter-clockwise text-xl text-purple-500"></i> حالة طلباتي
                         </h3>
-                        <!-- الفلتر اليومي للطلبات -->
                         <input type="date" id="filter-history-date" onchange="renderRequestsHistory()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 shadow-sm cursor-pointer">
                     </div>
-                    <div id="list-requests-history" class="space-y-3">
-                        <!-- يُملأ من السحابة -->
-                    </div>
+                    <div id="list-requests-history" class="space-y-3"></div>
                 </div>
             </div>
             
@@ -343,7 +332,6 @@
         </div>
     </div>
 
-    <!-- إشعار التوست -->
     <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[70] pointer-events-none w-max max-w-[90%]">
         <i class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
         <span id="txt-toast-msg" class="font-medium text-sm">تمت العملية بنجاح!</span>
@@ -354,15 +342,14 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'arkan-app-live';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "mock" };
-        
+        let firebaseConfig = null;
         let app, auth, db;
         let isAuthReady = false;
         let cloudErrorMsg = null;
         
         try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "mock" };
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
@@ -383,12 +370,21 @@
         async function initCloud() {
             if(!app) return;
             try {
-                if (typeof __initial_auth_token !== 'undefined') await signInWithCustomToken(auth, __initial_auth_token);
-                else await signInAnonymously(auth);
+                // نظام الطوارئ للمصادقة: يحاول الدخول بتوكن المنصة، وإذا انتهت صلاحيته يدخل كـ Anonymous لضمان استمرار العمل
+                if (typeof __initial_auth_token !== 'undefined') {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch(tokenErr) {
+                        console.warn("Custom token expired or invalid, using anonymous auth...", tokenErr);
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                }
                 isAuthReady = true;
                 startRealTimeListeners();
             } catch(err) { 
-                cloudErrorMsg = "فشل المصادقة السحابية. تأكد من صحة الرابط.";
+                cloudErrorMsg = "فشل الاتصال السحابي. يرجى تجربة فتح التطبيق من نافذة (Preview).";
                 console.error(err); 
             }
         }
@@ -397,8 +393,6 @@
 
         function startRealTimeListeners() {
             if(!auth.currentUser) return;
-            
-            // Listen to collections mapping perfectly with Admin page
             onSnapshot(getColRef('app_workers'), snap => { fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); checkSavedSession(); });
             onSnapshot(getColRef('app_projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); renderProjects(); if(currentUser) updateDashboardState(); });
             onSnapshot(getColRef('app_tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
@@ -411,17 +405,16 @@
             });
         }
 
-        // --- Core UI & Logic ---
-        
         function enforceDeviceBinding() {
-            // Locking the input to the single worker id if previously registered
             const owner = localStorage.getItem('arkan_device_owner');
             if (owner) {
                 const input = document.getElementById('input-worker-id');
-                input.value = owner;
-                input.readOnly = true; // Lock it so they can't type another ID!
-                input.classList.add('bg-slate-200', 'text-slate-500', 'cursor-not-allowed', 'opacity-80');
-                document.getElementById('txt-device-locked').classList.remove('hidden');
+                if(input) {
+                    input.value = owner;
+                    input.readOnly = true; 
+                    input.classList.add('bg-slate-200', 'text-slate-500', 'cursor-not-allowed', 'opacity-80');
+                    document.getElementById('txt-device-locked').classList.remove('hidden');
+                }
             }
         }
 
@@ -460,14 +453,14 @@
             const errTxt = document.getElementById('txt-login-error');
             const btnSubmit = document.getElementById('btn-login-submit');
 
-            if(cloudErrorMsg || typeof __firebase_config === 'undefined') {
-                errTxt.innerText = cloudErrorMsg || "لتسجيل الدخول السحابي، يجب تشغيل النظام من بيئة تطويرية مدعومة.";
+            if(cloudErrorMsg || firebaseConfig?.apiKey === 'mock') {
+                errTxt.innerText = cloudErrorMsg || "يرجى اختبار النظام السحابي عبر نافذة الـ Preview، أو تزويد إعدادات Firebase الخاصة بك.";
                 errDiv.classList.remove('hidden');
                 return;
             }
 
             if(!isAuthReady) {
-                errTxt.innerText = "جاري الاتصال بقاعدة البيانات السحابية، يرجى الانتظار ثوانٍ والمحاولة.";
+                errTxt.innerText = "جاري الاتصال بالسحابة، يرجى الانتظار ثوانٍ والمحاولة.";
                 errDiv.classList.remove('hidden');
                 return;
             }
@@ -495,10 +488,10 @@
                     resetLoginBtn(btnSubmit); return;
                 }
                 
-                // Bind device completely
+                // Device Binding
                 if (!owner) {
                     localStorage.setItem('arkan_device_owner', id); 
-                    enforceDeviceBinding(); // Lock the field visually for the future
+                    enforceDeviceBinding();
                 }
 
                 currentUser = worker;
@@ -529,7 +522,6 @@
             toggleSidebar();
         }
 
-        // --- Dashboard Syncing ---
         function updateDashboardState() {
             document.getElementById('state-checkin').classList.add('hidden');
             document.getElementById('state-loading').classList.add('hidden');
@@ -578,11 +570,10 @@
             } else { box.classList.add('hidden'); }
         }
 
-        // --- Daily Filter Logic (Tasks & Requests) ---
         function renderTasks() {
             if(!currentUser) return;
             const filterDate = document.getElementById('filter-tasks-date').value;
-            // Fetch tasks for THIS WORKER and specifically THIS DATE selected
+            
             const myTasks = fbTasks.filter(t => t.workerId === currentUser.id && t.date === filterDate);
             
             const listTasks = document.getElementById('list-tasks');
@@ -613,7 +604,7 @@
                     </div>`
                 }).join('');
             } else {
-                listTasks.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-check-circle text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا يوجد لديك مهام مطلوبة لتاريخ ${filterDate}</p></div>`;
+                listTasks.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-check-circle text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد مهام لتاريخ ${filterDate}</p></div>`;
             }
         }
 
@@ -628,12 +619,11 @@
         function renderRequestsHistory() {
             if(!currentUser) return;
             const filterDate = document.getElementById('filter-history-date').value;
-            // Fetch requests for THIS WORKER and specifically THIS DATE selected
             const myRequests = fbRequests.filter(r => r.workerId === currentUser.id && r.dateStr === filterDate).sort((a,b) => b.createdAt - a.createdAt);
             const listContainer = document.getElementById('list-requests-history');
 
             if(myRequests.length === 0) {
-                listContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-folder-open text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد طلبات سابقة في تاريخ ${filterDate}</p></div>`;
+                listContainer.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200"><i class="ph-duotone ph-folder-open text-4xl mb-2 text-slate-300"></i><p class="text-sm font-medium">لا توجد طلبات في تاريخ ${filterDate}</p></div>`;
                 return;
             }
 
@@ -659,7 +649,6 @@
             `}).join('');
         }
 
-        // --- GPS Logic ---
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371e3; const p1 = lat1 * Math.PI/180, p2 = lat2 * Math.PI/180;
             const dp = (lat2 - lat1) * Math.PI/180, dl = (lon2 - lon1) * Math.PI/180;
@@ -772,7 +761,7 @@
                     workerId: currentUser.id, workerName: currentUser.nameAr || currentUser.name, 
                     type: reqType, typeName: typeName, details: details, 
                     date: new Date().toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'}),
-                    dateStr: getLocalDateString(), // Essential for daily filtering
+                    dateStr: getLocalDateString(), 
                     status: 'pending', createdAt: Date.now()
                 });
                 closeModals(); e.target.reset(); showToast('تم إرسال الطلب، الإدارة تراه الآن!');
@@ -845,7 +834,7 @@
             document.getElementById('filter-tasks-date').value = today;
             document.getElementById('filter-history-date').value = today;
             
-            enforceDeviceBinding(); // Locks input if they already logged in before on this device
+            enforceDeviceBinding();
             initCloud(); 
         };
     </script>
