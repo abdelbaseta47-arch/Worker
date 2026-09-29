@@ -682,7 +682,7 @@
                 workerId: workerId,
                 text: text,
                 status: "pending",
-                date: new Date().toLocaleDateString('ar-SA')
+                date: new Date().toISOString().split('T')[0] // تم توحيد التاريخ ليعمل مع شاشة العامل
             });
             
             saveData('app_tasks', tasks);
