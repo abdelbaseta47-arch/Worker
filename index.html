@@ -5,59 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>أركان الخليج - بوابة العامل</title>
     
-    <!-- تحميل Tailwind CSS للتصميم -->
+    <!-- تحميل Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- تحميل مكتبة الأيقونات Phosphor Icons -->
+    <!-- تحميل مكتبة الأيقونات -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- تحميل الخطوط -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --font-ar: 'Tajawal', sans-serif;
-            --font-en: 'Inter', sans-serif;
-        }
-        body { 
-            font-family: var(--font-ar); 
-            -webkit-tap-highlight-color: transparent;
-            background-color: #f8fafc; /* slate-50 */
-        }
+        :root { --font-ar: 'Tajawal', sans-serif; --font-en: 'Inter', sans-serif; }
+        body { font-family: var(--font-ar); background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         .ltr body { font-family: var(--font-en); }
-        
-        /* تأثيرات حركية */
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .slide-up { animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-down { animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(100%); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideDown {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(100%); }
-        }
-
-        /* تحسينات التصميم */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col">
 
     <!-- شريط اللغة -->
     <div class="bg-slate-900 text-slate-300 py-2 px-4 flex justify-end z-20 relative">
-        <button id="btn-lang" class="flex items-center gap-2 text-xs font-semibold hover:text-white transition-colors">
+        <button onclick="toggleLang()" class="flex items-center gap-2 text-xs font-semibold hover:text-white transition-colors">
             <i class="ph ph-globe text-lg"></i>
             <span id="txt-lang">English</span>
         </button>
@@ -70,22 +40,171 @@
                 <i class="ph-fill ph-hexagon text-3xl text-blue-400 relative z-10"></i>
                 <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-blue-600 opacity-50"></div>
             </div>
+            <div>
+                <h1 id="txt-company" class="text-lg font-bold text-blue-950 leading-tight">شركة أركان الخليج</h1>
+                <p class="text-xs font-medium text-emerald-600 mt-0.5 flex items-center gap-1">
+                    <i class="ph-fill ph-shield-check"></i> <span id="txt-subtitle">نظام الحضور الآمن</span>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-md mx-auto p-4 pb-24 flex flex-col justify-center relative">
+        
+        <div id="section-login" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 fade-in w-full">
+            <div class="bg-slate-900 p-8 text-center relative">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                    <i class="ph-fill ph-fingerprint text-7xl text-white"></i>
+                </div>
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg relative z-10">
+                    <i class="ph-fill ph-user text-3xl text-white"></i>
+                </div>
+                <h2 id="txt-login-title" class="text-2xl font-bold text-white mb-1 relative z-10">تسجيل الدخول</h2>
+            </div>
+            <div class="p-6">
+                <form id="form-login" onsubmit="login(event)" class="space-y-5">
+                    <div>
+                        <label id="txt-worker-id" class="block text-sm font-bold text-slate-700 mb-2">رقم العامل (كود الموظف)</label>
+                        <div class="relative">
+                            <i class="ph ph-identification-card absolute top-1/2 transform -translate-y-1/2 right-3 text-slate-400 text-xl ltr:left-3 ltr:right-auto"></i>
+                            <input type="text" id="input-worker-id" placeholder="أدخل رقمك هنا (مثال: 1001)" required
+                                class="w-full px-10 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 transition-all font-semibold text-lg text-center">
+                        </div>
+                        <div id="login-error" class="hidden mt-3 p-3 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-2 text-rose-700 text-sm">
+                            <i class="ph-fill ph-warning-circle text-lg flex-shrink-0"></i>
+                            <span id="txt-login-error">رقم العامل غير صحيح!</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+                        <span id="txt-login-btn">دخول للنظام</span>
+                        <i class="ph-bold ph-arrow-left ltr:rotate-180"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="section-dashboard" class="hidden space-y-5 w-full">
+            
+            <!-- بطاقة الترحيب -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between fade-in">
+                <div>
+                    <p class="text-xs text-slate-500 font-medium mb-1"><span id="txt-greeting">صباح الخير</span> 👋</p>
+                    <h2 id="val-worker-name" class="text-xl font-bold text-slate-800">الاسم هنا</h2>
+                </div>
+                <button onclick="logout()" class="w-10 h-10 bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 rounded-full flex items-center justify-center transition-colors">
+                    <i class="ph-bold ph-power text-xl"></i>
+                </button>
+            </div>
+
+            <!-- بطاقة الحضور والانصراف -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 fade-in relative overflow-hidden">
+                
+                <!-- الحالة: لم يسجل حضور -->
+                <div id="state-checkin" class="space-y-4">
+                    <label id="txt-select-proj" class="block text-sm font-bold text-slate-700">موقع العمل الحالي:</label>
+                    <div class="relative">
+                        <i class="ph-fill ph-map-pin absolute top-1/2 transform -translate-y-1/2 right-3 text-blue-600 text-xl ltr:left-3 ltr:right-auto"></i>
+                        <select id="select-project" onchange="updateDashboardState()" class="w-full pl-4 pr-10 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 font-medium appearance-none ltr:pl-10 ltr:pr-4">
+                            <!-- الخيارات تضاف بالـ JS -->
+                        </select>
+                        <i class="ph-bold ph-caret-down absolute top-1/2 transform -translate-y-1/2 left-4 text-slate-400 ltr:right-4 ltr:left-auto"></i>
+                    </div>
+                    
+                    <div id="location-error" class="hidden p-3 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-2 text-rose-700 text-sm">
+                        <i class="ph-fill ph-warning text-lg flex-shrink-0"></i>
+                        <span id="txt-loc-error">أنت خارج النطاق الجغرافي!</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <button id="btn-do-checkin" onclick="performCheckIn(false)" class="col-span-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all opacity-50 cursor-not-allowed active:scale-95">
+                            <i class="ph-bold ph-fingerprint text-2xl"></i>
+                            <span id="txt-btn-checkin">تسجيل الحضور</span>
+                        </button>
+                        <button id="btn-bypass" onclick="performCheckIn(true)" class="col-span-2 text-xs text-slate-400 underline text-center py-2 hidden">تجاوز الفحص الأمني (تأكيد للمدير)</button>
+                    </div>
+                </div>
+
+                <!-- الحالة: جاري الفحص الأمني -->
+                <div id="state-loading" class="hidden py-8 text-center flex flex-col items-center">
+                    <i class="ph-duotone ph-spinner-gap text-5xl text-blue-500 animate-spin mb-4"></i>
+                    <h3 id="txt-sec-check" class="font-bold text-slate-700 text-lg mb-1">فحص أمني جاري...</h3>
+                </div>
+
+                <!-- الحالة: تم تسجيل الحضور -->
+                <div id="state-working" class="hidden text-center fade-in">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                        <i class="ph-duotone ph-briefcase text-4xl animate-pulse"></i>
+                    </div>
+                    <p id="txt-working-at" class="text-sm text-slate-500 mb-1">تعمل الآن في:</p>
+                    <p id="val-current-proj" class="text-xl font-bold text-slate-800 mb-4">اسم المشروع</p>
+                    
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-5 flex items-center justify-center gap-2 text-sm">
+                        <i class="ph-bold ph-clock text-blue-600"></i>
+                        <span id="txt-time-label" class="text-slate-600">وقت الدخول:</span>
+                        <span id="val-checkin-time" class="font-bold text-blue-700">00:00</span>
+                    </div>
+
+                    <button onclick="checkOut()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
+                        <i class="ph-bold ph-sign-out text-2xl"></i>
+                        <span id="txt-btn-checkout">إنهاء العمل (انصراف)</span>
+                    </button>
+                </div>
+
+                <!-- الحالة: تم الانصراف -->
+                <div id="state-completed" class="hidden text-center fade-in py-4">
+                    <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ph-fill ph-check-circle text-5xl"></i>
+                    </div>
+                    <h3 id="txt-shift-done" class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
+                    <p id="txt-shift-desc" class="text-sm text-slate-500 leading-relaxed">تم تسجيل انصرافك وإرسال البيانات للإدارة.</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 fade-in">
+                <h3 id="txt-services-title" class="text-sm font-bold text-slate-800 mb-4">الخدمات السريعة</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="openModal('modal-leave')" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-100 hover:border-blue-200 transition-all text-slate-600 hover:text-blue-700">
+                        <i class="ph-duotone ph-calendar-plus text-3xl mb-2 text-blue-500"></i>
+                        <span id="txt-srv-leave" class="text-[11px] font-bold text-center">طلب إجازة</span>
+                    </button>
+                    <button onclick="openModal('modal-loan')" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-emerald-50 rounded-xl border border-slate-100 hover:border-emerald-200 transition-all text-slate-600 hover:text-emerald-700">
+                        <i class="ph-duotone ph-money text-3xl mb-2 text-emerald-500"></i>
+                        <span id="txt-srv-loan" class="text-[11px] font-bold text-center">طلب سلفة</span>
+                    </button>
+                    <button onclick="openModal('modal-issue')" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-rose-50 rounded-xl border border-slate-100 hover:border-rose-200 transition-all text-slate-600 hover:text-rose-700">
+                        <i class="ph-duotone ph-warning-octagon text-3xl mb-2 text-rose-500"></i>
+                        <span id="txt-srv-issue" class="text-[11px] font-bold text-center">بلاغ مشكلة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-overlay" onclick="closeModals()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+
+    <!-- نافذة طلب إجازة -->
+    <div id="modal-leave" class="fixed bottom-0 left-0 right-0 z-50 hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto">
+        <div class="bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="txt-mod-leave-title" class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-calendar-plus text-blue-600"></i> طلب إجازة
+                </h3>
+                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="ph-bold ph-x"></i></button>
+            </div>
             <form onsubmit="handleFormSubmit(event, 'leave')" class="space-y-4">
                 <div>
-                    <label id="txt-mod-leave-date" class="block text-sm font-bold text-slate-700 mb-1">تاريخ البدء</label>
-                    <input type="date" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-slate-800 font-medium">
+                    <label class="block text-sm font-bold text-slate-700 mb-1">تاريخ البدء</label>
+                    <input type="date" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 bg-slate-50">
                 </div>
                 <div>
-                    <label id="txt-mod-leave-type" class="block text-sm font-bold text-slate-700 mb-1">نوع الإجازة</label>
-                    <select required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-slate-800 font-medium">
-                        <option id="opt-leave-1" value="1">إجازة سنوية (مستحقة)</option>
-                        <option id="opt-leave-2" value="2">إجازة مرضية</option>
-                        <option id="opt-leave-3" value="3">إجازة طارئة (بدون راتب)</option>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">نوع الإجازة</label>
+                    <select required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 bg-slate-50">
+                        <option value="annual">إجازة سنوية</option>
+                        <option value="sick">إجازة مرضية</option>
+                        <option value="unpaid">إجازة بدون راتب</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-4 active:scale-95 transition-transform">
-                    <span id="txt-mod-leave-btn">إرسال الطلب للإدارة</span>
-                </button>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl mt-4">إرسال الطلب للإدارة</button>
             </form>
         </div>
     </div>
@@ -97,20 +216,18 @@
                 <h3 id="txt-mod-loan-title" class="font-bold text-lg text-slate-800 flex items-center gap-2">
                     <i class="ph-fill ph-money text-emerald-600"></i> طلب سلفة مالية
                 </h3>
-                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="ph-bold ph-x"></i></button>
+                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="ph-bold ph-x"></i></button>
             </div>
             <form onsubmit="handleFormSubmit(event, 'loan')" class="space-y-4">
                 <div>
-                    <label id="txt-mod-loan-amt" class="block text-sm font-bold text-slate-700 mb-1">المبلغ المطلوب (ريال)</label>
-                    <input type="number" required placeholder="0.00" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50 text-slate-800 font-medium">
+                    <label class="block text-sm font-bold text-slate-700 mb-1">المبلغ المطلوب (ريال)</label>
+                    <input type="number" required placeholder="0.00" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 bg-slate-50">
                 </div>
                 <div>
-                    <label id="txt-mod-loan-rsn" class="block text-sm font-bold text-slate-700 mb-1">ملاحظات أو أسباب</label>
-                    <textarea rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 outline-none bg-slate-50 text-slate-800 font-medium"></textarea>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">ملاحظات أو أسباب</label>
+                    <textarea rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-600 bg-slate-50"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-4 active:scale-95 transition-transform">
-                    <span id="txt-mod-loan-btn">إرسال الطلب للإدارة</span>
-                </button>
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl mt-4">إرسال الطلب للإدارة</button>
             </form>
         </div>
     </div>
@@ -122,131 +239,62 @@
                 <h3 id="txt-mod-issue-title" class="font-bold text-lg text-slate-800 flex items-center gap-2">
                     <i class="ph-fill ph-warning-octagon text-rose-600"></i> بلاغ عن مشكلة
                 </h3>
-                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-200"><i class="ph-bold ph-x"></i></button>
+                <button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500"><i class="ph-bold ph-x"></i></button>
             </div>
             <form onsubmit="handleFormSubmit(event, 'issue')" class="space-y-4">
                 <div>
-                    <label id="txt-mod-issue-type" class="block text-sm font-bold text-slate-700 mb-1">نوع المشكلة</label>
-                    <select required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50 text-slate-800 font-medium">
-                        <option id="opt-iss-1" value="safety">أمن وسلامة مهنية</option>
-                        <option id="opt-iss-2" value="equip">عطل في معدة/آلة</option>
-                        <option id="opt-iss-3" value="other">أخرى</option>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">نوع المشكلة</label>
+                    <select required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 bg-slate-50">
+                        <option value="safety">أمن وسلامة مهنية</option>
+                        <option value="equip">عطل في معدة/آلة</option>
+                        <option value="other">أخرى</option>
                     </select>
                 </div>
                 <div>
-                    <label id="txt-mod-issue-desc" class="block text-sm font-bold text-slate-700 mb-1">وصف المشكلة</label>
-                    <textarea required rows="3" placeholder="اشرح المشكلة باختصار..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 outline-none bg-slate-50 text-slate-800 font-medium"></textarea>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">وصف المشكلة</label>
+                    <textarea required rows="3" placeholder="اشرح المشكلة باختصار..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-600 bg-slate-50"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-4 active:scale-95 transition-transform">
-                    <span id="txt-mod-issue-btn">إرسال البلاغ عاجل</span>
-                </button>
+                <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3.5 rounded-xl mt-4">إرسال البلاغ عاجل</button>
             </form>
         </div>
     </div>
 
-    <!-- رسالة النجاح (Toast) -->
+    <!-- توست الإشعارات للنجاح -->
     <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[60] pointer-events-none w-max max-w-[90%]">
         <i class="ph-fill ph-check-circle text-emerald-400 text-xl"></i>
-        <span id="txt-toast-msg" class="font-medium text-sm">تم إرسال الطلب بنجاح!</span>
+        <span id="txt-toast-msg" class="font-medium text-sm">تم إرسال الطلب بنجاح للإدارة!</span>
     </div>
 
     <script>
-        // --- 1. جلب البيانات من الإدارة (Shared LocalStorage) ---
-        
-        // دالة لجلب العمال المُسجلين من لوحة الإدارة
-        const getWorkers = () => {
-            const data = localStorage.getItem('app_workers');
-            return data ? JSON.parse(data) : [];
+        // --- 1. تهيئة البيانات الأساسية الوهمية (إذا كانت فارغة) ---
+        const defaultData = {
+            workers: [
+                { id: "1001", name: "أحمد محمد محمود", wage: 150, deviceLinked: false },
+                { id: "1002", name: "محمود علي السيد", wage: 120, deviceLinked: false }
+            ],
+            projects: [
+                { id: "P-01", name: "المصنع الرئيسي (جدة)", lat: 21.4858, lng: 39.1925, radius: 500 },
+                { id: "P-02", name: "مشروع أبراج الرياض", lat: 24.7136, lng: 46.6753, radius: 1000 }
+            ]
         };
 
-        // دالة لجلب المشاريع المُسجلة من لوحة الإدارة
-        const getProjects = () => {
-            const data = localStorage.getItem('app_projects');
-            return data ? JSON.parse(data) : [];
-        };
+        // هذه الدالة تضمن أن التطبيق يعمل حتى لو دخل العامل قبل أن يفتح المدير لوحة الإدارة
+        function initSharedData() {
+            if(!localStorage.getItem('app_workers')) localStorage.setItem('app_workers', JSON.stringify(defaultData.workers));
+            if(!localStorage.getItem('app_projects')) localStorage.setItem('app_projects', JSON.stringify(defaultData.projects));
+            if(!localStorage.getItem('app_attendance')) localStorage.setItem('app_attendance', JSON.stringify([]));
+            if(!localStorage.getItem('app_requests')) localStorage.setItem('app_requests', JSON.stringify([]));
+        }
 
-        // --- 2. القاموس اللغوي (Translations) ---
-        const dict = {
-            ar: {
-                lang: "English",
-                company: "شركة أركان الخليج",
-                subtitle: "نظام الحضور الآمن",
-                loginTitle: "تسجيل الدخول",
-                workerId: "رقم العامل (كود الموظف)",
-                loginBtn: "دخول للنظام",
-                loginErr: "رقم العامل غير صحيح، أو غير مسجل بالإدارة!",
-                deviceBlocked: "تم حظر الدخول! هذا الجهاز مسجل لعامل آخر.",
-                gm: "صباح الخير",
-                ge: "مساء الخير",
-                selProj: "موقع العمل الحالي (اختر من القائمة):",
-                selDef: "--- اختر موقع عملك ---",
-                locErr: "عفواً! أنت خارج النطاق الجغرافي للمشروع.",
-                gpsDenied: "يرجى تفعيل صلاحية الموقع (GPS) للمتابعة.",
-                checkIn: "تسجيل الحضور",
-                secCheck: "فحص أمني جاري...",
-                workAt: "تعمل حالياً في:",
-                timeLbl: "وقت الدخول:",
-                checkOut: "إنهاء العمل (انصراف)",
-                doneTitle: "تم إنهاء العمل بنجاح!",
-                doneDesc: "تم إرسال بيانات الانصراف للإدارة. يمكنك إغلاق التطبيق الآن.",
-                
-                srvTitle: "الخدمات السريعة",
-                srvLeave: "طلب إجازة", srvLoan: "طلب سلفة", srvIssue: "بلاغ مشكلة",
-                
-                modLeaveTitle: "تقديم طلب إجازة", modLeaveDate: "تاريخ البدء", modLeaveType: "نوع الإجازة", modLeaveBtn: "إرسال الطلب للإدارة",
-                optLeave1: "إجازة سنوية (مستحقة)", optLeave2: "إجازة مرضية", optLeave3: "إجازة طارئة (بدون راتب)",
-                
-                modLoanTitle: "طلب سلفة مالية", modLoanAmt: "المبلغ المطلوب (ريال)", modLoanRsn: "ملاحظات أو أسباب", modLoanBtn: "إرسال الطلب للإدارة",
-                
-                modIssueTitle: "بلاغ عن مشكلة", modIssueType: "نوع المشكلة", modIssueDesc: "وصف المشكلة", modIssueBtn: "إرسال البلاغ عاجل",
-                optIss1: "أمن وسلامة مهنية", optIss2: "عطل في معدة/آلة", optIss3: "أخرى",
-                
-                toastMsg: "تم إرسال طلبك بنجاح للإدارة!"
-            },
-            en: {
-                lang: "عربي",
-                company: "Arkan Al-Khaleej",
-                subtitle: "Secure Attendance System",
-                loginTitle: "Worker Login",
-                workerId: "Worker ID Number",
-                loginBtn: "System Login",
-                loginErr: "Invalid Worker ID, or not registered by Admin!",
-                deviceBlocked: "Access Denied! Device registered to another worker.",
-                gm: "Good Morning",
-                ge: "Good Evening",
-                selProj: "Current Work Location:",
-                selDef: "--- Select your location ---",
-                locErr: "Error! You are out of project geofence.",
-                gpsDenied: "Please enable GPS location to continue.",
-                checkIn: "Check In",
-                secCheck: "Security Check...",
-                workAt: "Currently working at:",
-                timeLbl: "Time In:",
-                checkOut: "End Shift (Check Out)",
-                doneTitle: "Shift Ended Successfully!",
-                doneDesc: "Check-out data sent to admin. You may close the app.",
-                
-                srvTitle: "Quick Services",
-                srvLeave: "Leave Req", srvLoan: "Loan Req", srvIssue: "Report Issue",
-                
-                modLeaveTitle: "Leave Request", modLeaveDate: "Start Date", modLeaveType: "Leave Type", modLeaveBtn: "Submit Request",
-                optLeave1: "Annual Leave", optLeave2: "Sick Leave", optLeave3: "Unpaid Leave",
-                
-                modLoanTitle: "Loan Request", modLoanAmt: "Amount (SAR)", modLoanRsn: "Reason / Notes", modLoanBtn: "Submit Request",
-                
-                modIssueTitle: "Report Issue", modIssueType: "Issue Type", modIssueDesc: "Description", modIssueBtn: "Submit Urgent Report",
-                optIss1: "Health & Safety", optIss2: "Equipment Failure", optIss3: "Other",
-                
-                toastMsg: "Your request was submitted successfully!"
-            }
-        };
-
-        // --- 3. حالة التطبيق (State) ---
+        // --- 2. إدارة الحالة والنصوص ---
         let lang = 'ar';
         let currentUser = null;
         let attendanceStatus = 'none'; 
-        
-        // --- 4. الدوال الأساسية للمنطق (Logic) ---
+
+        const dict = {
+            ar: { loginErr: "رقم العامل غير صحيح!", deviceBlocked: "الجهاز مسجل لعامل آخر!", gpsDenied: "يرجى تفعيل الـ GPS", locErr: "أنت خارج النطاق الجغرافي للمشروع" },
+            en: { loginErr: "Invalid ID!", deviceBlocked: "Device linked to another worker!", gpsDenied: "Enable GPS", locErr: "You are out of range" }
+        };
 
         function toggleLang() {
             lang = lang === 'ar' ? 'en' : 'ar';
@@ -254,81 +302,13 @@
             document.documentElement.lang = lang;
             if(lang === 'en') document.documentElement.classList.add('ltr');
             else document.documentElement.classList.remove('ltr');
-            
-            updateTexts();
-        }
-
-        function updateTexts() {
-            const t = dict[lang];
-            document.getElementById('txt-lang').innerText = t.lang;
-            document.getElementById('txt-company').innerText = t.company;
-            document.getElementById('txt-subtitle').innerText = t.subtitle;
-            document.getElementById('txt-login-title').innerText = t.loginTitle;
-            document.getElementById('txt-worker-id').innerText = t.workerId;
-            document.getElementById('txt-login-btn').innerText = t.loginBtn;
-            document.getElementById('txt-login-error').innerText = t.loginErr;
-            document.getElementById('input-worker-id').placeholder = lang === 'ar' ? 'أدخل رقمك هنا...' : 'Enter ID here...';
-            
-            document.getElementById('txt-select-proj').innerText = t.selProj;
-            document.getElementById('txt-loc-error').innerText = t.locErr;
-            document.getElementById('txt-btn-checkin').innerText = t.checkIn;
-            document.getElementById('txt-sec-check').innerText = t.secCheck;
-            document.getElementById('txt-working-at').innerText = t.workAt;
-            document.getElementById('txt-time-label').innerText = t.timeLbl;
-            document.getElementById('txt-btn-checkout').innerText = t.checkOut;
-            document.getElementById('txt-shift-done').innerText = t.doneTitle;
-            document.getElementById('txt-shift-desc').innerText = t.doneDesc;
-            
-            document.getElementById('txt-services-title').innerText = t.srvTitle;
-            document.getElementById('txt-srv-leave').innerText = t.srvLeave;
-            document.getElementById('txt-srv-loan').innerText = t.srvLoan;
-            document.getElementById('txt-srv-issue').innerText = t.srvIssue;
-            
-            document.getElementById('txt-mod-leave-title').innerHTML = `<i class="ph-fill ph-calendar-plus text-blue-600"></i> ${t.modLeaveTitle}`;
-            document.getElementById('txt-mod-leave-date').innerText = t.modLeaveDate;
-            document.getElementById('txt-mod-leave-type').innerText = t.modLeaveType;
-            document.getElementById('txt-mod-leave-btn').innerText = t.modLeaveBtn;
-            document.getElementById('opt-leave-1').innerText = t.optLeave1;
-            document.getElementById('opt-leave-2').innerText = t.optLeave2;
-            document.getElementById('opt-leave-3').innerText = t.optLeave3;
-
-            document.getElementById('txt-mod-loan-title').innerHTML = `<i class="ph-fill ph-money text-emerald-600"></i> ${t.modLoanTitle}`;
-            document.getElementById('txt-mod-loan-amt').innerText = t.modLoanAmt;
-            document.getElementById('txt-mod-loan-rsn').innerText = t.modLoanRsn;
-            document.getElementById('txt-mod-loan-btn').innerText = t.modLoanBtn;
-
-            document.getElementById('txt-mod-issue-title').innerHTML = `<i class="ph-fill ph-warning-octagon text-rose-600"></i> ${t.modIssueTitle}`;
-            document.getElementById('txt-mod-issue-type').innerText = t.modIssueType;
-            document.getElementById('txt-mod-issue-desc').innerText = t.modIssueDesc;
-            document.getElementById('txt-mod-issue-btn').innerText = t.modIssueBtn;
-            document.getElementById('opt-iss-1').innerText = t.optIss1;
-            document.getElementById('opt-iss-2').innerText = t.optIss2;
-            document.getElementById('opt-iss-3').innerText = t.optIss3;
-            
-            document.getElementById('txt-toast-msg').innerText = t.toastMsg;
-
-            updateGreeting();
-            renderProjects();
-            
-            if(attendanceStatus === 'working') {
-                const pId = localStorage.getItem('arkan_proj_id');
-                const p = getProjects().find(x => x.id === pId);
-                if(p) document.getElementById('val-current-proj').innerText = p.name;
-            }
-        }
-
-        function updateGreeting() {
-            if(!currentUser) return;
-            const hour = new Date().getHours();
-            const t = dict[lang];
-            document.getElementById('txt-greeting').innerText = hour < 12 ? t.gm : t.ge;
-            document.getElementById('val-worker-name').innerText = currentUser.name;
+            document.getElementById('txt-lang').innerText = lang === 'ar' ? 'English' : 'عربي';
         }
 
         function renderProjects() {
+            const projects = JSON.parse(localStorage.getItem('app_projects') || '[]');
             const select = document.getElementById('select-project');
-            select.innerHTML = `<option value="" disabled selected>${dict[lang].selDef}</option>`;
-            const projects = getProjects();
+            select.innerHTML = `<option value="" disabled selected>--- اختر موقع العمل ---</option>`;
             projects.forEach(p => {
                 const opt = document.createElement('option');
                 opt.value = p.id;
@@ -337,94 +317,41 @@
             });
         }
 
-        function switchView(view) {
-            document.getElementById('section-login').classList.add('hidden');
-            document.getElementById('section-dashboard').classList.add('hidden');
-            
-            if(view === 'dashboard') {
-                document.getElementById('section-dashboard').classList.remove('hidden');
-                updateDashboardState();
-            } else {
-                document.getElementById('section-login').classList.remove('hidden');
-                document.getElementById('input-worker-id').value = '';
-                document.getElementById('login-error').classList.add('hidden');
-            }
-        }
-
-        function updateDashboardState() {
-            document.getElementById('state-checkin').classList.add('hidden');
-            document.getElementById('state-loading').classList.add('hidden');
-            document.getElementById('state-working').classList.add('hidden');
-            document.getElementById('state-completed').classList.add('hidden');
-            
-            if(attendanceStatus === 'none') {
-                document.getElementById('state-checkin').classList.remove('hidden');
-                const projVal = document.getElementById('select-project').value;
-                const btnCheckin = document.getElementById('btn-do-checkin');
-                if(projVal) {
-                    btnCheckin.classList.remove('opacity-50', 'cursor-not-allowed');
-                    document.getElementById('btn-bypass').classList.remove('hidden');
-                } else {
-                    btnCheckin.classList.add('opacity-50', 'cursor-not-allowed');
-                    document.getElementById('btn-bypass').classList.add('hidden');
-                }
-            } 
-            else if(attendanceStatus === 'working') {
-                document.getElementById('state-working').classList.remove('hidden');
-                document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
-                const pId = localStorage.getItem('arkan_proj_id');
-                const p = getProjects().find(x => x.id === pId);
-                if(p) document.getElementById('val-current-proj').innerText = p.name;
-            } 
-            else if(attendanceStatus === 'completed') {
-                document.getElementById('state-completed').classList.remove('hidden');
-            }
-        }
-
-        // --- 5. دوال الإجراءات (Actions) ---
-
+        // --- 3. تسجيل الدخول وربط الجهاز ---
         function login(e) {
             e.preventDefault();
             const id = document.getElementById('input-worker-id').value;
-            const workersList = getWorkers();
-            const worker = workersList.find(w => w.id === id);
+            const workers = JSON.parse(localStorage.getItem('app_workers') || '[]');
+            const worker = workers.find(w => w.id === id);
             
             const errDiv = document.getElementById('login-error');
             const errTxt = document.getElementById('txt-login-error');
             
             if(worker) {
-                const registeredOwner = localStorage.getItem('arkan_device_owner');
-                
-                if (registeredOwner && registeredOwner !== id) {
+                // فحص ربط الجهاز لمنع التلاعب
+                const owner = localStorage.getItem('arkan_device_owner');
+                if (owner && owner !== id) {
                     errTxt.innerText = dict[lang].deviceBlocked;
                     errDiv.classList.remove('hidden');
                     return;
                 }
-                
-                if (!registeredOwner) {
-                    localStorage.setItem('arkan_device_owner', id);
-                    // تحديث حالة ارتباط الجهاز في الإدارة
-                    worker.deviceLinked = true;
-                    const wIndex = workersList.findIndex(w => w.id === id);
-                    workersList[wIndex] = worker;
-                    localStorage.setItem('app_workers', JSON.stringify(workersList));
-                }
+                if (!owner) localStorage.setItem('arkan_device_owner', id); // ربط الجهاز بهذا العامل
 
                 currentUser = worker;
                 localStorage.setItem('arkan_user_id', worker.id);
                 errDiv.classList.add('hidden');
                 
+                // التأكد من بدء يوم جديد
                 const today = new Date().toDateString();
-                const savedDay = localStorage.getItem('arkan_date');
-                if(today !== savedDay) {
+                if(localStorage.getItem('arkan_date') !== today) {
                     localStorage.setItem('arkan_date', today);
-                    localStorage.removeItem('arkan_status');
+                    localStorage.setItem('arkan_status', 'none');
                     attendanceStatus = 'none';
                 } else {
                     attendanceStatus = localStorage.getItem('arkan_status') || 'none';
                 }
                 
-                updateGreeting();
+                document.getElementById('val-worker-name').innerText = worker.name;
                 switchView('dashboard');
             } else {
                 errTxt.innerText = dict[lang].loginErr;
@@ -438,46 +365,88 @@
             switchView('login');
         }
 
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; 
-            const p1 = lat1 * Math.PI / 180;
-            const p2 = lat2 * Math.PI / 180;
-            const deltaP = (lat2 - lat1) * Math.PI / 180;
-            const deltaLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(deltaP/2) * Math.sin(deltaP/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+        function switchView(view) {
+            document.getElementById('section-login').classList.add('hidden');
+            document.getElementById('section-dashboard').classList.add('hidden');
+            
+            if(view === 'dashboard') {
+                document.getElementById('section-dashboard').classList.remove('hidden');
+                updateDashboardState();
+            } else {
+                document.getElementById('section-login').classList.remove('hidden');
+                document.getElementById('input-worker-id').value = '';
+            }
         }
 
-        function performRealSecurityCheck(isBypass = false) {
-            const projVal = document.getElementById('select-project').value;
-            if(!projVal) return;
+        // --- 4. نظام الحضور والانصراف (يسمع فوراً في الإدارة) ---
+        function updateDashboardState() {
+            document.getElementById('state-checkin').classList.add('hidden');
+            document.getElementById('state-loading').classList.add('hidden');
+            document.getElementById('state-working').classList.add('hidden');
+            document.getElementById('state-completed').classList.add('hidden');
             
-            const project = getProjects().find(p => p.id === projVal);
+            if(attendanceStatus === 'none') {
+                document.getElementById('state-checkin').classList.remove('hidden');
+                const projVal = document.getElementById('select-project').value;
+                const btnCheckin = document.getElementById('btn-do-checkin');
+                const btnBypass = document.getElementById('btn-bypass');
+                
+                if(projVal) {
+                    btnCheckin.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btnBypass.classList.remove('hidden');
+                } else {
+                    btnCheckin.classList.add('opacity-50', 'cursor-not-allowed');
+                    btnBypass.classList.add('hidden');
+                }
+            } 
+            else if(attendanceStatus === 'working') {
+                document.getElementById('state-working').classList.remove('hidden');
+                document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
+                
+                const pId = localStorage.getItem('arkan_proj_id');
+                const projects = JSON.parse(localStorage.getItem('app_projects') || '[]');
+                const p = projects.find(x => x.id === pId);
+                if(p) document.getElementById('val-current-proj').innerText = p.name;
+            } 
+            else if(attendanceStatus === 'completed') {
+                document.getElementById('state-completed').classList.remove('hidden');
+            }
+        }
+
+        function performCheckIn(isBypass) {
+            const projId = document.getElementById('select-project').value;
+            if(!projId) return;
+            
+            const projects = JSON.parse(localStorage.getItem('app_projects') || '[]');
+            const project = projects.find(p => p.id === projId);
+            if(!project) return;
 
             document.getElementById('location-error').classList.add('hidden');
             document.getElementById('state-checkin').classList.add('hidden');
             document.getElementById('state-loading').classList.remove('hidden');
 
+            // دالة حفظ الدخول وإرساله للإدارة
             const finalizeCheckIn = () => {
                 const now = new Date();
-                const timeStr = now.toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {hour:'2-digit', minute:'2-digit'});
+                const timeStr = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}); // تنسيق موحد
+                const dateStr = now.toISOString().split('T')[0];
+                
                 attendanceStatus = 'working';
                 localStorage.setItem('arkan_status', 'working');
                 localStorage.setItem('arkan_time', timeStr);
-                localStorage.setItem('arkan_proj_id', projVal);
+                localStorage.setItem('arkan_proj_id', projId);
                 
-                // إرسال البيانات للإدارة (حفظ في Storage المشترك)
+                // === إرسال البيانات فوراً للإدارة ===
                 const attendance = JSON.parse(localStorage.getItem('app_attendance') || '[]');
                 attendance.push({
                     id: Date.now(),
                     workerId: currentUser.id,
-                    workerName: currentUser.name,
+                    workerName: currentUser.name, // الاسم يطابق لوحة الإدارة
                     projectId: project.id,
                     projectName: project.name,
                     timeIn: timeStr,
                     timeOut: null,
-                    date: new Date().toISOString().split('T')[0],
+                    date: dateStr,
                     status: 'working'
                 });
                 localStorage.setItem('app_attendance', JSON.stringify(attendance));
@@ -492,120 +461,102 @@
                 document.getElementById('state-checkin').classList.remove('hidden');
             };
 
+            // تجاوز الفحص للتجربة (يعمل 100%)
             if (isBypass) {
-                setTimeout(finalizeCheckIn, 1500);
+                setTimeout(finalizeCheckIn, 1000);
                 return;
             }
 
+            // فحص الـ GPS
             if (!navigator.geolocation) {
-                showError(dict[lang].gpsDenied);
-                return;
+                showError(dict[lang].gpsDenied); return;
             }
 
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const distance = calculateDistance(latitude, longitude, project.lat, project.lng);
+                (pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    // معادلة Haversine للمسافة
+                    const R = 6371e3; 
+                    const p1 = latitude * Math.PI/180, p2 = project.lat * Math.PI/180;
+                    const dp = (project.lat - latitude) * Math.PI/180, dl = (project.lng - longitude) * Math.PI/180;
+                    const a = Math.sin(dp/2)*Math.sin(dp/2) + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
+                    const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                     
-                    if (distance > project.radius) {
-                        showError(`${dict[lang].locErr} (المسافة: ${Math.round(distance)}m > ${project.radius}m)`);
-                    } else {
-                        finalizeCheckIn();
-                    }
+                    if (distance > project.radius) showError(`${dict[lang].locErr} (${Math.round(distance)}m > ${project.radius}m)`);
+                    else finalizeCheckIn();
                 },
-                (error) => {
-                    showError(dict[lang].gpsDenied + ' (Error: ' + error.code + ')');
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                (err) => { showError(dict[lang].gpsDenied); },
+                { enableHighAccuracy: true, timeout: 10000 }
             );
         }
 
         function checkOut() {
-            attendanceStatus = 'completed';
-            localStorage.setItem('arkan_status', 'completed');
-            
-            // تحديث بيانات الانصراف في الإدارة
+            // تحديث سجل الحضور في الإدارة (وضع وقت الانصراف)
             const attendance = JSON.parse(localStorage.getItem('app_attendance') || '[]');
             const today = new Date().toISOString().split('T')[0];
             
-            // البحث عن آخر تسجيل دخول لنفس العامل اليوم وهو ما زال "يعمل"
-            let foundIndex = -1;
+            // البحث عن جلسة العامل المفتوحة اليوم
             for(let i = attendance.length - 1; i >= 0; i--) {
                 if(attendance[i].workerId === currentUser.id && attendance[i].date === today && attendance[i].status === 'working') {
-                    foundIndex = i;
+                    attendance[i].timeOut = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+                    attendance[i].status = 'completed';
                     break;
                 }
             }
+            localStorage.setItem('app_attendance', JSON.stringify(attendance));
 
-            if(foundIndex !== -1) {
-                const timeOutStr = new Date().toLocaleTimeString(lang === 'ar' ? 'ar-SA' : 'en-US', {hour:'2-digit', minute:'2-digit'});
-                attendance[foundIndex].timeOut = timeOutStr;
-                attendance[foundIndex].status = 'completed';
-                localStorage.setItem('app_attendance', JSON.stringify(attendance));
-            }
-
+            // تحديث واجهة العامل
+            attendanceStatus = 'completed';
+            localStorage.setItem('arkan_status', 'completed');
             updateDashboardState();
         }
 
-        // --- 6. النوافذ المنبثقة والطلبات (Requests) ---
-
+        // --- 5. نظام الطلبات والنوافذ (يسمع فوراً في الإدارة) ---
         function openModal(id) {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById(id);
-            overlay.classList.remove('hidden');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                modal.classList.remove('translate-y-full');
-            }, 10);
+            overlay.classList.remove('hidden'); modal.classList.remove('hidden');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); modal.classList.remove('translate-y-full'); }, 10);
         }
 
         function closeModals() {
             const overlay = document.getElementById('modal-overlay');
             const modals = ['modal-leave', 'modal-loan', 'modal-issue'];
             overlay.classList.add('opacity-0');
-            modals.forEach(id => {
-                document.getElementById(id).classList.add('translate-y-full');
-            });
+            modals.forEach(id => document.getElementById(id).classList.add('translate-y-full'));
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 modals.forEach(id => document.getElementById(id).classList.add('hidden'));
             }, 300);
         }
 
-        // معالجة إرسال النماذج للإدارة
         function handleFormSubmit(e, reqType) {
             e.preventDefault(); 
             
-            let typeName = "";
-            let details = "";
+            let typeName = "", details = "";
             
             if(reqType === 'leave') {
                 typeName = "طلب إجازة";
                 const date = e.target.querySelector('input[type="date"]').value;
                 const select = e.target.querySelector('select');
-                const leaveType = select.options[select.selectedIndex].text;
-                details = `تاريخ البدء: ${date} | النوع: ${leaveType}`;
-            } 
-            else if (reqType === 'loan') {
+                details = `تاريخ البدء: ${date} | النوع: ${select.options[select.selectedIndex].text}`;
+            } else if (reqType === 'loan') {
                 typeName = "طلب سلفة";
                 const amt = e.target.querySelector('input[type="number"]').value;
                 const reason = e.target.querySelector('textarea').value;
-                details = `المبلغ: ${amt} ريال | السبب: ${reason || 'لا يوجد'}`;
-            } 
-            else if (reqType === 'issue') {
+                details = `المبلغ: ${amt} ريال | السبب: ${reason || 'بدون'}`;
+            } else if (reqType === 'issue') {
                 typeName = "بلاغ مشكلة";
                 const select = e.target.querySelector('select');
-                const issueType = select.options[select.selectedIndex].text;
                 const desc = e.target.querySelector('textarea').value;
-                details = `التصنيف: ${issueType} | التفاصيل: ${desc}`;
+                details = `التصنيف: ${select.options[select.selectedIndex].text} | التفاصيل: ${desc}`;
             }
 
-            // إرسال الطلب وحفظه في الإدارة
+            // === إرسال الطلب فوراً للإدارة ===
             const requests = JSON.parse(localStorage.getItem('app_requests') || '[]');
             requests.push({
                 id: Date.now(),
-                workerName: currentUser.name,
+                workerName: currentUser.name, // الاسم يطابق لوحة الإدارة
                 type: reqType,
                 typeName: typeName,
                 details: details,
@@ -617,52 +568,32 @@
             closeModals();
             e.target.reset(); 
             
-            setTimeout(() => {
-                const toast = document.getElementById('toast-success');
-                toast.classList.remove('-translate-y-20', 'opacity-0');
-                setTimeout(() => { toast.classList.add('-translate-y-20', 'opacity-0'); }, 3000);
-            }, 400);
+            // إظهار التوست
+            const toast = document.getElementById('toast-success');
+            toast.classList.remove('-translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('-translate-y-20', 'opacity-0'), 3000);
         }
 
-        // --- 7. ربط الأحداث وتشغيل التطبيق ---
-
-        document.getElementById('btn-lang').addEventListener('click', toggleLang);
-        document.getElementById('form-login').addEventListener('submit', login);
-        document.getElementById('btn-logout').addEventListener('click', logout);
-        
-        document.getElementById('select-project').addEventListener('change', () => { updateDashboardState(); });
-
-        document.getElementById('btn-do-checkin').addEventListener('click', () => {
-            if(document.getElementById('select-project').value) performRealSecurityCheck(false);
-        });
-        
-        document.getElementById('btn-bypass').addEventListener('click', () => {
-            if(document.getElementById('select-project').value) performRealSecurityCheck(true);
-        });
-
-        document.getElementById('btn-do-checkout').addEventListener('click', checkOut);
-        document.getElementById('modal-overlay').addEventListener('click', closeModals);
-
+        // --- 6. الإقلاع الأولي ---
         window.onload = () => {
-            updateTexts();
+            initSharedData(); // التأكد من وجود البيانات الوهمية في قاعدة البيانات المشتركة
+            renderProjects();
             
             const savedId = localStorage.getItem('arkan_user_id');
             if(savedId) {
-                const workersList = getWorkers();
-                const worker = workersList.find(w => w.id === savedId);
+                const workers = JSON.parse(localStorage.getItem('app_workers') || '[]');
+                const worker = workers.find(w => w.id === savedId);
                 if(worker) {
                     currentUser = worker;
-                    
                     const today = new Date().toDateString();
                     if(localStorage.getItem('arkan_date') === today) {
                         attendanceStatus = localStorage.getItem('arkan_status') || 'none';
                     } else {
                         localStorage.setItem('arkan_date', today);
-                        localStorage.removeItem('arkan_status');
+                        localStorage.setItem('arkan_status', 'none');
                         attendanceStatus = 'none';
                     }
-                    
-                    updateGreeting();
+                    document.getElementById('val-worker-name').innerText = worker.name;
                     switchView('dashboard');
                     return;
                 }
