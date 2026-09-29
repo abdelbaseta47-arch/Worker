@@ -361,8 +361,8 @@
                 { id: "P-02", name: "مشروع أبراج الرياض", lat: 24.7136, lng: 46.6753, radius: 1000 }
             ],
             tasks: [
-                { id: 1, workerId: "1001", text: "استلام مواد البناء من المورد والتوقيع عليها.", status: "pending", date: new Date().toLocaleDateString('en-US') },
-                { id: 2, workerId: "1001", text: "صيانة ماكينة التقطيع رقم 3 في القسم ب.", status: "started", date: new Date().toLocaleDateString('en-US') }
+                { id: 1, workerId: "1001", text: "استلام مواد البناء من المورد والتوقيع عليها.", status: "pending", date: new Date().toISOString().split('T')[0] },
+                { id: 2, workerId: "1001", text: "صيانة ماكينة التقطيع رقم 3 في القسم ب.", status: "started", date: new Date().toISOString().split('T')[0] }
             ],
             announcements: [
                 { id: 1, text: "إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة (PPE) كأحذية الأمان والخوذة لضمان سلامتكم في المواقع.", date: "اليوم" }
@@ -563,7 +563,8 @@
             if(!currentUser) return;
             const t = dict[lang] || dict['ar'];
             const tasks = JSON.parse(localStorage.getItem('app_tasks') || '[]');
-            const myTasks = tasks.filter(task => task.workerId === currentUser.id && task.date === new Date().toLocaleDateString('en-US'));
+            const todayStr = new Date().toISOString().split('T')[0]; // توحيد التاريخ
+            const myTasks = tasks.filter(task => task.workerId === currentUser.id && task.date === todayStr);
             
             const listTasks = document.getElementById('list-tasks');
             const badges = [document.getElementById('badge-tasks'), document.getElementById('badge-menu-tasks')];
