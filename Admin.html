@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>أركان الخليج - لوحة تحكم الإدارة</title>
+    
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- تحميل Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- تحميل الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* تحسين السكرول بار للجداول والقوائم */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* تأثير الزجاج */
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased h-screen overflow-hidden flex">
+
+    <!-- القائمة الجانبية (Sidebar) -->
+    <aside id="sidebar" class="bg-slate-900 text-slate-300 w-64 flex-shrink-0 h-full flex flex-col transition-all duration-300 z-50 fixed lg:static transform -translate-x-full lg:translate-x-0 rtl:translate-x-full lg:rtl:translate-x-0">
+        <!-- شعار النظام -->
+        <div class="h-16 flex items-center gap-3 px-6 bg-slate-950 border-b border-slate-800">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <i class="ph-fill ph-hexagon text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-white font-bold text-lg leading-tight">الإدارة المركزية</h1>
+                <p class="text-[10px] text-blue-400 font-medium">أركان الخليج للأعمال المعدنية</p>
+            </div>
+            <!-- زر إغلاق القائمة في الموبايل -->
+            <button onclick="toggleSidebar()" class="lg:hidden mr-auto text-slate-400 hover:text-white">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+        </div>
+
+        <!-- روابط القائمة -->
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md">
+                <i class="ph-duotone ph-squares-four text-xl"></i> نظرة عامة
+            </button>
+            <button onclick="switchTab('attendance')" id="nav-attendance" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all">
+                <i class="ph-duotone ph-clock-counter-clockwise text-xl"></i> سجل الحضور اليومي
+            </button>
+            <button onclick="switchTab('requests')" id="nav-requests" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all">
+                <div class="flex items-center gap-3">
+                    <i class="ph-duotone ph-tray text-xl"></i> طلبات العمال
+                </div>
+                <span id="badge-requests" class="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+            </button>
+            
+            <div class="pt-4 pb-2">
+                <p class="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">إعدادات النظام</p>
+            </div>
+            
+            <button onclick="switchTab('workers')" id="nav-workers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all">
+                <i class="ph-duotone ph-users-three text-xl"></i> إدارة العمال والأجور
+            </button>
+            <button onclick="switchTab('projects')" id="nav-projects" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all">
+                <i class="ph-duotone ph-map-trifold text-xl"></i> مواقع المشاريع
+            </button>
+        </nav>
+
+        <!-- مستخدم الإدارة -->
+        <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center gap-3">
+            <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700">
+                <i class="ph-fill ph-user-circle-gear text-2xl text-slate-400"></i>
+            </div>
+            <div class="flex-1">
+                <h4 class="text-white text-sm font-bold">حساب الإدارة</h4>
+                <p class="text-xs text-emerald-500 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> متصل</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- المنطقة الرئيسية -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- خلفية داكنة للموبايل عند فتح القائمة -->
+        <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 lg:hidden hidden"></div>
+
+        <!-- الترويسة العلوية -->
+        <header class="h-16 glass border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 z-10">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200">
+                    <i class="ph-bold ph-list text-xl"></i>
+                </button>
+                <h2 id="header-title" class="text-xl font-bold text-slate-800">نظرة عامة</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
+                    <i class="ph-duotone ph-calendar-blank text-blue-600"></i>
+                    <span id="current-date"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- المحتوى القابل للتمرير -->
+        <div class="flex-1 overflow-y-auto p-4 lg:p-8 relative">
+            
+            <!-- 1. نظرة عامة (Dashboard) -->
+            <section id="view-dashboard" class="fade-in space-y-6">
+                <!-- الإحصائيات -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-users text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium mb-1">إجمالي العمال</p>
+                            <h3 id="stat-total-workers" class="text-2xl font-bold text-slate-800">0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="ph-fill ph-fingerprint text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium mb-1">الحضور اليوم</p>
+                            <h3 id="stat-present-today" class="text-2xl font-bold text-slate-800">0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center"><i class="ph-fill ph-bell-ringing text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium mb-1">طلبات معلقة</p>
+                            <h3 id="stat-pending-requests" class="text-2xl font-bold text-slate-800">0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="ph-fill ph-buildings text-2xl"></i></div>
+                        <div>
+                            <p class="text-sm text-slate-500 font-medium mb-1">المشاريع النشطة</p>
+                            <h3 id="stat-active-projects" class="text-2xl font-bold text-slate-800">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- آخر الحضور -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-duotone ph-clock text-blue-600 text-lg"></i> أحدث تسجيلات الحضور</h3>
+                        </div>
+                        <div class="p-0 flex-1">
+                            <ul id="list-recent-attendance" class="divide-y divide-slate-100">
+                                <!-- يتم الملء بالـ JS -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- أحدث الطلبات -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-duotone ph-tray text-rose-500 text-lg"></i> الطلبات الجديدة</h3>
+                        </div>
+                        <div class="p-0 flex-1">
+                            <ul id="list-recent-requests" class="divide-y divide-slate-100">
+                                <!-- يتم الملء بالـ JS -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. سجل الحضور (Attendance) -->
+            <section id="view-attendance" class="hidden fade-in space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 class="font-bold text-slate-800 text-lg">سجل حركات اليوم للعمال</h3>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <input type="date" id="filter-date" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-600 outline-none w-full sm:w-auto">
+                            <button onclick="renderAttendanceTable()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+                                <i class="ph-bold ph-funnel"></i> عرض
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">اسم العامل (الكود)</th>
+                                    <th class="px-6 py-4 font-bold">المشروع/الموقع</th>
+                                    <th class="px-6 py-4 font-bold">وقت الدخول</th>
+                                    <th class="px-6 py-4 font-bold">وقت الخروج</th>
+                                    <th class="px-6 py-4 font-bold">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-attendance" class="divide-y divide-slate-100">
+                                <!-- يتم الملء بالـ JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. طلبات العمال (Requests) -->
+            <section id="view-requests" class="hidden fade-in space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="grid-requests">
+                    <!-- يتم الملء بالـ JS -->
+                </div>
+                <!-- رسالة فارغة في حال عدم وجود طلبات -->
+                <div id="empty-requests" class="hidden py-20 flex flex-col items-center justify-center text-slate-400">
+                    <i class="ph-duotone ph-check-circle text-6xl mb-4 text-emerald-200"></i>
+                    <p class="font-medium text-lg">لا توجد طلبات معلقة حالياً.</p>
+                    <p class="text-sm mt-1 text-slate-400">كافة طلبات الإجازات والسلف تم الرد عليها.</p>
+                </div>
+            </section>
+
+            <!-- 4. إدارة العمال (Workers) -->
+            <section id="view-workers" class="hidden fade-in space-y-6">
+                <!-- نموذج إضافة عامل -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50 cursor-pointer flex justify-between items-center hover:bg-slate-100 transition-colors" onclick="toggleForm('form-worker-container')">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-user-plus text-blue-600 text-xl"></i> إضافة عامل جديد للنظام</h3>
+                        <i class="ph-bold ph-caret-down text-slate-400"></i>
+                    </div>
+                    <div id="form-worker-container" class="p-6 hidden bg-white">
+                        <form id="form-add-worker" onsubmit="addWorker(event)" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">رقم العامل (الكود) *</label>
+                                <input type="text" id="w-id" required placeholder="مثال: 1005" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">الاسم الكامل (عربي) *</label>
+                                <input type="text" id="w-name-ar" required placeholder="مثال: محمد أحمد" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">الاسم الكامل (إنجليزي) *</label>
+                                <input type="text" id="w-name-en" required placeholder="مثال: Mohammed Ahmed" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-left ltr">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">الأجر اليومي (ر.س) *</label>
+                                <input type="number" id="w-wage" required min="0" placeholder="مثال: 120" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            </div>
+                            <div class="md:col-span-3 flex justify-end mt-2 pt-4 border-t border-slate-100">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-md flex items-center gap-2 transition-transform active:scale-95">
+                                    <i class="ph-bold ph-floppy-disk text-lg"></i> حفظ بيانات العامل
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- جدول العمال -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="font-bold text-slate-800 text-lg">سجل العمال (البيانات الأساسية)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-6 py-4 font-bold">كود العامل</th>
+                                    <th class="px-6 py-4 font-bold">اسم العامل</th>
+                                    <th class="px-6 py-4 font-bold">الأجر اليومي</th>
+                                    <th class="px-6 py-4 font-bold">حالة الجهاز (البصمة)</th>
+                                    <th class="px-6 py-4 font-bold text-center">إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-workers" class="divide-y divide-slate-100">
+                                <!-- يتم الملء بالـ JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. إدارة المشاريع (Projects) -->
+            <section id="view-projects" class="hidden fade-in space-y-6">
+                <!-- نموذج إضافة مشروع -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50 cursor-pointer flex justify-between items-center hover:bg-slate-100 transition-colors" onclick="toggleForm('form-project-container')">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-map-pin-line text-blue-600 text-xl"></i> إضافة مشروع/موقع جديد</h3>
+                        <i class="ph-bold ph-caret-down text-slate-400"></i>
+                    </div>
+                    <div id="form-project-container" class="p-6 hidden bg-white">
+                        <form id="form-add-project" onsubmit="addProject(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">كود المشروع *</label>
+                                <input type="text" id="p-id" required placeholder="مثال: P-101" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-left ltr uppercase">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">اسم المشروع (عربي) *</label>
+                                <input type="text" id="p-name-ar" required placeholder="مثال: موقع الصيانة" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">اسم المشروع (إنجليزي) *</label>
+                                <input type="text" id="p-name-en" required placeholder="مثال: Maintenance Site" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-left ltr">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">خط العرض (Latitude) *</label>
+                                <input type="number" step="any" id="p-lat" required placeholder="21.4858" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-left ltr font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">خط الطول (Longitude) *</label>
+                                <input type="number" step="any" id="p-lng" required placeholder="39.1925" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 text-left ltr font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">النطاق المسموح للحضور (متر) *</label>
+                                <input type="number" id="p-radius" required value="500" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50">
+                            </div>
+                            <div class="md:col-span-2 lg:col-span-3 flex justify-end mt-2 pt-4 border-t border-slate-100">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-md flex items-center gap-2 transition-transform active:scale-95">
+                                    <i class="ph-bold ph-map-pin-plus text-lg"></i> إضافة للمنظومة
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- جدول المشاريع (بطاقات) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="grid-projects">
+                    <!-- يتم الملء بالـ JS -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- توست الإشعارات -->
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-[60] pointer-events-none">
+        <i id="toast-icon" class="ph-fill ph-check-circle text-emerald-400 text-2xl"></i>
+        <span id="toast-msg" class="font-bold text-sm">تمت العملية بنجاح</span>
+    </div>
+
+    <script>
+        // --- 1. إدارة البيانات في المتصفح (LocalStorage) ---
+        // بما أن النظام حاليا بدون سيرفر، سنعتمد على localStorage لمشاركة البيانات مع صفحة العامل
+
+        const initDefaultData = () => {
+            // بيانات العمال الافتراضية إذا لم تكن موجودة
+            if(!localStorage.getItem('arkan_workers')) {
+                const defaultWorkers = [
+                    { id: "1001", nameAr: "أحمد محمد", nameEn: "Ahmed Mohammed", wage: 150 },
+                    { id: "1002", nameAr: "محمود علي", nameEn: "Mahmoud Ali", wage: 120 },
+                    { id: "1003", nameAr: "جون دوي", nameEn: "John Doe", wage: 100 }
+                ];
+                localStorage.setItem('arkan_workers', JSON.stringify(defaultWorkers));
+            }
+
+            // بيانات المشاريع الافتراضية
+            if(!localStorage.getItem('arkan_projects')) {
+                const defaultProjects = [
+                    { id: "P-01", nameAr: "المصنع الرئيسي (جدة)", nameEn: "Main Factory (Jeddah)", lat: 21.4858, lng: 39.1925, radius: 500 },
+                    { id: "P-02", nameAr: "مشروع أبراج الرياض", nameEn: "Riyadh Towers", lat: 24.7136, lng: 46.6753, radius: 1000 }
+                ];
+                localStorage.setItem('arkan_projects', JSON.stringify(defaultProjects));
+            }
+
+            // هيكل فارغ للحضور والطلبات إذا لم تكن موجودة
+            if(!localStorage.getItem('arkan_attendance_log')) localStorage.setItem('arkan_attendance_log', JSON.stringify([]));
+            if(!localStorage.getItem('arkan_requests_log')) localStorage.setItem('arkan_requests_log', JSON.stringify([]));
+        };
+
+        // دوال القراءة والكتابة المبسطة
+        const getData = (key) => JSON.parse(localStorage.getItem(key) || '[]');
+        const saveData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+
+        // --- STREAMING_CHUNK:برمجة وظائف التنقل في لوحة التحكم... ---
+        // --- 2. التحكم في واجهة المستخدم (UI Navigation) ---
+
+        const views = ['dashboard', 'attendance', 'requests', 'workers', 'projects'];
+        const titles = {
+            'dashboard': 'نظرة عامة والتحليل',
+            'attendance': 'سجل الحضور والانصراف',
+            'requests': 'إدارة طلبات العمال',
+            'workers': 'سجل بيانات العمال',
+            'projects': 'مواقع ومشاريع العمل'
+        };
+
+        function switchTab(viewId) {
+            // تحديث العنوان العلوي
+            document.getElementById('header-title').innerText = titles[viewId];
+            
+            // إخفاء كل الأقسام وتصفير أزرار القائمة
+            views.forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                const btn = document.getElementById('nav-' + v);
+                btn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-all text-slate-300';
+            });
+            
+            // إظهار القسم المطلوب وتفعيل زره
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            const activeBtn = document.getElementById('nav-' + viewId);
+            
+            // تنسيق خاص لزر الطلبات لاحتوائه على شارة (Badge)
+            if(viewId === 'requests') {
+                 activeBtn.className = 'nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md';
+            } else {
+                 activeBtn.className = 'nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white transition-all shadow-md';
+            }
+
+            // إغلاق القائمة الجانبية في الشاشات الصغيرة بعد الاختيار
+            if(window.innerWidth < 1024 && !document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+
+            // استدعاء دالة جلب البيانات الخاصة بالقسم المختار
+            if(viewId === 'dashboard') renderDashboard();
+            if(viewId === 'attendance') renderAttendanceTable();
+            if(viewId === 'requests') renderRequests();
+            if(viewId === 'workers') renderWorkers();
+            if(viewId === 'projects') renderProjects();
+        }
+
+        // فتح وإغلاق القائمة الجانبية للموبايل
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            const isRtl = document.documentElement.dir === 'rtl';
+            
+            if (sidebar.classList.contains(isRtl ? 'translate-x-full' : '-translate-x-full')) {
+                sidebar.classList.remove(isRtl ? 'translate-x-full' : '-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add(isRtl ? 'translate-x-full' : '-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // إظهار وإخفاء نماذج الإضافة
+        function toggleForm(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // دالة عرض الإشعارات
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            const icon = document.getElementById('toast-icon');
+            
+            icon.className = type === 'success' 
+                ? 'ph-fill ph-check-circle text-emerald-400 text-2xl' 
+                : 'ph-fill ph-warning-circle text-rose-400 text-2xl';
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        // --- STREAMING_CHUNK:برمجة العرض لشاشة النظرة العامة (Dashboard)... ---
+        // --- 3. دوال عرض البيانات (Render Functions) ---
+
+        // أ- شاشة النظرة العامة
+        function renderDashboard() {
+            const workers = getData('arkan_workers');
+            const attendance = getData('arkan_attendance_log');
+            const requests = getData('arkan_requests_log');
+            const projects = getData('arkan_projects');
+
+            // تحديث الإحصائيات العلوية
+            const todayDate = new Date().toISOString().split('T')[0];
+            const todayAttendance = attendance.filter(a => a.date === todayDate);
+            const pendingRequests = requests.filter(r => r.status === 'pending');
+
+            document.getElementById('stat-total-workers').innerText = workers.length;
+            document.getElementById('stat-present-today').innerText = todayAttendance.length;
+            document.getElementById('stat-pending-requests').innerText = pendingRequests.length;
+            document.getElementById('stat-active-projects').innerText = projects.length;
+
+            // تحديث شارة الإشعارات في القائمة الجانبية (Badge)
+            const badge = document.getElementById('badge-requests');
+            badge.innerText = pendingRequests.length;
+            badge.style.display = pendingRequests.length > 0 ? 'block' : 'none';
+
+            // عرض أحدث 5 حركات حضور في القائمة المختصرة
+            const ulAtt = document.getElementById('list-recent-attendance');
+            ulAtt.innerHTML = todayAttendance.slice(-5).reverse().map(a => `
+                <li class="px-5 py-3 flex justify-between items-center hover:bg-slate-50 transition-colors">
+                    <div>
+                        <p class="font-bold text-sm text-slate-800">${a.workerName}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">${a.projectName}</p>
+                    </div>
+                    <div class="text-left">
+                        <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold ${a.status === 'working' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+                            ${a.status === 'working' ? 'حاضر بالعمل' : 'أنهى وانصرف'}
+                        </span>
+                        <p class="text-[11px] font-mono text-slate-400 mt-1">${a.timeIn}</p>
+                    </div>
+                </li>
+            `).join('') || '<li class="p-6 text-center text-sm font-medium text-slate-500">لم يسجل أي عامل حضوره اليوم بعد.</li>';
+
+            // عرض أحدث الطلبات
+            const ulReq = document.getElementById('list-recent-requests');
+            const typeIcons = {
+                'leave': '<div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm"><i class="ph-fill ph-calendar-plus text-lg"></i></div>',
+                'loan': '<div class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-sm"><i class="ph-fill ph-money text-lg"></i></div>',
+                'issue': '<div class="w-9 h-9 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shadow-sm"><i class="ph-fill ph-warning-octagon text-lg"></i></div>'
+            };
+
+            ulReq.innerHTML = pendingRequests.slice(-4).reverse().map(r => `
+                <li class="px-5 py-3 flex gap-3 items-center hover:bg-slate-50 transition-colors">
+                    ${typeIcons[r.type]}
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sm text-slate-800">${r.workerName}</p>
+                        <p class="text-xs text-slate-500 truncate mt-0.5">${r.typeName}</p>
+                    </div>
+                    <button onclick="switchTab('requests')" class="text-xs text-blue-600 font-bold bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-600 hover:text-white transition-colors border border-blue-100">معاينة</button>
+                </li>
+            `).join('') || '<li class="p-6 text-center text-sm font-medium text-slate-500">لا توجد طلبات جديدة بانتظار المراجعة.</li>';
+        }
+
+        // --- STREAMING_CHUNK:برمجة العرض لجدول الحضور... ---
+        // ب- جدول الحضور الكامل
+        function renderAttendanceTable() {
+            let attendance = getData('arkan_attendance_log');
+            const filterDate = document.getElementById('filter-date').value;
+            
+            // تصفية السجل بناءً على التاريخ المختار
+            if(filterDate) {
+                attendance = attendance.filter(a => a.date === filterDate);
+            }
+
+            const tbody = document.getElementById('table-attendance');
+            tbody.innerHTML = attendance.map(a => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <p class="font-bold text-slate-800">${a.workerName}</p>
+                        <p class="text-xs text-slate-500 font-mono mt-0.5">#${a.workerId}</p>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-700">${a.projectName}</td>
+                    <td class="px-6 py-4 text-sm text-blue-700 font-bold font-mono">${a.timeIn}</td>
+                    <td class="px-6 py-4 text-sm text-slate-500 font-mono font-medium">${a.timeOut || '---'}</td>
+                    <td class="px-6 py-4">
+                        ${a.status === 'working' 
+                            ? '<span class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 flex items-center gap-1.5 w-max shadow-sm"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> يعمل الآن</span>' 
+                            : '<span class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200 shadow-sm w-max block text-center">أنهى وانصرف</span>'}
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">لا توجد حركات مسجلة لهذا اليوم.</td></tr>`;
+        }
+
+        // --- STREAMING_CHUNK:برمجة العرض لطلبات العمال... ---
+        // ج- طلبات العمال
+        function renderRequests() {
+            const requests = getData('arkan_requests_log').filter(r => r.status === 'pending');
+            const grid = document.getElementById('grid-requests');
+            const emptyState = document.getElementById('empty-requests');
+
+            if(requests.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            const typeStyles = {
+                'leave': { color: 'blue', icon: 'ph-calendar-plus' },
+                'loan': { color: 'emerald', icon: 'ph-money' },
+                'issue': { color: 'rose', icon: 'ph-warning-octagon' }
+            };
+
+            grid.innerHTML = requests.map(r => {
+                const style = typeStyles[r.type];
+                return `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                    <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-${style.color}-50/50">
+                        <span class="text-xs font-bold px-3 py-1.5 rounded-md bg-${style.color}-100 text-${style.color}-700 flex items-center gap-1.5 shadow-sm border border-${style.color}-200">
+                            <i class="ph-fill ${style.icon} text-sm"></i> ${r.typeName}
+                        </span>
+                        <span class="text-[11px] font-semibold text-slate-500">${r.date}</span>
+                    </div>
+                    <div class="p-5 flex-1 bg-white">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="ph-fill ph-user-circle text-2xl text-slate-400"></i>
+                            <h4 class="font-bold text-slate-800 text-base">${r.workerName}</h4>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-sm text-slate-700 leading-relaxed font-medium">
+                            ${r.details}
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-slate-100 grid grid-cols-2 gap-3 bg-slate-50/50">
+                        <button onclick="handleRequest('${r.id}', 'approved')" class="bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1">
+                            <i class="ph-bold ph-check"></i> موافقة
+                        </button>
+                        <button onclick="handleRequest('${r.id}', 'rejected')" class="bg-white border border-rose-200 hover:bg-rose-50 hover:border-rose-300 text-rose-600 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-transform active:scale-95 flex items-center justify-center gap-1">
+                            <i class="ph-bold ph-x"></i> رفض
+                        </button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // --- STREAMING_CHUNK:برمجة العرض للعمال والمشاريع... ---
+        // د- العمال
+        function renderWorkers() {
+            const workers = getData('arkan_workers');
+            const tbody = document.getElementById('table-workers');
+
+            // المالك المسجل في النظام كجهاز مربوط
+            const boundDeviceOwner = localStorage.getItem('arkan_device_owner');
+
+            tbody.innerHTML = workers.map(w => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-bold font-mono text-slate-600">#${w.id}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-sm"><i class="ph-fill ph-user text-lg"></i></div>
+                            <div>
+                                <span class="font-bold text-slate-800 block">${w.nameAr}</span>
+                                <span class="text-[10px] text-slate-400 block uppercase tracking-wide">${w.nameEn}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-emerald-600 font-mono text-base">${w.wage} <span class="text-xs text-slate-400 font-sans font-medium">ر.س/يوم</span></td>
+                    <td class="px-6 py-4 text-xs font-medium">
+                        ${boundDeviceOwner === w.id 
+                            ? '<span class="text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-md border border-blue-200 shadow-sm flex items-center w-max gap-1"><i class="ph-fill ph-device-mobile"></i> جهاز مقترن</span>' 
+                            : '<span class="text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-md border border-slate-200 flex items-center w-max gap-1"><i class="ph-regular ph-device-mobile"></i> غير مقترن</span>'}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="deleteWorker('${w.id}')" class="w-8 h-8 inline-flex rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white items-center justify-center transition-colors border border-rose-100 hover:border-rose-500 shadow-sm" title="حذف العامل">
+                            <i class="ph-bold ph-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // هـ- المشاريع
+        function renderProjects() {
+            const projects = getData('arkan_projects');
+            const grid = document.getElementById('grid-projects');
+
+            grid.innerHTML = projects.map(p => `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hover:border-blue-300 transition-colors relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-blue-50 rounded-bl-full flex justify-end p-4 opacity-50 group-hover:scale-110 transition-transform">
+                        <i class="ph-fill ph-map-pin text-blue-200 text-3xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded uppercase tracking-wider mb-2 inline-block shadow-sm">${p.id}</span>
+                        <h4 class="font-bold text-slate-800 text-lg">${p.nameAr}</h4>
+                        <p class="text-xs text-slate-400 mb-4 font-medium">${p.nameEn}</p>
+                        
+                        <div class="space-y-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <div class="flex justify-between border-b border-slate-200 pb-1.5">
+                                <span class="text-slate-500 font-semibold">دائرة العرض (Lat):</span>
+                                <span class="font-mono text-slate-700 font-bold">${p.lat}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-200 pb-1.5 pt-1">
+                                <span class="text-slate-500 font-semibold">خط الطول (Lng):</span>
+                                <span class="font-mono text-slate-700 font-bold">${p.lng}</span>
+                            </div>
+                            <div class="flex justify-between pt-1">
+                                <span class="text-slate-500 font-semibold">نطاق الحضور (بصمة الـ GPS):</span>
+                                <span class="font-bold text-emerald-600 bg-emerald-50 px-1.5 rounded">${p.radius} متر</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="deleteProject('${p.id}')" class="mt-4 w-full bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 py-2.5 rounded-xl text-sm font-bold transition-colors border border-slate-200 shadow-sm flex items-center justify-center gap-1.5">
+                        <i class="ph-bold ph-trash"></i> إزالة المشروع
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // --- STREAMING_CHUNK:برمجة وظائف الإضافة والحذف (CRUD Actions)... ---
+        // --- 4. العمليات (Actions/CRUD) ---
+
+        function addWorker(e) {
+            e.preventDefault();
+            const id = document.getElementById('w-id').value;
+            const nameAr = document.getElementById('w-name-ar').value;
+            const nameEn = document.getElementById('w-name-en').value;
+            const wage = document.getElementById('w-wage').value;
+
+            const workers = getData('arkan_workers');
+            if(workers.find(w => w.id === id)) {
+                showToast('خطأ: كود العامل مستخدم مسبقاً!', 'error');
+                return;
+            }
+
+            workers.push({ id, nameAr, nameEn, wage: Number(wage) });
+            saveData('arkan_workers', workers);
+            
+            e.target.reset();
+            document.getElementById('form-worker-container').classList.add('hidden');
+            renderWorkers();
+            showToast('تم إضافة العامل للنظام بنجاح.');
+            
+            if(!document.getElementById('view-dashboard').classList.contains('hidden')) renderDashboard();
+        }
+
+        function deleteWorker(id) {
+            if(confirm('تحذير: هل أنت متأكد من حذف بيانات هذا العامل نهائياً؟')) {
+                let workers = getData('arkan_workers');
+                workers = workers.filter(w => w.id !== id);
+                saveData('arkan_workers', workers);
+                
+                // تنظيف جهاز العامل المربوط إذا تم حذفه
+                if(localStorage.getItem('arkan_device_owner') === id) {
+                    localStorage.removeItem('arkan_device_owner');
+                }
+
+                renderWorkers();
+                showToast('تم حذف العامل بنجاح.');
+            }
+        }
+
+        function addProject(e) {
+            e.preventDefault();
+            const id = document.getElementById('p-id').value.toUpperCase();
+            const nameAr = document.getElementById('p-name-ar').value;
+            const nameEn = document.getElementById('p-name-en').value;
+            const lat = document.getElementById('p-lat').value;
+            const lng = document.getElementById('p-lng').value;
+            const radius = document.getElementById('p-radius').value;
+
+            const projects = getData('arkan_projects');
+            if(projects.find(p => p.id === id)) {
+                showToast('خطأ: كود المشروع مستخدم مسبقاً!', 'error');
+                return;
+            }
+
+            projects.push({ id, nameAr, nameEn, lat: Number(lat), lng: Number(lng), radius: Number(radius) });
+            saveData('arkan_projects', projects);
+            
+            e.target.reset();
+            document.getElementById('form-project-container').classList.add('hidden');
+            renderProjects();
+            showToast('تم إضافة المشروع بنجاح.');
+        }
+
+        function deleteProject(id) {
+            if(confirm('هل أنت متأكد من حذف هذا المشروع من النظام؟ لن يتمكن العمال من تسجيل الدخول عليه.')) {
+                let projects = getData('arkan_projects');
+                projects = projects.filter(p => p.id !== id);
+                saveData('arkan_projects', projects);
+                renderProjects();
+                showToast('تم حذف المشروع بنجاح.');
+            }
+        }
+
+        function handleRequest(id, newStatus) {
+            let requests = getData('arkan_requests_log');
+            const reqIndex = requests.findIndex(r => r.id === id);
+            
+            if(reqIndex > -1) {
+                requests[reqIndex].status = newStatus;
+                saveData('arkan_requests_log', requests);
+                renderRequests();
+                
+                const msg = newStatus === 'approved' ? 'تمت الموافقة على الطلب.' : 'تم رفض الطلب.';
+                showToast(msg);
+                
+                // تحديث العداد في القائمة الجانبية
+                const pendingCount = requests.filter(r => r.status === 'pending').length;
+                const badge = document.getElementById('badge-requests');
+                badge.innerText = pendingCount;
+                badge.style.display = pendingCount > 0 ? 'block' : 'none';
+                
+                // تحديث لوحة المعلومات إذا كانت مفتوحة
+                if(!document.getElementById('view-dashboard').classList.contains('hidden')) renderDashboard();
+            }
+        }
+
+        // --- STREAMING_CHUNK:التشغيل الأولي عند تحميل الصفحة... ---
+        // --- 5. التشغيل الأولي (Initialization) ---
+        
+        window.onload = () => {
+            initDefaultData();
+            
+            // تعيين تاريخ اليوم في الهيدر العلوي
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-SA', options);
+            
+            // تعيين تاريخ اليوم كقيمة افتراضية لفلتر سجل الحضور
+            document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
+
+            // عرض لوحة التحكم الرئيسية فور الدخول
+            switchTab('dashboard');
+        };
+
+    </script>
+</body>
+</html>
