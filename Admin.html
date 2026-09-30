@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- تحميل مكتبة الرسم البياني -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     
@@ -29,7 +30,7 @@
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><i class="ph-fill ph-hexagon text-white text-xl"></i></div>
             <div>
                 <h1 class="text-white font-bold text-lg leading-tight">الإدارة المركزية</h1>
-                <p class="text-[10px] text-blue-400">أركان الخليج (نظام محلي)</p>
+                <p class="text-[10px] text-blue-400">تخزين محلي مباشر</p>
             </div>
         </div>
         
@@ -49,9 +50,10 @@
             <button onclick="switchTab('projects')" id="nav-projects" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white transition-colors"><i class="ph-duotone ph-map-trifold text-xl"></i> مواقع المشاريع</button>
         </nav>
         
-        <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center gap-3">
-            <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="ph-fill ph-hard-drives text-emerald-400 text-xl"></i></div>
-            <div><h4 class="text-white text-sm font-bold">التخزين المحلي</h4><p class="text-[10px] text-emerald-500">متصل وجاهز للمزامنة</p></div>
+        <div class="p-4 bg-slate-950 border-t border-slate-800 flex flex-col gap-2">
+            <button onclick="factoryReset()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-colors border border-rose-500/30">
+                <i class="ph-bold ph-warning"></i> مسح البيانات (إعادة تهيئة)
+            </button>
         </div>
     </aside>
 
@@ -59,7 +61,7 @@
         <header class="h-16 glass border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
             <h2 id="header-title" class="text-xl font-bold text-slate-800">نظرة عامة</h2>
             <div class="flex items-center gap-4">
-                <button onclick="refreshAll()" class="flex items-center gap-2 text-sm font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"><i class="ph-bold ph-arrows-clockwise"></i> تحديث البيانات</button>
+                <button onclick="refreshAll()" class="flex items-center gap-2 text-sm font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"><i class="ph-bold ph-arrows-clockwise"></i> تحديث</button>
                 <div class="text-sm font-medium text-slate-500 bg-white border px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm"><i class="ph-duotone ph-calendar-blank"></i> <span id="header-date"></span></div>
             </div>
         </header>
@@ -87,6 +89,7 @@
                 </div>
             </section>
 
+            <!-- 2. التقارير المالية (لوحة القيادة المطورة) -->
             <section id="view-finance" class="hidden fade-in space-y-6">
                 <!-- شريط الفلاتر الذكية -->
                 <div class="bg-white p-5 rounded-2xl border shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
@@ -208,5 +211,4 @@
             <section id="view-projects" class="hidden fade-in space-y-6">
                 <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
                     <div class="p-5 border-b bg-slate-50"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-map-pin-line text-blue-600"></i> إضافة مشروع جديد</h3></div>
-                    <form onsubmit="addProject(event)" class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div><label class="block text-sm font-bold
+                    <form onsubmit="addProject(event)" class="p-6 gri
