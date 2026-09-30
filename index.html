@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>بوابة العمال - أركان الخليج</title>
+    <title>أركان الخليج - بوابة العامل</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -50,13 +50,13 @@
     </header>
 
     <!-- القائمة الجانبية -->
-    <div id="sidebar-overlay" onclick="closeSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
     <aside id="sidebar-drawer" class="fixed top-0 start-0 h-full w-72 bg-white shadow-2xl z-50 transform ltr:-translate-x-full rtl:translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-6 bg-slate-900 text-white flex flex-col items-center justify-center relative overflow-hidden">
             <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-3 border-4 border-slate-800 relative z-10"><i class="ph-fill ph-user text-3xl text-white"></i></div>
             <h3 id="sidebar-worker-name" class="font-bold text-lg relative z-10">الاسم</h3>
             <p id="sidebar-worker-id" class="text-xs text-blue-300 font-mono mt-1 relative z-10">ID: 0000</p>
-            <button onclick="closeSidebar()" class="absolute top-4 end-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
+            <button onclick="toggleSidebar()" class="absolute top-4 end-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
         </div>
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
             <button onclick="openTab('tab-home')" id="nav-tab-home" class="tab-btn active w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 border border-transparent"><i class="ph-duotone ph-house text-xl text-blue-600"></i> <span id="txt-nav-home">الرئيسية (الحضور)</span></button>
@@ -100,7 +100,7 @@
                         <label id="txt-sel-proj" class="block text-sm font-bold text-slate-700">موقع العمل الحالي:</label>
                         <select id="select-project" class="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 font-medium"></select>
                         <div class="grid grid-cols-1 mt-4 gap-2">
-                            <button id="btn-do-checkin" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"><i class="ph-bold ph-fingerprint text-2xl"></i> <span id="txt-btn-checkin">تسجيل الحضور بالموقع</span></button>
+                            <button id="btn-do-checkin" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all opacity-50 cursor-not-allowed"><i class="ph-bold ph-fingerprint text-2xl"></i> <span id="txt-btn-checkin">تسجيل الحضور بالموقع</span></button>
                             <button id="btn-bypass" class="text-[10px] text-slate-400 underline text-center py-1 hidden">تجاوز الـ GPS (للتجربة من الكمبيوتر)</button>
                         </div>
                     </div>
@@ -167,9 +167,9 @@
     </main>
 
     <!-- النوافذ المنبثقة للطلبات -->
-    <div id="modal-overlay-form" onclick="closeModals()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="modal-overlay-form" onclick="closeModals()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300"></div>
 
-    <div id="modal-leave" class="modal-form fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+    <div id="modal-leave" class="modal-form fixed bottom-0 left-0 right-0 z-[70] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
         <div class="flex justify-between items-center mb-6"><h3 id="txt-mod-leave-head" class="font-bold text-lg text-slate-800">طلب إجازة</h3><button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full"><i class="ph-bold ph-x"></i></button></div>
         <form onsubmit="handleFormSubmit(event, 'leave')" class="space-y-4">
             <div><label id="txt-mod-leave-type" class="block text-sm font-bold text-slate-700 mb-1">نوع الإجازة</label><select required class="w-full px-4 py-3 rounded-xl border bg-slate-50"><option id="opt-l-1" value="annual">إجازة سنوية</option><option id="opt-l-2" value="sick">إجازة مرضية</option><option id="opt-l-3" value="unpaid">بدون راتب</option></select></div>
@@ -178,7 +178,7 @@
         </form>
     </div>
 
-    <div id="modal-loan" class="modal-form fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+    <div id="modal-loan" class="modal-form fixed bottom-0 left-0 right-0 z-[70] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
         <div class="flex justify-between items-center mb-6"><h3 id="txt-mod-loan-head" class="font-bold text-lg text-slate-800">طلب سلفة</h3><button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full"><i class="ph-bold ph-x"></i></button></div>
         <form onsubmit="handleFormSubmit(event, 'loan')" class="space-y-4">
             <div><label id="txt-mod-loan-amt" class="block text-sm font-bold text-slate-700 mb-1">المبلغ المطلوب</label><input type="number" required placeholder="0.00" class="w-full px-4 py-3 rounded-xl border bg-slate-50"></div>
@@ -187,7 +187,7 @@
         </form>
     </div>
 
-    <div id="modal-issue" class="modal-form fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
+    <div id="modal-issue" class="modal-form fixed bottom-0 left-0 right-0 z-[70] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
         <div class="flex justify-between items-center mb-6"><h3 id="txt-mod-issue-head" class="font-bold text-lg text-slate-800">بلاغ مشكلة</h3><button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full"><i class="ph-bold ph-x"></i></button></div>
         <form onsubmit="handleFormSubmit(event, 'issue')" class="space-y-4">
             <div><label id="txt-mod-issue-type" class="block text-sm font-bold text-slate-700 mb-1">نوع المشكلة</label><select required class="w-full px-4 py-3 rounded-xl border bg-slate-50"><option id="opt-i-1" value="safety">أمن وسلامة مهنية</option><option id="opt-i-2" value="equip">عطل في معدة</option><option id="opt-i-3" value="other">أخرى</option></select></div>
@@ -196,5 +196,4 @@
         </form>
     </div>
 
-    <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[70] pointer-events-none w-max">
-        <i class="ph-fill ph-c
+    <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[100] pointer-events-none w-m
