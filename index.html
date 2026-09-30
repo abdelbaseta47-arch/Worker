@@ -2,219 +2,140 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>أركان الخليج - بوابة العامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أركان الخليج - الإدارة المركزية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .marquee { overflow: hidden; white-space: nowrap; box-sizing: border-box; }
-        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; padding-left: 100%; }
-        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(100%, 0); } }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f1f5f9; } 
+        .fade-in { animation: fadeIn 0.3s ease-in-out; } 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="text-slate-800 antialiased h-screen overflow-hidden flex">
 
-    <div class="bg-slate-900 text-slate-300 py-1.5 px-4 flex justify-between items-center z-20 relative">
-        <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> متصل بالسحابة
+    <aside class="bg-slate-900 text-slate-300 w-64 flex-shrink-0 h-full flex flex-col z-50 transition-all duration-300">
+        <div class="h-16 flex items-center gap-3 px-6 bg-slate-950 border-b border-slate-800">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center"><i class="ph-fill ph-hexagon text-white text-xl"></i></div>
+            <div><h1 class="text-white font-bold text-lg leading-tight">الإدارة المركزية</h1><p class="text-[10px] text-blue-400">أركان الخليج السحابية</p></div>
         </div>
-        <div class="text-[11px] font-semibold text-slate-400">نظام إدارة العمال</div>
-    </div>
-
-    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30 glass-effect">
-        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" id="btn-menu-toggle" class="hidden w-10 h-10 bg-slate-50 hover:bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 transition-colors">
-                    <i class="ph-bold ph-list text-xl"></i>
-                </button>
-                <div class="w-10 h-10 bg-blue-900 rounded-xl flex items-center justify-center shadow-inner relative overflow-hidden flex-shrink-0">
-                    <i class="ph-fill ph-hexagon text-2xl text-blue-400 relative z-10"></i>
-                </div>
-                <div>
-                    <h1 class="text-base font-bold text-blue-950 leading-tight">أركان الخليج</h1>
-                    <p class="text-[10px] font-medium text-slate-500 mt-0.5">بوابة الخدمات الذاتية</p>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
-    <aside id="sidebar-drawer" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
-        <div class="p-6 bg-slate-900 text-white flex flex-col items-center justify-center relative overflow-hidden">
-            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-3 border-4 border-slate-800 relative z-10">
-                <i class="ph-fill ph-user text-3xl text-white"></i>
-            </div>
-            <h3 id="sidebar-worker-name" class="font-bold text-lg relative z-10">الاسم</h3>
-            <p id="sidebar-worker-id" class="text-xs text-blue-300 font-mono mt-1 relative z-10">ID: 0000</p>
-            <button onclick="toggleSidebar()" class="absolute top-4 left-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors"><i class="ph-bold ph-x"></i></button>
-        </div>
-        
-        <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-            <button onclick="openTab('tab-home')" class="tab-btn w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold bg-blue-50/50 text-blue-700 border border-blue-100" data-target="tab-home"><i class="ph-duotone ph-house text-xl text-blue-600"></i> الرئيسية (الحضور)</button>
-            <button onclick="openTab('tab-tasks')" class="tab-btn w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 border border-transparent" data-target="tab-tasks">
-                <div class="flex items-center gap-3"><i class="ph-duotone ph-clipboard-text text-xl text-amber-500"></i> المهام الموكلة</div>
-                <span id="badge-menu-tasks" class="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white"><i class="ph-duotone ph-squares-four text-xl"></i> نظرة عامة</button>
+            <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i class="ph-duotone ph-paper-plane-right text-xl"></i> توجيه المهام (جديد)</button>
+            <button onclick="switchTab('attendance')" id="nav-attendance" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i class="ph-duotone ph-clock-counter-clockwise text-xl"></i> سجل الحضور اليومي</button>
+            <button onclick="switchTab('requests')" id="nav-requests" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white">
+                <div class="flex items-center gap-3"><i class="ph-duotone ph-tray text-xl"></i> طلبات العمال</div><span id="badge-requests" class="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
             </button>
-            <button onclick="openTab('tab-services')" class="tab-btn w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 border border-transparent" data-target="tab-services"><i class="ph-duotone ph-squares-four text-xl text-emerald-500"></i> الخدمات (الطلبات)</button>
-            <button onclick="openTab('tab-history')" class="tab-btn w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 border border-transparent" data-target="tab-history"><i class="ph-duotone ph-clock-counter-clockwise text-xl text-purple-500"></i> متابعة طلباتي</button>
+            <div class="pt-4 pb-2"><p class="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">إعدادات المنظومة</p></div>
+            <button onclick="switchTab('workers')" id="nav-workers" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i class="ph-duotone ph-users-three text-xl"></i> إدارة العمال</button>
+            <button onclick="switchTab('projects')" id="nav-projects" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white"><i class="ph-duotone ph-map-trifold text-xl"></i> مواقع المشاريع</button>
         </nav>
-        <div class="p-4 border-t border-slate-100">
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors"><i class="ph-bold ph-power text-lg"></i> تسجيل الخروج</button>
+        <div class="p-4 bg-slate-950 border-t border-slate-800 flex items-center gap-3">
+            <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="ph-fill ph-cloud text-emerald-400 text-2xl"></i></div>
+            <div><h4 class="text-white text-sm font-bold">حالة السحابة</h4><p id="cloud-status-admin" class="text-[10px] text-amber-500">جاري الاتصال...</p></div>
         </div>
     </aside>
 
-    <main class="flex-1 w-full max-w-md mx-auto p-4 pb-24 relative overflow-hidden flex flex-col justify-center">
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <header class="h-16 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
+            <h2 id="header-title" class="text-xl font-bold text-slate-800">نظرة عامة</h2>
+            <div class="text-sm font-medium text-slate-500 bg-slate-100 px-4 py-2 rounded-lg flex items-center gap-2"><i class="ph-duotone ph-calendar-blank"></i> <span id="header-date"></span></div>
+        </header>
         
-        <!-- Login Section -->
-        <div id="section-login" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 fade-in w-full">
-            <div class="bg-slate-900 p-8 text-center relative">
-                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"><i class="ph-fill ph-user text-3xl text-white"></i></div>
-                <h2 class="text-2xl font-bold text-white mb-1">تسجيل الدخول</h2>
-            </div>
-            <div class="p-6">
-                <form onsubmit="login(event)" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">رقم العامل (كود الموظف)</label>
-                        <div class="relative">
-                            <i class="ph ph-identification-card absolute top-1/2 transform -translate-y-1/2 right-3 text-slate-400 text-xl"></i>
-                            <input type="text" id="input-worker-id" placeholder="أدخل رقمك هنا" required class="w-full px-10 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 transition-all font-bold text-lg text-center">
-                        </div>
-                        <p id="txt-device-locked" class="text-[10px] text-emerald-600 font-bold mt-1.5 hidden flex items-center gap-1"><i class="ph-fill ph-lock-key"></i> هذا الجهاز مرتبط بملفك الشخصي.</p>
-                        <div id="login-error" class="hidden mt-3 p-3 bg-rose-50 border border-rose-100 rounded-lg flex items-start gap-2 text-rose-700 text-sm">
-                            <i class="ph-fill ph-warning-circle text-lg flex-shrink-0"></i> <span id="txt-login-error">الكود غير صحيح!</span>
-                        </div>
-                    </div>
-                    <button type="submit" id="btn-login-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95">
-                        <i class="ph-duotone ph-spinner animate-spin hidden" id="login-spinner"></i>
-                        <span id="txt-login-btn">دخول للنظام</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Dashboard Section -->
-        <div id="section-dashboard" class="hidden w-full h-full flex flex-col justify-start">
+        <div class="flex-1 overflow-y-auto p-8 relative">
             
-            <!-- Tab 1: Home (Attendance) -->
-            <div id="tab-home" class="tab-content fade-in space-y-4">
-                <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-3 flex items-center gap-3 shadow-sm">
-                    <i class="ph-fill ph-megaphone text-2xl text-blue-500 flex-shrink-0"></i>
-                    <div class="flex-1 marquee text-sm font-bold"><span class="marquee-content">إعلان إداري هام: يُرجى من جميع العاملين الالتزام التام بارتداء الزي الرسمي ومهمات الأمن والسلامة كأحذية الأمان والخوذة لضمان سلامتكم.</span></div>
+            <!-- Dashboard -->
+            <section id="view-dashboard" class="fade-in space-y-6">
+                <div class="grid grid-cols-4 gap-6">
+                    <div class="bg-white p-5 rounded-2xl border flex items-center gap-4 shadow-sm"><div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center"><i class="ph-fill ph-users text-2xl"></i></div><div><p class="text-sm text-slate-500 mb-1">العمال المسجلين</p><h3 id="stat-workers" class="text-2xl font-bold">0</h3></div></div>
+                    <div class="bg-white p-5 rounded-2xl border flex items-center gap-4 shadow-sm"><div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="ph-fill ph-fingerprint text-2xl"></i></div><div><p class="text-sm text-slate-500 mb-1">حضور اليوم</p><h3 id="stat-attendance" class="text-2xl font-bold">0</h3></div></div>
+                    <div class="bg-white p-5 rounded-2xl border flex items-center gap-4 shadow-sm"><div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center"><i class="ph-fill ph-bell-ringing text-2xl"></i></div><div><p class="text-sm text-slate-500 mb-1">طلبات معلقة</p><h3 id="stat-requests" class="text-2xl font-bold">0</h3></div></div>
+                    <div class="bg-white p-5 rounded-2xl border flex items-center gap-4 shadow-sm"><div class="w-14 h-14 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="ph-fill ph-buildings text-2xl"></i></div><div><p class="text-sm text-slate-500 mb-1">المشاريع</p><h3 id="stat-projects" class="text-2xl font-bold">0</h3></div></div>
                 </div>
+            </section>
 
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 relative overflow-hidden">
-                    <div id="state-checkin" class="space-y-4">
-                        <h3 class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-2"><i class="ph-duotone ph-map-pin text-blue-600"></i> تسجيل الحضور</h3>
-                        <label class="block text-sm font-bold text-slate-700">موقع العمل الحالي:</label>
-                        <select id="select-project" onchange="updateDashboardState()" class="w-full px-4 py-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 outline-none bg-slate-50 font-medium"></select>
-                        <div class="grid grid-cols-1 mt-4 gap-2">
-                            <button id="btn-do-checkin" onclick="performCheckIn(false)" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all opacity-50 cursor-not-allowed"><i class="ph-bold ph-fingerprint text-2xl"></i> تسجيل الحضور</button>
-                            <button id="btn-bypass" onclick="performCheckIn(true)" class="text-[10px] text-slate-400 underline text-center py-1 hidden">تجاوز الـ GPS للتجربة</button>
+            <!-- Tasks -->
+            <section id="view-tasks" class="hidden fade-in space-y-6">
+                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="p-5 border-b bg-indigo-50"><h3 class="font-bold text-indigo-800 flex items-center gap-2"><i class="ph-fill ph-paper-plane-tilt"></i> توجيه مهمة جديدة لعامل</h3></div>
+                    <form onsubmit="assignTask(event)" class="p-6 grid grid-cols-4 gap-4">
+                        <div><label class="block text-sm font-bold mb-1">تاريخ المهمة</label><input type="date" id="t-date" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-indigo-600 outline-none"></div>
+                        <div><label class="block text-sm font-bold mb-1">تحديد العامل</label><select id="t-worker" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-indigo-600 outline-none"></select></div>
+                        <div class="col-span-2"><label class="block text-sm font-bold mb-1">المهام المطلوبة منه</label><input type="text" id="t-desc" required placeholder="مثال: استلام مواد البناء من المورد..." class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-indigo-600 outline-none"></div>
+                        <div class="col-span-4 flex justify-end"><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-colors">إرسال لجوال العامل مباشرة</button></div>
+                    </form>
+                </div>
+                
+                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="p-5 border-b bg-slate-50 flex justify-between items-center"><h3 class="font-bold flex items-center gap-2"><i class="ph-duotone ph-list-dashes"></i> متابعة حالة المهام</h3><div class="flex gap-2 items-center text-sm font-bold"><label>تصفية بالتاريخ:</label><input type="date" id="filter-task-date" onchange="renderTasks()" class="border px-3 py-1.5 rounded-lg bg-white"></div></div>
+                    <table class="w-full text-right text-sm"><thead class="bg-slate-100 border-b text-slate-600"><tr><th class="px-6 py-4">العامل المكلف</th><th class="px-6 py-4">المهمة المطلوبة</th><th class="px-6 py-4">حالة التنفيذ (تحديث فوري)</th></tr></thead><tbody id="table-tasks" class="divide-y"></tbody></table>
+                </div>
+            </section>
+
+            <!-- Attendance -->
+            <section id="view-attendance" class="hidden fade-in space-y-4">
+                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="p-5 border-b bg-slate-50 flex justify-between items-center"><h3 class="font-bold">سجل الحركات اليومية</h3><div class="flex gap-2 items-center text-sm font-bold"><label>تصفية بالتاريخ:</label><input type="date" id="filter-att-date" onchange="renderAttendance()" class="border px-3 py-1.5 rounded-lg bg-white"></div></div>
+                    <table class="w-full text-right text-sm"><thead class="bg-slate-100 border-b text-slate-600"><tr><th class="px-6 py-4">اسم العامل</th><th class="px-6 py-4">المشروع / الموقع</th><th class="px-6 py-4">وقت الدخول</th><th class="px-6 py-4">وقت الخروج</th></tr></thead><tbody id="table-attendance" class="divide-y"></tbody></table>
+                </div>
+            </section>
+
+            <!-- Requests -->
+            <section id="view-requests" class="hidden fade-in space-y-4">
+                <div class="flex justify-end mb-4"><div class="flex items-center gap-2 bg-white px-4 py-2 border rounded-xl shadow-sm font-bold text-sm"><i class="ph-duotone ph-calendar"></i> عرض طلبات يوم: <input type="date" id="filter-req-date" onchange="renderRequests()" class="px-2 py-1 outline-none"></div></div>
+                <div class="grid grid-cols-3 gap-6" id="grid-requests"></div>
+            </section>
+
+            <!-- Workers -->
+            <section id="view-workers" class="hidden fade-in space-y-6">
+                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="p-5 border-b bg-blue-50"><h3 class="font-bold text-blue-800 flex items-center gap-2"><i class="ph-fill ph-user-plus"></i> تسجيل عامل جديد بالمنظومة</h3></div>
+                    <form onsubmit="addWorker(event)" class="p-6 grid grid-cols-3 gap-4">
+                        <div><label class="block text-sm font-bold mb-1">الكود (مهم جداً)</label><input type="text" id="w-id" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                        <div><label class="block text-sm font-bold mb-1">اسم العامل</label><input type="text" id="w-name" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                        <div><label class="block text-sm font-bold mb-1">الأجر اليومي المتفق عليه</label><input type="number" id="w-wage" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                        <div class="col-span-3 flex justify-end mt-2"><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-colors">حفظ في السحابة</button></div>
+                    </form>
+                </div>
+                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <table class="w-full text-right text-sm"><thead class="bg-slate-100 border-b text-slate-600"><tr><th class="px-6 py-4">الكود التعريفي</th><th class="px-6 py-4">الاسم</th><th class="px-6 py-4">الأجر اليومي</th><th class="px-6 py-4">حالة الجهاز</th></tr></thead><tbody id="table-workers" class="divide-y"></tbody></table>
+                </div>
+            </section>
+
+            <!-- Projects -->
+            <section id="view-projects" class="hidden fade-in space-y-6">
+                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                    <div class="p-5 border-b bg-slate-50"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-map-pin-line text-blue-600"></i> إضافة موقع/مشروع جديد</h3></div>
+                    <form onsubmit="addProject(event)" class="p-6 grid grid-cols-4 gap-4">
+                        <div><label class="block text-sm font-bold mb-1">كود المشروع</label><input type="text" id="p-id" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none uppercase"></div>
+                        <div><label class="block text-sm font-bold mb-1">اسم الموقع</label><input type="text" id="p-name" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                        <div><label class="block text-sm font-bold mb-1">خط العرض Lat</label><input type="number" step="any" id="p-lat" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                        <div><label class="block text-sm font-bold mb-1">خط الطول Lng</label><input type="number" step="any" id="p-lng" required class="w-full px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                        <div class="col-span-4 flex justify-between items-end mt-2">
+                            <div><label class="block text-sm font-bold mb-1">نطاق البصمة الجغرافية (بالمتر)</label><input type="number" id="p-radius" value="500" class="w-40 px-4 py-2 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-600 outline-none"></div>
+                            <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-8 rounded-xl shadow-md transition-colors">تفعيل المشروع</button>
                         </div>
-                    </div>
-
-                    <div id="state-working" class="hidden text-center">
-                        <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3"><i class="ph-duotone ph-briefcase text-4xl animate-pulse"></i></div>
-                        <p class="text-sm text-slate-500 mb-1">تعمل الآن في:</p>
-                        <p id="val-current-proj" class="text-xl font-bold text-slate-800 mb-4">اسم المشروع</p>
-                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-5 flex items-center justify-center gap-2 text-sm"><i class="ph-bold ph-clock text-blue-600"></i> <span class="font-bold text-blue-700" id="val-checkin-time">00:00</span></div>
-                        <button onclick="checkOut()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-md"><i class="ph-bold ph-sign-out text-2xl"></i> إنهاء العمل (انصراف)</button>
-                    </div>
-
-                    <div id="state-completed" class="hidden text-center py-4">
-                        <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="ph-fill ph-check-circle text-5xl"></i></div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">تم إنهاء العمل بنجاح!</h3>
-                        <p class="text-sm text-slate-500">تم تسجيل انصرافك وإرساله للإدارة.</p>
-                    </div>
+                    </form>
                 </div>
-            </div>
-
-            <!-- Tab 2: Tasks -->
-            <div id="tab-tasks" class="tab-content hidden fade-in space-y-4">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                        <h3 class="font-bold text-slate-800"><i class="ph-duotone ph-clipboard-text text-amber-500"></i> المهام الموكلة</h3>
-                        <input type="date" id="filter-tasks-date" onchange="renderTasks()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none">
-                    </div>
-                    <div id="list-tasks" class="space-y-3"></div>
-                </div>
-            </div>
-
-            <!-- Tab 3: Services -->
-            <div id="tab-services" class="tab-content hidden fade-in space-y-4">
-                <div class="grid grid-cols-1 gap-4">
-                    <button onclick="openModal('modal-leave')" class="w-full flex items-center text-right p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-blue-300 transition-all group">
-                        <div class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 ml-4 flex items-center justify-center"><i class="ph-duotone ph-calendar-plus text-3xl group-hover:scale-110 transition-transform"></i></div>
-                        <div><h4 class="font-bold text-slate-800 text-lg">طلب إجازة</h4><p class="text-xs text-slate-500">تقديم طلب إجازة رسمية للإدارة.</p></div>
-                    </button>
-                    <button onclick="openModal('modal-loan')" class="w-full flex items-center text-right p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-emerald-300 transition-all group">
-                        <div class="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 ml-4 flex items-center justify-center"><i class="ph-duotone ph-money text-3xl group-hover:scale-110 transition-transform"></i></div>
-                        <div><h4 class="font-bold text-slate-800 text-lg">طلب سلفة</h4><p class="text-xs text-slate-500">طلب سلفة مالية من الراتب.</p></div>
-                    </button>
-                    <button onclick="openModal('modal-issue')" class="w-full flex items-center text-right p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:border-rose-300 transition-all group">
-                        <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 ml-4 flex items-center justify-center"><i class="ph-duotone ph-warning-octagon text-3xl group-hover:scale-110 transition-transform"></i></div>
-                        <div><h4 class="font-bold text-slate-800 text-lg">بلاغ مشكلة</h4><p class="text-xs text-slate-500">الإبلاغ عن أعطال أو أمن وسلامة.</p></div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tab 4: History -->
-            <div id="tab-history" class="tab-content hidden fade-in space-y-4">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 min-h-[300px]">
-                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                        <h3 class="font-bold text-slate-800"><i class="ph-duotone ph-clock-counter-clockwise text-purple-500"></i> متابعة طلباتي</h3>
-                        <input type="date" id="filter-history-date" onchange="renderRequestsHistory()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 outline-none">
-                    </div>
-                    <div id="list-requests-history" class="space-y-3"></div>
-                </div>
-            </div>
+                <div class="grid grid-cols-3 gap-6" id="grid-projects"></div>
+            </section>
         </div>
     </main>
 
-    <div id="modal-overlay-form" onclick="closeModals()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300"></div>
-
-    <div id="modal-leave" class="modal-form fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
-        <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-800"><i class="ph-fill ph-calendar-plus text-blue-600"></i> طلب إجازة</h3><button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full"><i class="ph-bold ph-x"></i></button></div>
-        <form onsubmit="handleFormSubmit(event, 'leave')" class="space-y-4">
-            <div><label class="block text-sm font-bold text-slate-700 mb-1">تاريخ البدء</label><input type="date" required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50"></div>
-            <div><label class="block text-sm font-bold text-slate-700 mb-1">نوع الإجازة</label><select required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50"><option value="annual">إجازة سنوية</option><option value="sick">إجازة مرضية</option><option value="unpaid">بدون راتب</option></select></div>
-            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-4 shadow-lg">إرسال الطلب</button>
-        </form>
-    </div>
-
-    <div id="modal-loan" class="modal-form fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
-        <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-800"><i class="ph-fill ph-money text-emerald-600"></i> طلب سلفة</h3><button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full"><i class="ph-bold ph-x"></i></button></div>
-        <form onsubmit="handleFormSubmit(event, 'loan')" class="space-y-4">
-            <div><label class="block text-sm font-bold text-slate-700 mb-1">المبلغ المطلوب (ريال)</label><input type="number" required placeholder="0.00" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50"></div>
-            <div><label class="block text-sm font-bold text-slate-700 mb-1">ملاحظات</label><textarea rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50"></textarea></div>
-            <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl mt-4 shadow-lg">إرسال الطلب</button>
-        </form>
-    </div>
-
-    <div id="modal-issue" class="modal-form fixed bottom-0 left-0 right-0 z-[60] hidden translate-y-full transition-transform duration-300 w-full max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl p-6 pb-10 border-t border-slate-100">
-        <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-800"><i class="ph-fill ph-warning-octagon text-rose-600"></i> بلاغ مشكلة</h3><button onclick="closeModals()" class="w-8 h-8 bg-slate-100 rounded-full"><i class="ph-bold ph-x"></i></button></div>
-        <form onsubmit="handleFormSubmit(event, 'issue')" class="space-y-4">
-            <div><label class="block text-sm font-bold text-slate-700 mb-1">نوع المشكلة</label><select required class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50"><option value="safety">أمن وسلامة مهنية</option><option value="equip">عطل في معدة</option><option value="other">أخرى</option></select></div>
-            <div><label class="block text-sm font-bold text-slate-700 mb-1">التفاصيل</label><textarea required rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50"></textarea></div>
-            <button type="submit" class="w-full bg-rose-600 text-white font-bold py-4 rounded-xl mt-4 shadow-lg">إرسال البلاغ</button>
-        </form>
-    </div>
-
-    <div id="toast-success" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 -translate-y-20 opacity-0 z-[70] pointer-events-none w-max">
-        <i class="ph-fill ph-check-circle text-emerald-400 text-xl"></i><span id="txt-toast-msg" class="font-medium text-sm">تمت العملية بنجاح!</span>
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 translate-y-20 opacity-0 z-[60]">
+        <i class="ph-fill ph-check-circle text-emerald-400"></i><span id="toast-msg" class="font-medium text-sm">تم</span>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // إعداداتك السحابية الحقيقية (لا تغيرها)
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyC-L23_5r9kQinJAwKxjbL1AKs7dNEa1FQ",
             authDomain: "arkan-system-cdf54.firebaseapp.com",
@@ -226,201 +147,139 @@
         };
         
         let app, auth, db;
-        let fbProjects = [], fbTasks = [], fbRequests = [];
-        let currentUser = null;
-        let attendanceStatus = 'none';
-
+        let fbWorkers = [], fbProjects = [], fbTasks = [], fbRequests = [], fbAttendance = [];
         const getToday = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().split('T')[0]; };
+        
+        document.getElementById('t-date').value = getToday();
+        document.getElementById('filter-task-date').value = getToday();
+        document.getElementById('filter-att-date').value = getToday();
+        document.getElementById('filter-req-date').value = getToday();
+        
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('header-date').innerText = new Date().toLocaleDateString('ar-SA', options);
+
+        const cloudStatus = document.getElementById('cloud-status-admin');
 
         try {
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
             
-            signInAnonymously(auth).then(() => {
-                onSnapshot(collection(db, 'app_projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); renderProjects(); if(currentUser) updateDashboardState(); });
-                onSnapshot(collection(db, 'app_tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
-                onSnapshot(collection(db, 'app_requests'), snap => { fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); renderRequestsHistory(); });
-                checkSavedSession();
-            }).catch(e => { console.error("Auth Error", e); showError("فشل الاتصال السحابي، تأكد من تفعيل Anonymous Auth في Firebase."); });
-        } catch(e) { console.error("Init Error", e); }
-
-        function checkSavedSession() {
-            const savedId = localStorage.getItem('arkan_user_id');
-            const savedName = localStorage.getItem('arkan_user_name');
-            if(savedId && savedName) {
-                currentUser = { id: savedId, name: savedName };
-                document.getElementById('sidebar-worker-name').innerText = savedName;
-                document.getElementById('sidebar-worker-id').innerText = `ID: ${savedId}`;
-                
-                const todayStr = getToday();
-                if(localStorage.getItem('arkan_date') === todayStr) attendanceStatus = localStorage.getItem('arkan_status') || 'none';
-                else { localStorage.setItem('arkan_date', todayStr); localStorage.setItem('arkan_status', 'none'); attendanceStatus = 'none'; }
-                
-                document.getElementById('btn-menu-toggle').classList.remove('hidden');
-                document.getElementById('section-login').classList.add('hidden');
-                document.getElementById('section-dashboard').classList.remove('hidden');
-                updateDashboardState();
-            }
-        }
-
-        window.login = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-login-submit');
-            const spinner = document.getElementById('login-spinner');
-            const errDiv = document.getElementById('login-error');
-            const errTxt = document.getElementById('txt-login-error');
-            
-            btn.disabled = true; spinner.classList.remove('hidden'); errDiv.classList.add('hidden');
-            
-            const rawId = document.getElementById('input-worker-id').value;
-            const id = rawId.trim(); // إزالة المسافات الزائدة
-            
-            try {
-                // قراءة مباشرة من السحابة لضمان الدقة وتفادي تأخير onSnapshot
-                const docRef = doc(db, 'app_workers', id);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const worker = docSnap.data();
-                    const owner = localStorage.getItem('arkan_device_owner');
-                    if (owner && owner !== id) {
-                        showError("هذا الجهاز مسجل لعامل آخر. لا يمكنك الدخول!");
-                    } else {
-                        if (!owner) localStorage.setItem('arkan_device_owner', id);
-                        localStorage.setItem('arkan_user_id', worker.id);
-                        localStorage.setItem('arkan_user_name', worker.name);
-                        checkSavedSession();
-                    }
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    cloudStatus.innerText = 'مزامنة حية 100%';
+                    cloudStatus.className = 'text-[10px] text-emerald-400 font-bold';
+                    
+                    // الاستماع للتحديثات الحية للسحابة
+                    onSnapshot(collection(db, 'app_workers'), snap => { fbWorkers = snap.docs.map(d=>({id:d.id, ...d.data()})); updateDash(); renderWorkers(); updateWorkerSelect(); });
+                    onSnapshot(collection(db, 'app_projects'), snap => { fbProjects = snap.docs.map(d=>({id:d.id, ...d.data()})); updateDash(); renderProjects(); });
+                    onSnapshot(collection(db, 'app_tasks'), snap => { fbTasks = snap.docs.map(d=>({id:d.id, ...d.data()})); renderTasks(); });
+                    onSnapshot(collection(db, 'app_requests'), snap => { fbRequests = snap.docs.map(d=>({id:d.id, ...d.data()})); updateDash(); renderRequests(); });
+                    onSnapshot(collection(db, 'app_attendance'), snap => { fbAttendance = snap.docs.map(d=>({id:d.id, ...d.data()})); updateDash(); renderAttendance(); });
                 } else {
-                    showError("كود العامل غير مسجل في السحابة. راجع الإدارة.");
+                    signInAnonymously(auth).catch(e => {
+                        console.error(e); cloudStatus.innerText = 'فشل الاتصال'; cloudStatus.className = 'text-[10px] text-rose-500 font-bold';
+                    });
                 }
-            } catch (err) {
-                console.error(err);
-                showError("حدث خطأ في الاتصال بالشبكة.");
-            }
-            btn.disabled = false; spinner.classList.add('hidden');
+            });
+            signInAnonymously(auth).catch(e=>{});
+        } catch(e) { console.error(e); }
+
+        const views = ['dashboard', 'tasks', 'attendance', 'requests', 'workers', 'projects'];
+        const titles = { 'dashboard':'نظرة عامة', 'tasks':'إدارة وتوجيه المهام', 'attendance':'سجل الحضور اليومي', 'requests':'طلبات العمال', 'workers':'إدارة العمال', 'projects':'مواقع المشاريع' };
+
+        window.switchTab = function(id) {
+            document.getElementById('header-title').innerText = titles[id];
+            views.forEach(v => { document.getElementById('view-'+v).classList.add('hidden'); document.getElementById('nav-'+v).className='nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold hover:bg-slate-800 hover:text-white'; });
+            document.getElementById('view-'+id).classList.remove('hidden');
+            document.getElementById('nav-'+id).className='nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-blue-600 text-white shadow-md';
         };
 
-        function showError(msg) {
-            const errDiv = document.getElementById('login-error');
-            document.getElementById('txt-login-error').innerText = msg;
-            errDiv.classList.remove('hidden');
-            const btn = document.getElementById('btn-login-submit');
-            btn.disabled = false; document.getElementById('login-spinner').classList.add('hidden');
+        function showToast(msg) { const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = msg; t.classList.remove('translate-y-20','opacity-0'); setTimeout(()=>t.classList.add('translate-y-20','opacity-0'),3000); }
+        
+        function updateDash() {
+            document.getElementById('stat-workers').innerText = fbWorkers.length; document.getElementById('stat-projects').innerText = fbProjects.length;
+            document.getElementById('stat-attendance').innerText = fbAttendance.filter(a => a.date === getToday()).length;
+            const pReq = fbRequests.filter(r => r.status === 'pending').length; document.getElementById('stat-requests').innerText = pReq;
+            const b = document.getElementById('badge-requests'); b.innerText = pReq; pReq > 0 ? b.classList.remove('hidden') : b.classList.add('hidden');
         }
 
-        window.logout = function() {
-            localStorage.removeItem('arkan_user_id'); localStorage.removeItem('arkan_user_name');
-            currentUser = null;
-            document.getElementById('btn-menu-toggle').classList.add('hidden');
-            document.getElementById('section-dashboard').classList.add('hidden');
-            document.getElementById('section-login').classList.remove('hidden');
-            toggleSidebar();
-        };
-
-        function renderProjects() {
-            const select = document.getElementById('select-project');
-            select.innerHTML = `<option value="" disabled selected>--- اختر موقع العمل ---</option>`;
-            fbProjects.forEach(p => { const o = document.createElement('option'); o.value = p.id; o.innerText = p.name; select.appendChild(o); });
+        function updateWorkerSelect() { 
+            const s = document.getElementById('t-worker'); 
+            s.innerHTML = '<option value="" disabled selected>-- اختر العامل --</option>'; 
+            fbWorkers.forEach(w => { const o = document.createElement('option'); o.value = w.id; o.innerText = `${w.name} (${w.id})`; s.appendChild(o); }); 
         }
 
-        window.updateDashboardState = function() {
-            document.getElementById('state-checkin').classList.add('hidden');
-            document.getElementById('state-working').classList.add('hidden');
-            document.getElementById('state-completed').classList.add('hidden');
-            
-            if(attendanceStatus === 'none') {
-                document.getElementById('state-checkin').classList.remove('hidden');
-                const p = document.getElementById('select-project').value;
-                const btn = document.getElementById('btn-do-checkin');
-                if(p) { btn.classList.remove('opacity-50', 'cursor-not-allowed'); document.getElementById('btn-bypass').classList.remove('hidden'); }
-                else { btn.classList.add('opacity-50', 'cursor-not-allowed'); document.getElementById('btn-bypass').classList.add('hidden'); }
-            } else if(attendanceStatus === 'working') {
-                document.getElementById('state-working').classList.remove('hidden');
-                document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
-                const proj = fbProjects.find(x => x.id === localStorage.getItem('arkan_proj_id'));
-                if(proj) document.getElementById('val-current-proj').innerText = proj.name;
-            } else if(attendanceStatus === 'completed') {
-                document.getElementById('state-completed').classList.remove('hidden');
-            }
+        window.addWorker = async function(e) {
+            e.preventDefault(); 
+            const id = document.getElementById('w-id').value.trim(); // Trim is crucial here
+            const name = document.getElementById('w-name').value; 
+            const wage = document.getElementById('w-wage').value;
+            await setDoc(doc(db, 'app_workers', id), { id, name, wage: Number(wage) }); 
+            e.target.reset(); 
+            showToast('تم حفظ العامل بنجاح!');
+        };
+        
+        window.renderWorkers = function() { 
+            document.getElementById('table-workers').innerHTML = fbWorkers.map(w => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-slate-500">#${w.id}</td><td class="px-6 py-4 font-bold text-slate-800">${w.name}</td><td class="px-6 py-4 font-bold text-emerald-600">${w.wage} ر.س</td><td class="px-6 py-4"><span class="bg-blue-50 text-blue-600 px-2 py-1 rounded text-xs font-bold border border-blue-100">سحابي</span></td></tr>`).join(''); 
         };
 
-        window.performCheckIn = async function(isBypass) {
-            const pId = document.getElementById('select-project').value;
-            if(!pId || !currentUser) return;
-            const proj = fbProjects.find(x => x.id === pId);
-            
-            const doCheckIn = async () => {
-                const tStr = new Date().toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
-                attendanceStatus = 'working';
-                localStorage.setItem('arkan_status', 'working'); localStorage.setItem('arkan_time', tStr); localStorage.setItem('arkan_proj_id', pId);
-                await addDoc(collection(db, 'app_attendance'), { workerId: currentUser.id, workerName: currentUser.name, projectId: proj.id, projectName: proj.name, timeIn: tStr, timeOut: null, date: getToday(), status: 'working', createdAt: Date.now() });
-                updateDashboardState();
-            };
-            if(isBypass) { doCheckIn(); return; }
-            if(navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    const R = 6371e3; const p1 = pos.coords.latitude * Math.PI/180, p2 = proj.lat * Math.PI/180, dp = (proj.lat - pos.coords.latitude) * Math.PI/180, dl = (proj.lng - pos.coords.longitude) * Math.PI/180;
-                    const a = Math.sin(dp/2)*Math.sin(dp/2) + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
-                    const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                    if(dist <= (proj.radius || 500)) doCheckIn(); else alert('أنت خارج النطاق بمسافة ' + Math.round(dist) + ' متر!');
-                });
-            } else alert('الرجاء تفعيل الـ GPS');
+        window.addProject = async function(e) { 
+            e.preventDefault(); 
+            const id = document.getElementById('p-id').value.toUpperCase(); 
+            await setDoc(doc(db, 'app_projects', id), { id, name: document.getElementById('p-name').value, lat: Number(document.getElementById('p-lat').value), lng: Number(document.getElementById('p-lng').value), radius: Number(document.getElementById('p-radius').value) }); 
+            e.target.reset(); showToast('تم إضافة المشروع للسحابة!'); 
+        };
+        
+        window.renderProjects = function() { 
+            document.getElementById('grid-projects').innerHTML = fbProjects.map(p => `<div class="bg-white border border-slate-100 rounded-xl p-5 shadow-sm hover:border-blue-200 transition-colors"><span class="text-[10px] text-slate-400 font-bold tracking-wider">${p.id}</span><h4 class="font-bold text-lg mb-3 text-slate-800">${p.name}</h4><div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg"><span class="text-xs text-slate-500">نطاق البصمة:</span><span class="text-sm font-bold text-emerald-600">${p.radius} متر</span></div></div>`).join(''); 
         };
 
-        window.checkOut = function() { attendanceStatus = 'completed'; localStorage.setItem('arkan_status', 'completed'); updateDashboardState(); };
-
-        window.renderTasks = function() {
-            if(!currentUser) return;
-            const fDate = document.getElementById('filter-tasks-date').value;
-            const tList = fbTasks.filter(t => t.workerId === currentUser.id && t.date === fDate);
-            const pend = tList.filter(t => t.status !== 'completed').length;
-            const badge = document.getElementById('badge-menu-tasks');
-            if(pend > 0) { badge.innerText = pend; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
-            
-            document.getElementById('list-tasks').innerHTML = tList.map(t => {
-                let btns = t.status === 'pending' ? `<button onclick="updateTask('${t.id}','started')" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold">بدء</button>` : (t.status === 'started' ? `<button onclick="updateTask('${t.id}','completed')" class="bg-emerald-500 text-white text-xs px-4 py-2 rounded-lg font-bold">إنجاز</button>` : `<span class="text-xs text-emerald-600 font-bold">مكتملة ✅</span>`);
-                return `<div class="p-4 border rounded-xl flex items-center justify-between gap-4 bg-slate-50"><div class="flex-1 font-semibold text-sm">${t.text}</div><div>${btns}</div></div>`;
-            }).join('') || `<div class="text-center py-10 text-slate-400 font-medium">لا توجد مهام لهذا اليوم</div>`;
+        window.assignTask = async function(e) { 
+            e.preventDefault(); 
+            const d = document.getElementById('t-date').value; 
+            await addDoc(collection(db, 'app_tasks'), { 
+                workerId: document.getElementById('t-worker').value, 
+                date: d, 
+                text: document.getElementById('t-desc').value, 
+                status: 'pending' 
+            }); 
+            e.target.reset(); document.getElementById('t-date').value = d; showToast('تم إرسال المهمة لجوال العامل في نفس اللحظة!'); 
         };
-        window.updateTask = async function(id, st) { await updateDoc(doc(db, 'app_tasks', id), {status: st}); showToast('تم التحديث والسحابة استلمت الرد!'); };
-
-        window.handleFormSubmit = async function(e, type) {
-            e.preventDefault(); if(!currentUser) return;
-            let typeName = "", details = "";
-            if(type === 'leave') { typeName = "طلب إجازة"; details = `تاريخ: ${e.target[0].value} | النوع: ${e.target[1].options[e.target[1].selectedIndex].text}`; }
-            else if(type === 'loan') { typeName = "طلب سلفة"; details = `المبلغ: ${e.target[0].value} | السبب: ${e.target[1].value}`; }
-            else if(type === 'issue') { typeName = "بلاغ مشكلة"; details = `التصنيف: ${e.target[0].options[e.target[0].selectedIndex].text} | التفاصيل: ${e.target[1].value}`; }
-            
-            await addDoc(collection(db, 'app_requests'), { workerId: currentUser.id, workerName: currentUser.name, type: type, typeName: typeName, details: details, dateStr: getToday(), status: 'pending', createdAt: Date.now() });
-            closeModals(); e.target.reset(); showToast('تم الإرسال للإدارة بنجاح!');
+        
+        window.renderTasks = function() { 
+            const d = document.getElementById('filter-task-date').value; 
+            const tList = fbTasks.filter(x => x.date === d); 
+            document.getElementById('table-tasks').innerHTML = tList.map(t => { 
+                const w = fbWorkers.find(x=>x.id===t.workerId); 
+                let st = '<span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-amber-200">بانتظار العامل</span>'; 
+                if(t.status==='started') st='<span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-blue-200 flex items-center gap-1 w-max"><i class="ph-duotone ph-spinner animate-spin"></i> جاري التنفيذ</span>'; 
+                else if(t.status==='completed') st='<span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-200">مكتملة ✅</span>'; 
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-slate-800">${w?w.name:t.workerId}</td><td class="px-6 py-4 text-slate-600 font-medium">${t.text}</td><td class="px-6 py-4">${st}</td></tr>`; 
+            }).join('') || `<tr><td colspan="3" class="text-center py-10 text-slate-400 font-bold">لا مهام مسجلة في هذا التاريخ</td></tr>`; 
         };
 
-        window.renderRequestsHistory = function() {
-            if(!currentUser) return;
-            const fDate = document.getElementById('filter-history-date').value;
-            const rList = fbRequests.filter(r => r.workerId === currentUser.id && r.dateStr === fDate).sort((a,b)=>b.createdAt-a.createdAt);
-            const statusConf = {'pending':{t:'قيد المراجعة', c:'bg-amber-100 text-amber-700'}, 'approved':{t:'موافقة ✅', c:'bg-emerald-100 text-emerald-700'}, 'rejected':{t:'مرفوض ❌', c:'bg-rose-100 text-rose-700'}};
-            document.getElementById('list-requests-history').innerHTML = rList.map(r => {
-                const st = statusConf[r.status] || statusConf['pending'];
-                return `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100"><div class="flex justify-between mb-2"><span class="font-bold">${r.typeName}</span><span class="text-[10px] px-2 py-1 rounded-md font-bold ${st.c}">${st.t}</span></div><p class="text-xs text-slate-600">${r.details}</p></div>`;
-            }).join('') || `<div class="text-center py-10 text-slate-400 font-medium">لا توجد طلبات لهذا اليوم</div>`;
+        window.renderAttendance = function() { 
+            const d = document.getElementById('filter-att-date').value; 
+            const aList = fbAttendance.filter(x => x.date === d); 
+            document.getElementById('table-attendance').innerHTML = aList.map(a => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-slate-800">${a.workerName}</td><td class="px-6 py-4 text-slate-600 font-medium">${a.projectName}</td><td class="px-6 py-4 font-bold text-blue-600">${a.timeIn}</td><td class="px-6 py-4 text-slate-500">${a.timeOut||'<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold">حاضر الآن</span>'}</td></tr>`).join('') || `<tr><td colspan="4" class="text-center py-10 text-slate-400 font-bold">لا حضور مسجل في هذا التاريخ</td></tr>`; 
         };
 
-        window.toggleSidebar = function() { const s = document.getElementById('sidebar-drawer'), o = document.getElementById('sidebar-overlay'); if(s.classList.contains('translate-x-full')) { s.classList.remove('translate-x-full'); o.classList.remove('hidden'); setTimeout(()=>o.classList.remove('opacity-0'),10); } else { s.classList.add('translate-x-full'); o.classList.add('opacity-0'); setTimeout(()=>o.classList.add('hidden'),300); } };
-        window.openTab = function(id) { document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>{ if(b.dataset.target===id) b.className='tab-btn w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold bg-blue-50/50 text-blue-700 border border-blue-100'; else b.className='tab-btn w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 border border-transparent'; }); toggleSidebar(); if(id==='tab-tasks') renderTasks(); if(id==='tab-history') renderRequestsHistory(); };
-        window.openModal = function(id) { const o = document.getElementById('modal-overlay-form'), m = document.getElementById(id); o.classList.remove('hidden'); m.classList.remove('hidden'); setTimeout(()=>{o.classList.remove('opacity-0'); m.classList.remove('translate-y-full');},10); };
-        window.closeModals = function() { const o = document.getElementById('modal-overlay-form'); o.classList.add('opacity-0'); document.querySelectorAll('.modal-form').forEach(m=>m.classList.add('translate-y-full')); setTimeout(()=>{o.classList.add('hidden'); document.querySelectorAll('.modal-form').forEach(m=>m.classList.add('hidden'));},300); };
-        window.showToast = function(msg) { const t = document.getElementById('toast-success'); document.getElementById('txt-toast-msg').innerText = msg; t.classList.remove('-translate-y-20','opacity-0'); setTimeout(()=>t.classList.add('-translate-y-20','opacity-0'),3000); };
-
-        window.onload = () => {
-            const today = getToday();
-            document.getElementById('filter-tasks-date').value = today;
-            document.getElementById('filter-history-date').value = today;
-            const owner = localStorage.getItem('arkan_device_owner');
-            if(owner) { const input = document.getElementById('input-worker-id'); input.value = owner; input.readOnly = true; input.classList.add('bg-slate-200','cursor-not-allowed'); document.getElementById('txt-device-locked').classList.remove('hidden'); }
+        window.renderRequests = function() { 
+            const d = document.getElementById('filter-req-date').value; 
+            const rList = fbRequests.filter(x => x.dateStr === d); 
+            document.getElementById('grid-requests').innerHTML = rList.map(r => { 
+                let btns = r.status === 'pending' ? `<div class="p-4 border-t border-slate-100 bg-slate-50/50 grid grid-cols-2 gap-3"><button onclick="updReq('${r.id}','approved')" class="bg-emerald-500 hover:bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">موافقة</button><button onclick="updReq('${r.id}','rejected')" class="bg-white hover:bg-rose-50 border border-rose-200 text-rose-600 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors">رفض</button></div>` : `<div class="p-4 border-t border-slate-100 bg-slate-50 text-center text-sm font-bold ${r.status==='approved'?'text-emerald-600':'text-rose-600'}">${r.status==='approved'?'تمت الموافقة وتم إبلاغ العامل ✅':'تم الرفض وتم إبلاغ العامل ❌'}</div>`; 
+                return `<div class="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"><div class="p-3 bg-slate-100 border-b flex items-center gap-2 font-bold text-slate-700 text-sm"><i class="ph-fill ph-bell-ringing text-blue-500"></i> ${r.typeName}</div><div class="p-5 flex-1"><h4 class="font-bold text-slate-900 text-lg mb-2">${r.workerName}</h4><p class="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">${r.details}</p></div>${btns}</div>`; 
+            }).join('') || `<div class="col-span-3 text-center py-16 text-slate-400 font-bold">لا توجد طلبات واردة في هذا التاريخ</div>`; 
         };
+        
+        window.updReq = async function(id, st) { 
+            await updateDoc(doc(db, 'app_requests', id), { status: st }); 
+            showToast('تم الرد وسيظهر القرار بمتصفح العامل فوراً!'); 
+        };
+
+        window.onload = () => switchTab('dashboard');
     </script>
 </body>
 </html>
