@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -50,13 +51,13 @@
     </header>
 
     <!-- القائمة الجانبية -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="sidebar-overlay" onclick="closeSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300"></div>
     <aside id="sidebar-drawer" class="fixed top-0 start-0 h-full w-72 bg-white shadow-2xl z-50 transform ltr:-translate-x-full rtl:translate-x-full transition-transform duration-300 flex flex-col">
         <div class="p-6 bg-slate-900 text-white flex flex-col items-center justify-center relative overflow-hidden">
             <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-3 border-4 border-slate-800 relative z-10"><i class="ph-fill ph-user text-3xl text-white"></i></div>
             <h3 id="sidebar-worker-name" class="font-bold text-lg relative z-10">الاسم</h3>
             <p id="sidebar-worker-id" class="text-xs text-blue-300 font-mono mt-1 relative z-10">ID: 0000</p>
-            <button onclick="toggleSidebar()" class="absolute top-4 end-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
+            <button onclick="closeSidebar()" class="absolute top-4 end-4 w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white"><i class="ph-bold ph-x"></i></button>
         </div>
         <nav class="flex-1 overflow-y-auto p-4 space-y-2">
             <button onclick="openTab('tab-home')" id="nav-tab-home" class="tab-btn active w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold text-slate-700 border border-transparent"><i class="ph-duotone ph-house text-xl text-blue-600"></i> <span id="txt-nav-home">الرئيسية (الحضور)</span></button>
@@ -201,206 +202,4 @@
         // --- 1. الترجمة (Translation Dictionary) ---
         const dict = {
             ar: {
-                langBtn: "English", company: "أركان الخليج", subtitle: "بوابة الخدمات الذاتية", dbStatus: "متصل (المزامنة الحية مفعلة)",
-                navHome: "الرئيسية (الحضور)", navTasks: "المهام الموكلة", navServices: "الخدمات السريعة", navHistory: "متابعة طلباتي", navLogout: "تسجيل الخروج للتجربة",
-                loginTitle: "تسجيل الدخول", workerId: "رقم العامل (الكود)", loginBtn: "دخول للنظام", loginErr: "الكود غير مسجل، تمت إضافته في الإدارة؟",
-                attTitle: "تسجيل الحضور اليومي", selProj: "موقع العمل الحالي:", checkinBtn: "تسجيل الحضور بالموقع",
-                workingAt: "تعمل الآن في:", checkoutBtn: "إنهاء العمل (انصراف)", shiftDoneTitle: "تم إنهاء العمل بنجاح!", shiftDoneDesc: "تم إرسال انصرافك للإدارة.",
-                taskTitle: "المهام الموكلة", taskEmpty: "لا توجد مهام في هذا اليوم", taskStart: "بدء التنفيذ", taskDone: "إنجاز", taskCompleted: "مكتملة ✅",
-                srvLeaveTitle: "طلب إجازة", srvLeaveDesc: "تقديم طلب إجازة للإدارة.", srvLoanTitle: "طلب سلفة", srvLoanDesc: "طلب سلفة مالية من الراتب.", srvIssueTitle: "بلاغ مشكلة", srvIssueDesc: "الإبلاغ عن أعطال أو أمن وسلامة.",
-                histTitle: "متابعة طلباتي", histEmpty: "لا توجد طلبات في هذا اليوم",
-                modLeaveHead: "طلب إجازة", modLeaveType: "نوع الإجازة", modLeaveDet: "التفاصيل (تاريخ البدء والمدة)", modLeaveBtn: "إرسال الطلب",
-                optL1: "إجازة سنوية", optL2: "إجازة مرضية", optL3: "بدون راتب",
-                modLoanHead: "طلب سلفة", modLoanAmt: "المبلغ المطلوب", modLoanRsn: "السبب / ملاحظات", modLoanBtn: "إرسال الطلب",
-                modIssueHead: "بلاغ مشكلة", modIssueType: "نوع المشكلة", modIssueDet: "التفاصيل", modIssueBtn: "إرسال البلاغ",
-                optI1: "أمن وسلامة مهنية", optI2: "عطل معدة", optI3: "أخرى",
-                toastMsg: "تم الإرسال للإدارة بنجاح!", reqPending: "قيد المراجعة", reqApprove: "موافقة ✅", reqReject: "مرفوض ❌",
-                phID: "مثال: 1001", bypass: "تجاوز الـ GPS (للتجربة من الكمبيوتر)"
-            },
-            en: {
-                langBtn: "عربي", company: "Arkan Al-Khaleej", subtitle: "Self-Service Portal", dbStatus: "Connected (Live Sync Active)",
-                navHome: "Home (Attendance)", navTasks: "Assigned Tasks", navServices: "Quick Services", navHistory: "My Requests", navLogout: "Logout (Testing)",
-                loginTitle: "Login", workerId: "Worker ID", loginBtn: "Login", loginErr: "ID not registered. Added in Admin?",
-                attTitle: "Daily Check-in", selProj: "Current Location:", checkinBtn: "Check In at Site",
-                workingAt: "Working at:", checkoutBtn: "End Shift (Check Out)", shiftDoneTitle: "Shift Ended Successfully!", shiftDoneDesc: "Check-out sent to admin.",
-                taskTitle: "Assigned Tasks", taskEmpty: "No tasks for this date", taskStart: "Start", taskDone: "Complete", taskCompleted: "Completed ✅",
-                srvLeaveTitle: "Leave Request", srvLeaveDesc: "Submit leave request.", srvLoanTitle: "Loan Request", srvLoanDesc: "Salary advance request.", srvIssueTitle: "Report Issue", srvIssueDesc: "Report faults or safety issues.",
-                histTitle: "My Requests", histEmpty: "No requests found for this date",
-                modLeaveHead: "Leave Request", modLeaveType: "Leave Type", modLeaveDet: "Details (Start Date & Duration)", modLeaveBtn: "Submit Request",
-                optL1: "Annual Leave", optL2: "Sick Leave", optL3: "Unpaid Leave",
-                modLoanHead: "Loan Request", modLoanAmt: "Amount Required", modLoanRsn: "Reason / Notes", modLoanBtn: "Submit Request",
-                modIssueHead: "Report Issue", modIssueType: "Issue Type", modIssueDet: "Details", modIssueBtn: "Submit Report",
-                optI1: "Health & Safety", optI2: "Equipment Fault", optI3: "Other",
-                toastMsg: "Sent to Admin Successfully!", reqPending: "Pending", reqApprove: "Approved ✅", reqReject: "Rejected ❌",
-                phID: "e.g. 1001", bypass: "Bypass GPS (PC Testing)"
-            }
-        };
-
-        let currentLang = 'ar';
-        function toggleLang() {
-            currentLang = currentLang === 'ar' ? 'en' : 'ar';
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLang;
-            if(currentLang === 'en') document.documentElement.classList.add('ltr'); else document.documentElement.classList.remove('ltr');
-            updateUI();
-        }
-
-        function updateUI() {
-            const t = dict[currentLang];
-            document.getElementById('txt-lang').innerText = t.langBtn; document.getElementById('txt-company').innerText = t.company; document.getElementById('txt-subtitle').innerText = t.subtitle; document.getElementById('txt-db-status').innerText = t.dbStatus;
-            document.getElementById('txt-nav-home').innerText = t.navHome; document.getElementById('txt-nav-tasks').innerText = t.navTasks; document.getElementById('txt-nav-services').innerText = t.navServices; document.getElementById('txt-nav-history').innerText = t.navHistory; document.getElementById('txt-nav-logout').innerText = t.navLogout;
-            document.getElementById('txt-login-title').innerText = t.loginTitle; document.getElementById('txt-worker-id').innerText = t.workerId; document.getElementById('txt-login-btn').innerText = t.loginBtn; document.getElementById('txt-login-error').innerText = t.loginErr; document.getElementById('input-worker-id').placeholder = t.phID;
-            document.getElementById('txt-att-title').innerText = t.attTitle; document.getElementById('txt-sel-proj').innerText = t.selProj; document.getElementById('txt-btn-checkin').innerText = t.checkinBtn; document.getElementById('btn-bypass').innerText = t.bypass;
-            document.getElementById('txt-working-at').innerText = t.workingAt; document.getElementById('txt-btn-checkout').innerText = t.checkoutBtn; document.getElementById('txt-shift-done-title').innerText = t.shiftDoneTitle; document.getElementById('txt-shift-done-desc').innerText = t.shiftDoneDesc;
-            document.getElementById('txt-task-title').innerText = t.taskTitle;
-            document.getElementById('txt-srv-leave-title').innerText = t.srvLeaveTitle; document.getElementById('txt-srv-leave-desc').innerText = t.srvLeaveDesc; document.getElementById('txt-srv-loan-title').innerText = t.srvLoanTitle; document.getElementById('txt-srv-loan-desc').innerText = t.srvLoanDesc; document.getElementById('txt-srv-issue-title').innerText = t.srvIssueTitle; document.getElementById('txt-srv-issue-desc').innerText = t.srvIssueDesc;
-            document.getElementById('txt-hist-title').innerText = t.histTitle;
-            document.getElementById('txt-mod-leave-head').innerText = t.modLeaveHead; document.getElementById('txt-mod-leave-type').innerText = t.modLeaveType; document.getElementById('txt-mod-leave-det').innerText = t.modLeaveDet; document.getElementById('btn-submit-leave').innerText = t.modLeaveBtn; document.getElementById('opt-l-1').innerText = t.optL1; document.getElementById('opt-l-2').innerText = t.optL2; document.getElementById('opt-l-3').innerText = t.optL3;
-            document.getElementById('txt-mod-loan-head').innerText = t.modLoanHead; document.getElementById('txt-mod-loan-amt').innerText = t.modLoanAmt; document.getElementById('txt-mod-loan-rsn').innerText = t.modLoanRsn; document.getElementById('btn-submit-loan').innerText = t.modLoanBtn;
-            document.getElementById('txt-mod-issue-head').innerText = t.modIssueHead; document.getElementById('txt-mod-issue-type').innerText = t.modIssueType; document.getElementById('txt-mod-issue-det').innerText = t.modIssueDet; document.getElementById('btn-submit-issue').innerText = t.modIssueBtn; document.getElementById('opt-i-1').innerText = t.optI1; document.getElementById('opt-i-2').innerText = t.optI2; document.getElementById('opt-i-3').innerText = t.optI3;
-            document.getElementById('txt-toast-msg').innerText = t.toastMsg;
-            renderProjects(); if(currentUser) { renderTasks(); renderHistory(); }
-        }
-        document.getElementById('btn-lang').addEventListener('click', toggleLang);
-
-        // --- 2. محرك قاعدة البيانات المحلية الموحد (Local Storage Engine) ---
-        const getDB = (table) => JSON.parse(localStorage.getItem(`arkan_db_${table}`) || '[]');
-        const setDB = (table, data) => localStorage.setItem(`arkan_db_${table}`, JSON.stringify(data));
-        const getToday = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().split('T')[0]; };
-
-        let currentUser = null; let attendanceStatus = 'none';
-
-        window.onload = () => {
-            const today = getToday();
-            document.getElementById('filter-tasks-date').value = today; document.getElementById('filter-history-date').value = today;
-            updateUI();
-            
-            const savedId = localStorage.getItem('arkan_user_id');
-            if(savedId) {
-                const workers = getDB('workers'); const worker = workers.find(w => w.id === savedId);
-                if(worker) {
-                    currentUser = worker;
-                    document.getElementById('sidebar-worker-name').innerText = currentLang==='ar'?worker.nameAr:worker.nameEn; document.getElementById('sidebar-worker-id').innerText = `ID: ${savedId}`;
-                    if(localStorage.getItem('arkan_date') === today) attendanceStatus = localStorage.getItem('arkan_status') || 'none';
-                    else { localStorage.setItem('arkan_date', today); localStorage.removeItem('arkan_status'); attendanceStatus = 'none'; }
-                    document.getElementById('btn-menu-toggle').classList.remove('hidden'); document.getElementById('section-login').classList.add('hidden'); document.getElementById('section-dashboard').classList.remove('hidden');
-                    updateDashboardState(); renderTasks(); renderHistory();
-                }
-            }
-            
-            // الاستماع لتغييرات الإدارة لحظياً
-            window.addEventListener('storage', (e) => {
-                if(e.key && e.key.startsWith('arkan_db_') && currentUser) { renderProjects(); renderTasks(); renderHistory(); }
-            });
-        };
-
-        // --- 3. العمليات الحيوية وتسميع البيانات (Data Sync) ---
-        document.getElementById('form-login').addEventListener('submit', (e) => {
-            e.preventDefault(); const id = document.getElementById('input-worker-id').value.trim();
-            const workers = getDB('workers'); const worker = workers.find(w => w.id === id);
-            if(worker) {
-                currentUser = worker; localStorage.setItem('arkan_user_id', worker.id); document.getElementById('login-error').classList.add('hidden');
-                window.location.reload(); // إعادة التحميل لتطبيق حالة الدخول بسلاسة
-            } else document.getElementById('login-error').classList.remove('hidden');
-        });
-
-        function logout() { currentUser = null; localStorage.removeItem('arkan_user_id'); window.location.reload(); }
-
-        function renderProjects() {
-            const select = document.getElementById('select-project'); select.innerHTML = `<option value="" disabled selected>--- ${dict[currentLang].selProj} ---</option>`;
-            getDB('projects').forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.innerText = currentLang === 'ar' ? p.nameAr : p.nameEn; select.appendChild(opt); });
-            // إذا كان يعمل يعرض اسم مشروعه
-            if(attendanceStatus === 'working') {
-                const pId = localStorage.getItem('arkan_proj_id'); const p = getDB('projects').find(x => x.id === pId);
-                if(p) document.getElementById('val-current-proj').innerText = currentLang === 'ar' ? p.nameAr : p.nameEn;
-            }
-        }
-
-        function updateDashboardState() {
-            ['state-checkin', 'state-working', 'state-completed'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            if(attendanceStatus === 'none') {
-                document.getElementById('state-checkin').classList.remove('hidden');
-                const pId = document.getElementById('select-project').value; const btn = document.getElementById('btn-do-checkin');
-                if(pId) { btn.classList.remove('opacity-50', 'cursor-not-allowed'); document.getElementById('btn-bypass').classList.remove('hidden'); }
-                else { btn.classList.add('opacity-50', 'cursor-not-allowed'); document.getElementById('btn-bypass').classList.add('hidden'); }
-            } else if(attendanceStatus === 'working') {
-                document.getElementById('state-working').classList.remove('hidden'); document.getElementById('val-checkin-time').innerText = localStorage.getItem('arkan_time');
-                renderProjects(); // لتحديث اسم المشروع
-            } else if(attendanceStatus === 'completed') document.getElementById('state-completed').classList.remove('hidden');
-        }
-        document.getElementById('select-project').addEventListener('change', updateDashboardState);
-
-        // أهم دالة: تسجيل الدخول وتسميعه في جدول الحضور ليقرأه نظام التكاليف
-        function performCheckIn() {
-            const pId = document.getElementById('select-project').value; if(!pId || !currentUser) return;
-            const proj = getDB('projects').find(x => x.id === pId);
-            
-            const tStr = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-            attendanceStatus = 'working'; localStorage.setItem('arkan_status', 'working'); localStorage.setItem('arkan_time', tStr); localStorage.setItem('arkan_proj_id', pId);
-            
-            // الكتابة في جدول الحضور للإدارة والتكاليف
-            const attDB = getDB('attendance');
-            attDB.push({ 
-                id: Date.now().toString(), workerId: currentUser.id, workerName: currentLang==='ar'?currentUser.nameAr:currentUser.nameEn, 
-                projectId: proj.id, projectName: currentLang==='ar'?proj.nameAr:proj.nameEn, timeIn: tStr, timeOut: null, date: getToday(), status: 'working'
-            });
-            setDB('attendance', attDB); updateDashboardState();
-        }
-        document.getElementById('btn-do-checkin').addEventListener('click', performCheckIn);
-        document.getElementById('btn-bypass').addEventListener('click', performCheckIn);
-
-        document.getElementById('btn-do-checkout').addEventListener('click', () => { 
-            attendanceStatus = 'completed'; localStorage.setItem('arkan_status', 'completed'); 
-            const attDB = getDB('attendance'); const record = attDB.find(a => a.workerId === currentUser.id && a.date === getToday() && a.status === 'working');
-            if(record) { record.status = 'completed'; record.timeOut = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}); setDB('attendance', attDB); }
-            updateDashboardState(); 
-        });
-
-        // قراءة وتحديث المهام (تسميع للإدارة)
-        window.renderTasks = function() {
-            if(!currentUser) return; const fDate = document.getElementById('filter-tasks-date').value;
-            const tasks = getDB('tasks').filter(tk => tk.workerId === currentUser.id && tk.date === fDate);
-            const pend = tasks.filter(tk => tk.status !== 'completed').length; const badge = document.getElementById('badge-menu-tasks');
-            if(pend > 0) { badge.innerText = pend; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
-            
-            document.getElementById('list-tasks').innerHTML = tasks.map(tk => {
-                let btns = tk.status === 'pending' ? `<button onclick="updateTask('${tk.id}','started')" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold shadow">${dict[currentLang].taskStart}</button>` : (tk.status === 'started' ? `<button onclick="updateTask('${tk.id}','completed')" class="bg-emerald-500 text-white text-xs px-4 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="ph-duotone ph-spinner animate-spin"></i> ${dict[currentLang].taskDone}</button>` : `<span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded">${dict[currentLang].taskCompleted}</span>`);
-                return `<div class="p-4 border rounded-xl flex items-center justify-between gap-4 bg-slate-50 shadow-sm"><div class="flex-1 font-semibold text-sm">${tk.text}</div><div>${btns}</div></div>`;
-            }).join('') || `<div class="text-center py-10 text-slate-400 font-medium">${dict[currentLang].taskEmpty}</div>`;
-        };
-        document.getElementById('filter-tasks-date').addEventListener('change', renderTasks);
-        window.updateTask = function(id, st) { const tasks = getDB('tasks'); const task = tasks.find(tk => tk.id === id); if(task) { task.status = st; setDB('tasks', tasks); renderTasks(); } };
-
-        // إرسال الطلبات (تسميع للإدارة)
-        window.handleFormSubmit = function(e, type) {
-            e.preventDefault(); if(!currentUser) return;
-            let typeName = "", details = "";
-            if(type === 'leave') { typeName = dict[currentLang].srvLeaveTitle; details = `النوع: ${e.target[0].options[e.target[0].selectedIndex].text} | التفاصيل: ${e.target[1].value}`; }
-            else if(type === 'loan') { typeName = dict[currentLang].srvLoanTitle; details = `المبلغ: ${e.target[0].value} | السبب: ${e.target[1].value}`; }
-            else if(type === 'issue') { typeName = dict[currentLang].srvIssueTitle; details = `النوع: ${e.target[0].options[e.target[0].selectedIndex].text} | التفاصيل: ${e.target[1].value}`; }
-            
-            const reqs = getDB('requests');
-            reqs.push({ id: Date.now().toString(), workerId: currentUser.id, workerName: currentLang==='ar'?currentUser.nameAr:currentUser.nameEn, type: type, typeName: typeName, details: details, dateStr: getToday(), status: 'pending', createdAt: Date.now() });
-            setDB('requests', reqs); closeModals(); e.target.reset(); document.getElementById('filter-history-date').value = getToday(); renderHistory(); 
-            const toast = document.getElementById('toast-success'); toast.classList.remove('-translate-y-20','opacity-0'); setTimeout(()=>toast.classList.add('-translate-y-20','opacity-0'),3000);
-        };
-
-        // قراءة سجل الطلبات للإدارة
-        window.renderHistory = function() {
-            if(!currentUser) return; const fDate = document.getElementById('filter-history-date').value;
-            const reqs = getDB('requests').filter(r => r.workerId === currentUser.id && r.dateStr === fDate).sort((a,b)=>b.createdAt-a.createdAt);
-            const conf = { 'pending':{ textKey: 'reqPending', c:'bg-amber-100 text-amber-700'}, 'approved':{ textKey: 'reqApprove', c:'bg-emerald-100 text-emerald-700'}, 'rejected':{ textKey: 'reqReject', c:'bg-rose-100 text-rose-700'} };
-            document.getElementById('list-requests-history').innerHTML = reqs.map(r => {
-                const st = conf[r.status]; return `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100 shadow-sm"><div class="flex justify-between mb-2"><span class="font-bold">${r.typeName}</span><span class="text-[10px] px-2 py-1 rounded-md font-bold ${st.c}">${dict[currentLang][st.textKey]}</span></div><p class="text-xs text-slate-600">${r.details}</p></div>`;
-            }).join('') || `<div class="text-center py-10 text-slate-400 font-medium">${dict[currentLang].histEmpty}</div>`;
-        };
-        document.getElementById('filter-history-date').addEventListener('change', renderHistory);
-
-        // واجهة المستخدم والتنقل
-        window.toggleSidebar = () => { const s = document.getElementById('sidebar-drawer'), o = document.getElementById('sidebar-overlay'), hideClass = currentLang === 'ar' ? 'translate-x-full' : '-translate-x-full'; if(s.classList.contains(hideClass)) { s.classList.remove('translate-x-full', '-translate-x-full'); o.classList.remove('hidden'); setTimeout(()=>o.classList.remove('opacity-0'),10); } else { s.classList.add(hideClass); o.classList.add('opacity-0'); setTimeout(()=>o.classList.add('hidden'),300); } };
-        window.openTab = (id) => { document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active', 'bg-blue-50', 'text-blue-700', 'border-blue-200'); if(b.id === 'nav-'+id) b.classList.add('active', 'bg-blue-50', 'text-blue-700', 'border-blue-200'); }); toggleSidebar(); };
-        window.openModal = (id) => { const o = document.getElementById('modal-overlay-form'), m = document.getElementById(id); o.classList.remove('hidden'); m.classList.remove('hidden'); setTimeout(()=>{o.classList.remove('opacity-0'); m.classList.remove('translate-y-full');},10); };
-        window.closeModals = () => { const o = document.getElementById('modal-overlay-form'); o.classList.add('opacity-0'); document.querySelectorAll('.modal-form').forEach(m=>m.classList.add('translate-y-full')); setTimeout(()=>{o.classList.add('hidden'); document.querySelectorAll('.modal-form').forEach(m=>m.classList.add('hidden'));},300); };
-    </script>
-</body>
-</html>
+                langBtn: "English", company: "أركان الخليج", subtitle: "بوابة الخدمات الذاتية", dbStatus: "متصل (المزامنة الحية م
